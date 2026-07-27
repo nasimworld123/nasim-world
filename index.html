@@ -620,7 +620,7 @@
       let priceHTML = `<span class="product-price">৳${item.price}</span>`;
       if (item.oldPrice) {
         const save = parseFloat(item.oldPrice) - parseFloat(item.price);
-        priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${}</span>`;
+        priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
 
       card.innerHTML = `
