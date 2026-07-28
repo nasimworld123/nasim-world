@@ -628,7 +628,7 @@
         <p class="product-name">${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>
-        <button class="add-cart-btn" style="background:#25D366;color:#fff;border-color:#25D366;" onclick='orderNow(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)})'>📩 এখনই অর্ডার করুন</button>`;
+        <button class="add-cart-btn" style="background:transparent;color:#128C4A;border:1.5px solid #128C4A;" onclick='orderNow(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>📩 অর্ডার করুন</button>`;
       grid.appendChild(card);
     });
     document.getElementById('modalOverlay').classList.add('active');
@@ -643,10 +643,12 @@
     else { cart.push({ name, price, src, qty: 1 }); }
     updateCartCount();
   }
-function orderNow(name, price) {
-    const msg = `নতুন অর্ডার:\nপণ্য: ${name}\nমূল্য: ৳${price}\n\nদয়া করে আমার নাম, ঠিকানা ও মোবাইল নাম্বার এখানে লিখে পাঠান।`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-  }
+function orderNow(name, price, src) {
+    cart = [{ name, price: parseFloat(bnToEn(price)), src, qty: 1 }];
+    updateCartCount();
+    openCart();
+    showOrderForm();
+}
   function updateCartCount() {
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
     document.getElementById('cartCount').textContent = totalQty;
@@ -721,20 +723,33 @@ function orderNow(name, price) {
       return;
     }
 
-    let msg = `নতুন অর্ডার:\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\n\nপণ্যসমূহ:\n`;
+    let itemsText = '';
     let total = 0;
     cart.forEach(item => {
-      msg += `- ${item.name} x${item.qty} = ৳${item.price * item.qty}\n`;
+      itemsText += `${item.name} x${item.qty} = ৳${item.price * item.qty}\n`;
       total += item.price * item.qty;
     });
-    msg += `\nমোট মূল্য: ৳${total}`;
 
+    fetch("https://formspree.io/f/xvzelqan", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        নাম: name,
+        মোবাইল: phone,
+        ঠিকানা: address,
+        পণ্যসমূহ: itemsText,
+        মোট_মূল্য: `৳${total}`
+      })
+    }).catch(() => {});
+
+    let msg = `নতুন অর্ডার:\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\n\nপণ্যসমূহ:\n${itemsText}\nমোট মূল্য: ৳${total}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 
     cart = [];
     updateCartCount();
     closeCart();
-  }
+    alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে!');
+ }
 
   const offerSlides = document.querySelectorAll('.offer-slide');
   const offerDotsWrap = document.getElementById('offerDots');
