@@ -627,7 +627,8 @@
         <img src="${item.src}" alt="photo ${i+1}">
         <p class="product-name">${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
-        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${item.price}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
+        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>
+        <button class="add-cart-btn" style="background:#25D366;color:#fff;border-color:#25D366;" onclick='orderNow(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)})'>📩 এখনই অর্ডার করুন</button>`;
       grid.appendChild(card);
     });
     document.getElementById('modalOverlay').classList.add('active');
@@ -642,7 +643,10 @@
     else { cart.push({ name, price, src, qty: 1 }); }
     updateCartCount();
   }
-
+function orderNow(name, price) {
+    const msg = `নতুন অর্ডার:\nপণ্য: ${name}\nমূল্য: ৳${price}\n\nদয়া করে আমার নাম, ঠিকানা ও মোবাইল নাম্বার এখানে লিখে পাঠান।`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
   function updateCartCount() {
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
     document.getElementById('cartCount').textContent = totalQty;
