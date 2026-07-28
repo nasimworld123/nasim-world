@@ -627,8 +627,7 @@
         <img src="${item.src}" alt="photo ${i+1}">
         <p class="product-name">${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
-        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>
-        <button class="add-cart-btn" style="background:transparent;color:#128C4A;border:1.5px solid #128C4A;" onclick='orderNow(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>📩 অর্ডার করুন</button>`;
+        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
       grid.appendChild(card);
     });
     document.getElementById('modalOverlay').classList.add('active');
