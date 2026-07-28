@@ -572,7 +572,10 @@
 <script>
   const WHATSAPP_NUMBER = "8801340902365";
   const PHONE_NUMBER = "+8801340902365";
-
+function bnToEn(str) {
+  const bnDigits = '০১২৩৪৫৬৭৮৯';
+  return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
+   }
   const galleries = {
     group1: [
       { src:"Pictures/amrapali.png", name: "আম্রপালি", price: "৫০০", oldPrice: "৬০০" },
@@ -620,7 +623,7 @@
 
       let priceHTML = `<span class="product-price">৳${item.price}</span>`;
       if (item.oldPrice) {
-        const save = parseFloat(item.oldPrice) - parseFloat(item.price);
+        const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
 
@@ -638,10 +641,11 @@
   let cart = [];
 
   function addToCart(name, price, src) {
-    const existing = cart.find(i => i.name === name);
-    if (existing) { existing.qty++; }
-    else { cart.push({ name, price, src, qty: 1 }); }
-    updateCartCount();
+  const numPrice = parseFloat(bnToEn(price));
+  const existing = cart.find(i => i.name === name);
+  if (existing) { existing.qty++; }
+  else { cart.push({ name, price: numPrice, src, qty: 1 }); }
+  updateCartCount();
   }
 function orderNow(name, price, src) {
     cart = [{ name, price: parseFloat(bnToEn(price)), src, qty: 1 }];
