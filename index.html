@@ -82,9 +82,10 @@
 
   /* ===== Cart Modal ===== */
   .cart-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(234,246,252,0.98);
-    z-index: 999; padding: 20px 16px; overflow-y: auto; opacity: 0; transition: opacity 0.3s ease;
-  }
+  display: none; position: fixed; inset: 0; background: #eaf6fc;
+  z-index: 999; padding: 20px 16px; overflow-y: auto;
+}
+.cart-overlay.active { display: block; }
   .cart-overlay.active { display: block; opacity: 1; }
   .cart-item {
     display: flex; gap: 12px; align-items: center;
