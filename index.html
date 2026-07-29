@@ -89,17 +89,21 @@
   .cart-overlay.active { display: block; opacity: 1; }
   .cart-item {
     display: flex; gap: 12px; align-items: center;
-    background: #fff; border: 1px solid rgba(14,165,233,0.2);
-    border-radius: 14px; padding: 10px; margin-bottom: 10px;
-    box-shadow: 0 2px 10px rgba(14,165,233,0.08);
+    background: #fff; border: none;
+    border-bottom: 1px solid rgba(14,165,233,0.15);
+    border-radius: 0; padding: 14px 4px;
+    box-shadow: none;
   }
-  .cart-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+  .cart-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(14,165,233,0.15); }
   .cart-item-info { flex: 1; }
-  .cart-item-info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; }
-  .cart-item-info .price { color: #f97316; font-size: 0.8rem; margin-top: 2px; }
+  .cart-item-info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; margin-bottom: 6px; }
+  .cart-item-info .price { display: none; }
   .qty-control {
+    display: flex; align-items: center; gap: 10px;
+    justify-content: space-between;
+  }
+  .qty-control .qty-buttons {
     display: flex; align-items: center; gap: 8px;
-    margin-top: 6px;
   }
   .qty-control button {
     width: 24px; height: 24px; border-radius: 50%;
@@ -107,8 +111,9 @@
     color: #0284c7; font-size: 0.9rem; cursor: pointer;
   }
   .qty-control span { font-size: 0.85rem; min-width: 16px; text-align: center; color: #1e2a38; }
+  .qty-control .line-total { color: #f97316; font-size: 0.85rem; font-weight: bold; }
   .remove-item {
-    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
+    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px; align-self: flex-start;
   }
   .cart-empty { text-align: center; color: rgba(30,42,56,0.4); padding: 40px 0; font-size: 0.9rem; }
   .cart-summary {
@@ -119,14 +124,7 @@
     padding: 14px 4px 4px;
     margin-top: 14px;
   }
-  .cart-total-row {
-    display: flex; justify-content: space-between;
-    font-size: 1rem; font-weight: bold; color: #1e2a38;
-    margin-bottom: 10px;
-  }
-  .cart-total-row span:last-child { color: #f97316; }
-  .place-order-btn {
-    width: 100%;
+  
     background: linear-gradient(90deg,#0ea5e9,#0284c7);
     color: #fff; border: none; padding: 13px; border-radius: 25px;
     font-size: 0.95rem; font-weight: bold; cursor: pointer;
@@ -696,18 +694,20 @@ function orderNow(name, price, src) {
       total += item.price * item.qty;
       const el = document.createElement('div');
       el.className = 'cart-item';
-      el.innerHTML = `
+    el.innerHTML = `
         <img src="${item.src}">
         <div class="cart-item-info">
           <div class="name">${item.name}</div>
-          <div class="price">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</div>
           <div class="qty-control">
-            <button onclick="changeQty(${i}, -1)">-</button>
-            <span>${item.qty}</span>
-            <button onclick="changeQty(${i}, 1)">+</button>
+            <div class="qty-buttons">
+              <button onclick="changeQty(${i}, -1)">-</button>
+              <span>${item.qty}</span>
+              <button onclick="changeQty(${i}, 1)">+</button>
+            </div>
+            <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
           </div>
         </div>
-        <button class="remove-item" onclick="removeItem(${i})">×</button>`;
+        <button class="remove-item" onclick="removeItem(${i})">✕</button>`;
       wrap.appendChild(el);
     });
 
