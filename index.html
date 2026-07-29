@@ -339,16 +339,17 @@
 
   /* ===== Modal / Lightbox Gallery ===== */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(234,246,252,0.98);
-    z-index: 999; padding: 20px 16px; overflow-y: auto; opacity: 0; transition: opacity 0.3s ease;
-  }
+  display: none; position: fixed; inset: 0; background: #eaf6fc;
+  z-index: 999; padding: 20px 16px; overflow-y: auto;
+}
+.modal-overlay.active { display: block; }
   .modal-overlay.active { display: block; opacity: 1; }
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; opacity: 0; transform: translateY(-15px); }
   .modal-overlay.active .modal-header { animation: slideDown 0.4s ease forwards; }
   .modal-header h3 { color: #0284c7; font-size: 1.1rem; }
   .modal-close {
-    background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.35); color: #0284c7;
-    width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer;
+  background: #0284c7; border: none; color: #fff;
+  width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer;
   }
   .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .modal-card {
