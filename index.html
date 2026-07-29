@@ -648,7 +648,7 @@ function bnToEn(str) {
   }
   function closeGallery() { document.getElementById('modalOverlay').classList.remove('active'); }
 
-  let cart = [];
+  let cart = JSON.parse(localStorage.getItem('nasimCart') || '[]');
 
   function addToCart(name, price, src) {
   const numPrice = parseFloat(bnToEn(price));
@@ -664,6 +664,7 @@ function orderNow(name, price, src) {
     showOrderForm();
 }
  function updateCartCount() {
+    localStorage.setItem('nasimCart', JSON.stringify(cart));
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
     document.getElementById('cartCount').textContent = totalQty;
     const modalCartCount = document.getElementById('cartCountModal');
@@ -818,7 +819,9 @@ function orderNow(name, price, src) {
     else if (diff > threshold) { offerIndex = (offerIndex - 1 + offerSlides.length) % offerSlides.length; showOfferSlide(offerIndex); }
     startX = 0; currentX = 0;
   });
+
+  updateCartCount();
 </script>
 
 </body>
-   </html>
+     </html>
