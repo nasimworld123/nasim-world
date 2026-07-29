@@ -82,11 +82,10 @@
 
   /* ===== Cart Modal ===== */
   .cart-overlay {
-  display: none; position: fixed; inset: 0; background: #eaf6fc;
-  z-index: 999; padding: 20px 16px; overflow-y: auto;
-}
-.cart-overlay.active { display: block; }
-  .cart-overlay.active { display: block; opacity: 1; }
+    display: none; position: fixed; inset: 0; background: #eaf6fc;
+    z-index: 999; padding: 20px 16px; overflow-y: auto;
+  }
+  .cart-overlay.active { display: block; }
   .cart-item {
     display: flex; gap: 12px; align-items: center;
     background: #fff; border: none;
@@ -113,7 +112,7 @@
   .qty-control span { font-size: 0.85rem; min-width: 16px; text-align: center; color: #1e2a38; }
   .qty-control .line-total { color: #f97316; font-size: 0.85rem; font-weight: bold; }
   .remove-item {
-    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px; align-self: flex-start;
+    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
   }
   .cart-empty { text-align: center; color: rgba(30,42,56,0.4); padding: 40px 0; font-size: 0.9rem; }
   .cart-summary {
@@ -124,7 +123,14 @@
     padding: 14px 4px 4px;
     margin-top: 14px;
   }
-  
+  .cart-total-row {
+    display: flex; justify-content: space-between;
+    font-size: 1rem; font-weight: bold; color: #1e2a38;
+    margin-bottom: 10px;
+  }
+  .cart-total-row span:last-child { color: #f97316; }
+  .place-order-btn {
+    width: 100%;
     background: linear-gradient(90deg,#0ea5e9,#0284c7);
     color: #fff; border: none; padding: 13px; border-radius: 25px;
     font-size: 0.95rem; font-weight: bold; cursor: pointer;
@@ -177,12 +183,12 @@
     top: 18px; right: 18px;
     width: 34px; height: 34px;
     border-radius: 50%;
-    background: rgba(14,165,233,0.1);
-    border: 1px solid rgba(14,165,233,0.3);
+    background: #0284c7;
+    border: none;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    color: #0284c7;
+    color: #fff;
   }
   .nav-overlay {
     display: none;
@@ -338,16 +344,16 @@
 
   /* ===== Modal / Lightbox Gallery ===== */
   .modal-overlay {
-  display: none; position: fixed; inset: 0; background: #eaf6fc;
-  z-index: 999; padding: 20px 16px; overflow-y: auto;
-}
-.modal-overlay.active { display: block; }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;}
+    display: none; position: fixed; inset: 0; background: #eaf6fc;
+    z-index: 999; padding: 20px 16px; overflow-y: auto;
+  }
+  .modal-overlay.active { display: block; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
   .modal-overlay.active .modal-header, .cart-overlay.active .modal-header { animation: slideDown 0.4s ease forwards; }
   .modal-header h3 { color: #0284c7; font-size: 1.1rem; }
   .modal-close {
-  background: #0284c7; border: none; color: #fff;
-  width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer;
+    background: #0284c7; border: none; color: #fff;
+    width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer;
   }
   .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .modal-card {
@@ -815,4 +821,4 @@ function orderNow(name, price, src) {
 </script>
 
 </body>
-</html>
+   </html>
