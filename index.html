@@ -531,7 +531,12 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-header">
       <h3 id="modalTitle">গ্যালারি</h3>
-      <button class="modal-close" onclick="closeGallery()">✕</button>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="cart-icon" onclick="closeGallery(); openCart();">
+          🛒<span class="cart-count" id="cartCountModal">0</span>
+        </div>
+        <button class="modal-close" onclick="closeGallery()">✕</button>
+      </div>
     </div>
     <div class="modal-grid" id="modalGrid"></div>
   </div>
@@ -654,10 +659,12 @@ function orderNow(name, price, src) {
     openCart();
     showOrderForm();
 }
-  function updateCartCount() {
+ function updateCartCount() {
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
     document.getElementById('cartCount').textContent = totalQty;
-  }
+    const modalCartCount = document.getElementById('cartCountModal');
+    if (modalCartCount) modalCartCount.textContent = totalQty;
+ }
 
   function changeQty(index, delta) {
     cart[index].qty += delta;
