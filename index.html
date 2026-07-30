@@ -10,7 +10,7 @@
   body {
     background: #eaf6fc;
     color: #1e2a38;
-    padding-bottom: 40px;
+    padding-bottom: 90px;
   }
   a { text-decoration: none; color: inherit; }
 
@@ -357,10 +357,57 @@
   }
   .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .modal-card {
+    position: relative;
     background: #fff; border: 1px solid rgba(14,165,233,0.2); border-radius: 16px;
     overflow: hidden; text-align: center; padding-bottom: 10px; opacity: 0; transform: scale(0.85);
     box-shadow: 0 3px 14px rgba(14,165,233,0.1);
   }
+  .wish-heart {
+    position: absolute; top: 8px; right: 8px; z-index: 5;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .wish-heart.active { color: #ef4444; }
+  .wish-heart:not(.active) { color: rgba(30,42,56,0.35); }
+  .wishlist-icon {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(14,165,233,0.1);
+    border: 1px solid rgba(14,165,233,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .wishlist-count {
+    position: absolute;
+    top: -6px; right: -6px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    min-width: 17px; height: 17px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+  }
+  .wish-item {
+    display: flex; gap: 12px; align-items: center;
+    background: #fff; border: none;
+    border-bottom: 1px solid rgba(14,165,233,0.15);
+    padding: 14px 4px;
+  }
+  .wish-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(14,165,233,0.15); cursor: pointer; }
+  .wish-item .info { flex: 1; cursor: pointer; }
+  .wish-item .info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; margin-bottom: 4px; }
+  .wish-item .info .price { font-size: 0.8rem; color: #f97316; font-weight: bold; }
+  .wish-remove {
+    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
+  }
+  .wish-empty { text-align: center; color: rgba(30,42,56,0.4); padding: 40px 0; font-size: 0.9rem; }
   .modal-overlay.active .modal-card { animation: popIn 0.4s ease forwards; }
   .modal-card:nth-child(1){animation-delay:.05s!important}
   .modal-card:nth-child(2){animation-delay:.12s!important}
@@ -444,7 +491,7 @@
   /* ===== Floating Contact Button ===== */
   .float-btn {
     position: fixed;
-    bottom: 20px; right: 18px;
+    bottom: 92px; right: 18px;
     width: 58px; height: 58px;
     border-radius: 50%;
     background: #25D366;
@@ -456,6 +503,45 @@
     touch-action: none;
     box-shadow: 0 0 0 8px rgba(37,211,102,0.22), 0 4px 16px rgba(0,0,0,0.25);
     animation: waPulse 2.4s infinite;
+  }
+
+  /* ===== Bottom Navigation Bar (glassy) ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 900;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 9px 4px calc(9px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(14,165,233,0.25);
+    box-shadow: 0 -6px 24px rgba(14,165,233,0.12);
+  }
+  .bottom-nav .nav-item {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: rgba(30,42,56,0.5);
+    font-size: 0.62rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+  }
+  .bottom-nav .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .bottom-nav .nav-item:active { transform: scale(0.92); }
+  .bottom-nav .nav-item.active-home { color: #0284c7; }
+  .bottom-nav .nav-badge {
+    position: absolute; top: -2px; right: 22%;
+    background: #f97316; color: #fff; font-size: 0.6rem; font-weight: bold;
+    min-width: 15px; height: 15px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; padding: 0 3px;
   }
   .float-btn svg { width: 30px; height: 30px; }
   @keyframes waPulse {
@@ -590,6 +676,26 @@
     </div>
   </div>
 
+  <!-- Wishlist Modal -->
+  <div class="cart-overlay" id="wishlistOverlay">
+    <div class="modal-header">
+      <h3>❤️ আমার পছন্দ</h3>
+      <button class="modal-close" onclick="closeWishlist()">✕</button>
+    </div>
+    <div id="wishlistItemsWrap"></div>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="searchOverlay">
+    <div class="modal-header">
+      <h3>প্রোডাক্ট খুঁজুন</h3>
+      <button class="modal-close" onclick="closeSearch()">✕</button>
+    </div>
+    <input type="text" id="searchInput" placeholder="প্রোডাক্টের নাম লিখুন..." oninput="performSearch(this.value)"
+      style="width:100%;background:#fff;border:1px solid rgba(14,165,233,0.3);border-radius:12px;padding:12px 14px;font-size:0.9rem;margin-bottom:16px;color:#1e2a38;">
+    <div class="modal-grid" id="searchGrid"></div>
+  </div>
+
   <!-- Product Detail Modal -->
   <div class="modal-overlay" id="productDetailOverlay">
     <div class="modal-header">
@@ -706,11 +812,13 @@ function bnToEn(str) {
       }
 
       card.innerHTML = `
+        <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})'>
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
       grid.appendChild(card);
+      if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
     });
   }
   function closeGallery() { document.getElementById('modalOverlay').classList.remove('active'); }
@@ -785,6 +893,72 @@ function bnToEn(str) {
     });
   }
 
+  // ===== Wishlist (no login, saved on this device) =====
+  let wishlist = JSON.parse(localStorage.getItem('nasimWishlist') || '[]');
+
+  function isInWishlist(name) {
+    return wishlist.some(i => i.name === name);
+  }
+
+  function saveWishlist() {
+    localStorage.setItem('nasimWishlist', JSON.stringify(wishlist));
+    updateWishCount();
+  }
+
+  function updateWishCount() {
+    const wishCountEl = document.getElementById('wishCount');
+    if (wishCountEl) wishCountEl.textContent = wishlist.length;
+    const navWish = document.getElementById('navWishCount');
+    if (navWish) navWish.textContent = wishlist.length;
+  }
+
+  function toggleWishlist(item) {
+    const idx = wishlist.findIndex(i => i.name === item.name);
+    const heartEl = document.getElementById(`wish-${item.name}`);
+    if (idx > -1) {
+      wishlist.splice(idx, 1);
+      if (heartEl) heartEl.classList.remove('active');
+    } else {
+      wishlist.push(item);
+      if (heartEl) heartEl.classList.add('active');
+    }
+    saveWishlist();
+  }
+
+  function removeFromWishlist(name) {
+    wishlist = wishlist.filter(i => i.name !== name);
+    saveWishlist();
+    renderWishlist();
+  }
+
+  function renderWishlist() {
+    const wrap = document.getElementById('wishlistItemsWrap');
+    if (wishlist.length === 0) {
+      wrap.innerHTML = `<div class="wish-empty">আপনার পছন্দের তালিকা খালি</div>`;
+      return;
+    }
+    wrap.innerHTML = "";
+    wishlist.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'wish-item';
+      let priceHTML = `৳${item.price}`;
+      el.innerHTML = `
+        <img src="${item.src}" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})'>
+        <div class="info" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})'>
+          <div class="name">${item.name}</div>
+          <div class="price">${priceHTML}</div>
+        </div>
+        <button class="wish-remove" onclick='removeFromWishlist(${JSON.stringify(item.name)})'>✕</button>`;
+      wrap.appendChild(el);
+    });
+  }
+
+  function openWishlist() {
+    renderWishlist();
+    document.getElementById('wishlistOverlay').classList.add('active');
+  }
+  function closeWishlist() { document.getElementById('wishlistOverlay').classList.remove('active'); }
+
   let cart = JSON.parse(localStorage.getItem('nasimCart') || '[]');
 
   function addToCart(name, price, src) {
@@ -806,6 +980,8 @@ function orderNow(name, price, src) {
     document.getElementById('cartCount').textContent = totalQty;
     const modalCartCount = document.getElementById('cartCountModal');
     if (modalCartCount) modalCartCount.textContent = totalQty;
+    const navCart = document.getElementById('navCartCount');
+    if (navCart) navCart.textContent = totalQty;
  }
 
   function changeQty(index, delta) {
@@ -864,6 +1040,83 @@ function orderNow(name, price, src) {
     document.getElementById('cartOverlay').classList.add('active');
   }
   function closeCart() { document.getElementById('cartOverlay').classList.remove('active'); }
+
+  // ===== Bottom Navigation Bar actions =====
+  function closeAllOverlays() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('cartOverlay').classList.remove('active');
+    document.getElementById('wishlistOverlay').classList.remove('active');
+    document.getElementById('searchOverlay').classList.remove('active');
+    document.getElementById('productDetailOverlay').classList.remove('active');
+  }
+
+  function goHome() {
+    closeAllOverlays();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goAccount() {
+    closeAllOverlays();
+    document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function navOpenCart() {
+    closeAllOverlays();
+    openCart();
+  }
+
+  function navOpenWishlist() {
+    closeAllOverlays();
+    openWishlist();
+  }
+
+  // ===== Search =====
+  let allProductsCache = null;
+
+  async function openSearch() {
+    closeAllOverlays();
+    document.getElementById('searchOverlay').classList.add('active');
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchGrid').innerHTML = '';
+    setTimeout(() => document.getElementById('searchInput').focus(), 300);
+    if (!allProductsCache) {
+      try {
+        const snap = await db.collection('products').get();
+        allProductsCache = snap.docs.map(d => d.data());
+      } catch (e) { allProductsCache = []; }
+    }
+  }
+
+  function closeSearch() { document.getElementById('searchOverlay').classList.remove('active'); }
+
+  function performSearch(query) {
+    const grid = document.getElementById('searchGrid');
+    query = query.trim();
+    if (!query) { grid.innerHTML = ''; return; }
+    const results = (allProductsCache || []).filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+    if (results.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:rgba(30,42,56,0.4);padding:30px 0;">কোনো পণ্য পাওয়া যায়নি</p>';
+      return;
+    }
+    grid.innerHTML = '';
+    results.forEach((item, i) => {
+      const card = document.createElement('div');
+      card.className = 'modal-card';
+      let priceHTML = `<span class="product-price">৳${item.price}</span>`;
+      if (item.oldPrice) {
+        const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
+        priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
+      }
+      card.innerHTML = `
+        <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
+        <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})'>
+        <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
+        <div class="product-price-row">${priceHTML}</div>
+        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
+      grid.appendChild(card);
+      if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
+    });
+  }
 
   function showOrderForm() {
     document.getElementById('orderForm').classList.add('show');
@@ -958,6 +1211,7 @@ function orderNow(name, price, src) {
   });
 
   updateCartCount();
+  updateWishCount();
 
   // ===== Draggable WhatsApp floating button =====
   (function() {
@@ -1014,6 +1268,32 @@ function orderNow(name, price, src) {
     });
   })();
 </script>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-nav">
+    <div class="nav-item active-home" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navOpenCart()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span id="navCartCount" class="nav-badge">0</span>
+      <span>Cart</span>
+    </div>
+    <div class="nav-item" onclick="navOpenWishlist()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9C0.7 8.4 2 5 5.2 5c1.9 0 3.3 1 4.8 3 1.5-2 2.9-3 4.8-3C18 5 19.3 8.4 21.5 12 19 16.4 12 21 12 21z"/></svg>
+      <span id="navWishCount" class="nav-badge">0</span>
+      <span>Wishlist</span>
+    </div>
+    <div class="nav-item" onclick="openSearch()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Search</span>
+    </div>
+    <div class="nav-item" onclick="goAccount()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Account</span>
+    </div>
+  </div>
 
 </body>
  </html>
