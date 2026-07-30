@@ -1210,8 +1210,10 @@ function orderNow(name, price, src) {
     startX = 0; currentX = 0;
   });
 
-  updateCartCount();
-  updateWishCount();
+  window.addEventListener('DOMContentLoaded', function() {
+    updateCartCount();
+    updateWishCount();
+  });
 
   // ===== Draggable WhatsApp floating button =====
   (function() {
@@ -1296,4 +1298,4 @@ function orderNow(name, price, src) {
   </div>
 
 </body>
- </html>
+</html>
