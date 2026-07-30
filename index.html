@@ -640,6 +640,22 @@
     <div>© 2026 সর্বস্বত্ব সংরক্ষিত</div>
   </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdN_pY2ONFkYch-8dRwpR5JG8enxfJbEQ",
+      authDomain: "nasim-world.firebaseapp.com",
+      projectId: "nasim-world",
+      storageBucket: "nasim-world.firebasestorage.app",
+      messagingSenderId: "270942884516",
+      appId: "1:270942884516:web:b7c3876d30a6bf1fc10c31"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
 <script>
   const WHATSAPP_NUMBER = "8801340902365";
   const PHONE_NUMBER = "+8801340902365";
@@ -647,39 +663,13 @@ function bnToEn(str) {
   const bnDigits = '০১২৩৪৫৬৭৮৯';
   return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
    }
-  const galleries = {
-    group1: [
-      { src:"Pictures/amrapali.png", name: "আম্রপালি", price: "500", oldPrice: "750" },
-      { src: "Pictures/kati-mon.png", name: "কাটিমন", price: "350", oldPrice: " 530" },
-      { src: "Pictures/bari-four.png", name: "বাড়ি ফোর", price: "450", oldPrice: "890" },
-      { src: "Pictures/banana-mango.png", name: "ব্যানানা ম্যাংগো", price: "721", oldPrice: "1000" }
-    ],
-    group2: [
-      { src: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&q=80", name: "পণ্যের নাম ১", price: "৫০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80", name: "পণ্যের নাম ২", price: "৬০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1546456073-92b9f0a8d413?w=400&q=80", name: "পণ্যের নাম ৩", price: "৪৫০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&q=80", name: "পণ্যের নাম ৪", price: "৭০০", oldPrice: "" }
-    ],
-    group3: [
-      { src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=80", name: "পণ্যের নাম ১", price: "৫০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80", name: "পণ্যের নাম ২", price: "৬০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=400&q=80", name: "পণ্যের নাম ৩", price: "৪৫০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80", name: "পণ্যের নাম ৪", price: "৭০০", oldPrice: "" }
-    ],
-    group4: [
-      { src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80", name: "পণ্যের নাম ১", price: "৫০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1546456073-92b9f0a8d413?w=400&q=80", name: "পণ্যের নাম ২", price: "৬০০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80", name: "পণ্যের নাম ৩", price: "৪৫০", oldPrice: "" },
-      { src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80", name: "পণ্যের নাম ৪", price: "৭০০", oldPrice: "" }
-    ]
-  };
   const titles = {
-  group1: '<img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;">',
-  group2: "ছবি ২ - সব ছবি",
+  group1: "আম",
+  group2: "আচার",
   group3: "ছবি ৩ - সব ছবি",
   group4: "ছবি ৪ - সব ছবি"
 };
-  function openGallery(key, imgEl) {
+  async function openGallery(key, imgEl) {
     if (imgEl) {
       imgEl.classList.remove('pulse');
       void imgEl.offsetWidth;
@@ -687,8 +677,25 @@ function bnToEn(str) {
     }
     const grid = document.getElementById('modalGrid');
     document.getElementById('modalTitle').innerHTML = titles[key];
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#0284c7;padding:30px 0;">লোড হচ্ছে...</p>';
+    document.getElementById('modalOverlay').classList.add('active');
+
+    let items = [];
+    try {
+      const snap = await db.collection('products').where('category', '==', key).get();
+      items = snap.docs.map(doc => doc.data());
+    } catch (e) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#ef4444;padding:30px 0;">লোড করতে সমস্যা হয়েছে</p>';
+      return;
+    }
+
     grid.innerHTML = "";
-    galleries[key].forEach((item, i) => {
+    if (items.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:rgba(30,42,56,0.4);padding:30px 0;">কোনো পণ্য নেই</p>';
+      return;
+    }
+
+    items.forEach((item, i) => {
       const card = document.createElement('div');
       card.className = 'modal-card';
 
@@ -705,7 +712,6 @@ function bnToEn(str) {
         <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
       grid.appendChild(card);
     });
-    document.getElementById('modalOverlay').classList.add('active');
   }
   function closeGallery() { document.getElementById('modalOverlay').classList.remove('active'); }
 
@@ -1010,4 +1016,4 @@ function orderNow(name, price, src) {
 </script>
 
 </body>
-            </html>
+ </html>
