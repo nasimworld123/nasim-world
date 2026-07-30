@@ -79,6 +79,11 @@
     background: none; border: 1px solid #ef4444; color: #ef4444;
     padding: 6px 10px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
   }
+  .product-row .edit-btn {
+    background: none; border: 1px solid #0284c7; color: #0284c7;
+    padding: 6px 10px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
+    margin-right: 6px;
+  }
   .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 10px 0; }
   .status-msg { text-align: center; font-size: 0.85rem; padding: 8px 0; min-height: 20px; }
 </style>
@@ -118,7 +123,7 @@
         <option value="group3">ছবি ৩</option>
         <option value="group4">ছবি ৪</option>
       </select>
-      <button class="add-btn" onclick="addProduct()">পণ্য যোগ করুন</button>
+      <button class="add-btn" id="addBtn" onclick="addProduct()">পণ্য যোগ করুন</button>
       <div class="status-msg" id="addStatus"></div>
     </div>
 
@@ -177,6 +182,8 @@
       }
     });
 
+    let editingId = null;
+
     function addProduct() {
       const name = document.getElementById('pName').value.trim();
       const price = document.getElementById('pPrice').value.trim();
@@ -191,10 +198,28 @@
         return;
       }
 
+      const data = { name, price, oldPrice, src, category };
+
+      if (editingId) {
+        statusEl.textContent = 'আপডেট করা হচ্ছে...';
+        statusEl.style.color = '#0284c7';
+        db.collection('products').doc(editingId).update(data)
+          .then(() => {
+            statusEl.textContent = '✅ পণ্য আপডেট হয়েছে';
+            statusEl.style.color = '#128C4A';
+            cancelEdit();
+          })
+          .catch(() => {
+            statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+            statusEl.style.color = '#ef4444';
+          });
+        return;
+      }
+
       statusEl.textContent = 'যোগ করা হচ্ছে...';
       statusEl.style.color = '#0284c7';
 
-      db.collection('products').add({ name, price, oldPrice, src, category, createdAt: Date.now() })
+      db.collection('products').add({ ...data, createdAt: Date.now() })
         .then(() => {
           statusEl.textContent = '✅ পণ্য যোগ হয়েছে';
           statusEl.style.color = '#128C4A';
@@ -207,6 +232,28 @@
           statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
           statusEl.style.color = '#ef4444';
         });
+    }
+
+    function editProduct(id, name, price, oldPrice, src, category) {
+      editingId = id;
+      document.getElementById('pName').value = name;
+      document.getElementById('pPrice').value = price;
+      document.getElementById('pOldPrice').value = oldPrice || '';
+      document.getElementById('pImage').value = src;
+      document.getElementById('pCategory').value = category;
+      document.getElementById('addBtn').textContent = 'আপডেট করুন';
+      document.getElementById('addStatus').textContent = `"${name}" এডিট করছেন`;
+      document.getElementById('addStatus').style.color = '#0284c7';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('pName').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pOldPrice').value = '';
+      document.getElementById('pImage').value = '';
+      document.getElementById('addBtn').textContent = 'পণ্য যোগ করুন';
     }
 
     function deleteProduct(id) {
@@ -241,6 +288,7 @@
                     <div class="name">${item.name}</div>
                     <div class="price">৳${item.price}${item.oldPrice ? ' (আগে ৳' + item.oldPrice + ')' : ''}</div>
                   </div>
+                  <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>এডিট</button>
                   <button class="del-btn" onclick="deleteProduct('${item.id}')">মুছুন</button>
                 </div>`;
             });
@@ -253,4 +301,4 @@
   </script>
 
 </body>
-  </html>
+</html>
