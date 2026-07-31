@@ -574,7 +574,7 @@
 
   <!-- Navbar -->
   <div class="navbar">
-    <div class="logo"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;"></div>
+    <div class="logo" onclick="secretAdminTap()"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;"></div>
     <div style="display:flex; align-items:center; gap:10px;">
       <div class="cart-icon" onclick="openCart()">
         🛒<span class="cart-count" id="cartCount">0</span>
@@ -671,7 +671,7 @@
         <input type="text" id="custName" placeholder="আপনার নাম">
         <input type="text" id="custPhone" placeholder="মোবাইল নাম্বার">
         <textarea id="custAddress" placeholder="ঠিকানা" rows="2"></textarea>
-        <button class="place-order-btn" onclick="submitOrder()">📩 WhatsApp-এ অর্ডার পাঠান</button>
+        <button class="place-order-btn" onclick="submitOrder()">📩 অর্ডার কনফার্ম করুন</button>
       </div>
     </div>
   </div>
@@ -874,22 +874,25 @@ function bnToEn(str) {
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
     const total = numPrice * pdCurrentQty;
 
-    fetch("https://formspree.io/f/xvzelqan", {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        নাম: name,
-        মোবাইল: phone,
-        ঠিকানা: address,
-        পণ্য: pdCurrentItem.name,
-        পরিমাণ: pdCurrentQty,
-        মোট_মূল্য: `৳${total}`
-      })
+    const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'অপেক্ষা করুন...';
+
+    db.collection('orders').add({
+      name, phone, address,
+      items: [{ name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
+      total: total,
+      status: 'Pending',
+      source: 'Single Product',
+      createdAt: Date.now()
     }).then(() => {
       closeProductDetail();
       alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে! শীঘ্রই আমরা যোগাযোগ করব।');
     }).catch(() => {
       alert('দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    }).finally(() => {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'ORDER CONFIRM';
     });
   }
 
@@ -1050,6 +1053,19 @@ function orderNow(name, price, src) {
     document.getElementById('productDetailOverlay').classList.remove('active');
   }
 
+  // ===== Hidden admin access: tap logo 5 times within 2 seconds =====
+  let logoTapCount = 0;
+  let logoTapTimer = null;
+  function secretAdminTap() {
+    logoTapCount++;
+    if (logoTapTimer) clearTimeout(logoTapTimer);
+    logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 2000);
+    if (logoTapCount >= 5) {
+      logoTapCount = 0;
+      window.location.href = 'admin.html';
+    }
+  }
+
   function goHome() {
     closeAllOverlays();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1132,32 +1148,35 @@ function orderNow(name, price, src) {
       return;
     }
 
-    let itemsText = '';
+    let itemsArr = [];
     let total = 0;
     cart.forEach(item => {
-      itemsText += `${item.name} x${item.qty} = ৳${item.price * item.qty}\n`;
+      itemsArr.push({ name: item.name, price: item.price, qty: item.qty });
       total += item.price * item.qty;
     });
 
-    fetch("https://formspree.io/f/xvzelqan", {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        নাম: name,
-        মোবাইল: phone,
-        ঠিকানা: address,
-        পণ্যসমূহ: itemsText,
-        মোট_মূল্য: `৳${total}`
-      })
-    }).catch(() => {});
+    const confirmBtn = document.querySelector('#orderForm .place-order-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'অপেক্ষা করুন...';
 
-    let msg = `নতুন অর্ডার:\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\n\nপণ্যসমূহ:\n${itemsText}\nমোট মূল্য: ৳${total}`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-
-    cart = [];
-    updateCartCount();
-    closeCart();
-    alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে!');
+    db.collection('orders').add({
+      name, phone, address,
+      items: itemsArr,
+      total: total,
+      status: 'Pending',
+      source: 'Cart',
+      createdAt: Date.now()
+    }).then(() => {
+      cart = [];
+      updateCartCount();
+      closeCart();
+      alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে!');
+    }).catch(() => {
+      alert('দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    }).finally(() => {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = '📩 অর্ডার কনফার্ম করুন';
+    });
  }
 
   const offerSlides = document.querySelectorAll('.offer-slide');
