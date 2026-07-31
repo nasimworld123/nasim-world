@@ -87,8 +87,40 @@
   .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 10px 0; }
   .status-msg { text-align: center; font-size: 0.85rem; padding: 8px 0; min-height: 20px; }
 
+  /* ===== New Orders Alert Banner ===== */
+  .order-alert {
+    display: none;
+    max-width: 700px; margin: 14px auto 0; padding: 0 18px;
+  }
+  .order-alert.show { display: block; }
+  .order-alert .box {
+    background: linear-gradient(90deg,#f97316,#ea580c);
+    color: #fff; border-radius: 14px; padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(249,115,22,0.35);
+    animation: alertPulse 1.6s infinite;
+  }
+  .order-alert .box .txt { font-weight: bold; font-size: 0.95rem; }
+  .order-alert .box .count { font-size: 1.6rem; font-weight: bold; }
+  @keyframes alertPulse {
+    0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(249,115,22,0); }
+    100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+  }
+  .order-del-btn {
+    background: none; border: 1px solid rgba(30,42,56,0.3); color: rgba(30,42,56,0.6);
+    padding: 8px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
+    width: 36px; display: flex; align-items: center; justify-content: center;
+  }
+
   /* ===== Orders ===== */
   .order-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .history-toggle {
+    background: #fff; border: 1px solid rgba(30,42,56,0.3); color: rgba(30,42,56,0.6);
+    padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+    margin-bottom: 16px; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .history-toggle.active { background: #1e2a38; color: #fff; border-color: #1e2a38; }
   .order-tab {
     background: #eaf6fc; border: 1px solid rgba(14,165,233,0.3); color: #0284c7;
     padding: 6px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: bold; cursor: pointer;
@@ -129,6 +161,13 @@
     <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="doLogout()">Logout</button>
   </div>
 
+  <div class="order-alert" id="orderAlert">
+    <div class="box">
+      <span class="txt">🔔 নতুন অর্ডার এসেছে</span>
+      <span class="count" id="pendingOrderCount">0</span>
+    </div>
+  </div>
+
   <!-- Login -->
   <div class="login-wrap" id="loginWrap">
     <div class="login-card">
@@ -152,6 +191,7 @@
         <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
         <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
       </div>
+      <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 পুরনো সম্পন্ন অর্ডার দেখুন</div>
       <div id="ordersList"></div>
     </div>
 
@@ -311,12 +351,60 @@
     // ===== Orders =====
     let allOrders = [];
     let currentOrderFilter = 'all';
+    let knownOrderIds = new Set();
+    let ordersFirstLoad = true;
+
+    function playNewOrderBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (e) {}
+    }
 
     function listenOrders() {
       db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
         allOrders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (!ordersFirstLoad) {
+          const newOnes = allOrders.filter(o => !knownOrderIds.has(o.id));
+          if (newOnes.length > 0) playNewOrderBeep();
+        }
+        allOrders.forEach(o => knownOrderIds.add(o.id));
+        ordersFirstLoad = false;
+
+        // Auto-delete completed orders older than 2 weeks
+        const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+        allOrders.forEach(o => {
+          const isDone = (o.status === 'Delivered' || o.status === 'Cancelled');
+          if (isDone && (Date.now() - o.createdAt) > TWO_WEEKS_MS) {
+            db.collection('orders').doc(o.id).delete();
+          }
+        });
+
+        const pendingCount = allOrders.filter(o => o.status === 'Pending').length;
+        const alertBox = document.getElementById('orderAlert');
+        document.getElementById('pendingOrderCount').textContent = pendingCount;
+        if (pendingCount > 0) {
+          alertBox.classList.add('show');
+          document.title = `(${pendingCount}) NASIM WORLD — Admin`;
+        } else {
+          alertBox.classList.remove('show');
+          document.title = 'NASIM WORLD — Admin';
+        }
+
         renderOrders();
       });
+    }
+
+    function deleteOrder(id) {
+      if (!confirm('এই অর্ডারটি মুছে ফেলতে চান?')) return;
+      db.collection('orders').doc(id).delete();
     }
 
     function filterOrders(status, el) {
@@ -326,9 +414,27 @@
       renderOrders();
     }
 
+    let showHistory = false;
+    function toggleHistory() {
+      showHistory = !showHistory;
+      const btn = document.getElementById('historyToggle');
+      btn.classList.toggle('active', showHistory);
+      btn.textContent = showHistory ? '🕓 শুধু সাম্প্রতিক অর্ডার দেখুন' : '🕓 পুরনো সম্পন্ন অর্ডার দেখুন';
+      renderOrders();
+    }
+
     function renderOrders() {
       const listEl = document.getElementById('ordersList');
-      const filtered = currentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentOrderFilter);
+      let filtered = currentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentOrderFilter);
+
+      const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+      if (!showHistory) {
+        filtered = filtered.filter(o => {
+          const isDone = (o.status === 'Delivered' || o.status === 'Cancelled');
+          const isOld = (Date.now() - o.createdAt) > TWO_DAYS_MS;
+          return !(isDone && isOld);
+        });
+      }
 
       if (filtered.length === 0) {
         listEl.innerHTML = `<div class="empty-msg">কোনো অর্ডার নেই</div>`;
@@ -355,6 +461,7 @@
           actionsHTML = `<button class="btn-deliver" onclick="updateOrderStatus('${order.id}','Delivered')">Delivered</button>`;
         }
         actionsHTML += `<a class="btn-call" href="tel:${order.phone}">📞 কল</a>`;
+        actionsHTML += `<button class="order-del-btn" onclick="deleteOrder('${order.id}')">🗑️</button>`;
 
         card.innerHTML = `
           <div class="top-row">
@@ -414,4 +521,4 @@
   </script>
 
 </body>
-</html>
+ </html>
