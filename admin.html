@@ -86,6 +86,40 @@
   }
   .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 10px 0; }
   .status-msg { text-align: center; font-size: 0.85rem; padding: 8px 0; min-height: 20px; }
+
+  /* ===== Orders ===== */
+  .order-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .order-tab {
+    background: #eaf6fc; border: 1px solid rgba(14,165,233,0.3); color: #0284c7;
+    padding: 6px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: bold; cursor: pointer;
+  }
+  .order-tab.active { background: #0284c7; color: #fff; }
+  .order-card {
+    background: #fff; border: 1px solid rgba(14,165,233,0.2); border-radius: 14px;
+    padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(14,165,233,0.08);
+  }
+  .order-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .order-card .cust-name { font-weight: bold; font-size: 0.95rem; color: #1e2a38; }
+  .order-badge {
+    font-size: 0.7rem; font-weight: bold; padding: 3px 10px; border-radius: 12px;
+  }
+  .order-badge.Pending { background: #fff4e5; color: #f97316; }
+  .order-badge.Accepted { background: #e5f6ff; color: #0284c7; }
+  .order-badge.Delivered { background: #e8f9ee; color: #128C4A; }
+  .order-badge.Cancelled { background: #fdeaea; color: #ef4444; }
+  .order-card .meta { font-size: 0.78rem; color: rgba(30,42,56,0.6); margin-bottom: 8px; line-height: 1.6; }
+  .order-card .items-list { font-size: 0.8rem; color: #1e2a38; margin-bottom: 8px; }
+  .order-card .items-list div { padding: 2px 0; }
+  .order-card .total-row { font-weight: bold; color: #f97316; font-size: 0.85rem; margin-bottom: 10px; }
+  .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .order-actions button {
+    flex: 1; min-width: 80px; border: none; padding: 8px; border-radius: 16px;
+    font-size: 0.75rem; font-weight: bold; cursor: pointer; color: #fff;
+  }
+  .btn-accept { background: #0284c7; }
+  .btn-deliver { background: #128C4A; }
+  .btn-cancel { background: #ef4444; }
+  .btn-call { background: #25D366; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
@@ -108,6 +142,18 @@
 
   <!-- Dashboard -->
   <div class="dashboard" id="dashboard">
+
+    <div class="section-card">
+      <h3>সব অর্ডার</h3>
+      <div class="order-tabs" id="orderTabs">
+        <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">সব</div>
+        <div class="order-tab" data-filter="Pending" onclick="filterOrders('Pending', this)">Pending</div>
+        <div class="order-tab" data-filter="Accepted" onclick="filterOrders('Accepted', this)">Accepted</div>
+        <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
+        <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
+      </div>
+      <div id="ordersList"></div>
+    </div>
 
     <div class="section-card">
       <h3>নতুন পণ্য যোগ করুন</h3>
@@ -175,6 +221,7 @@
         document.getElementById('dashboard').style.display = 'block';
         document.getElementById('logoutBtn').style.display = 'inline-block';
         listenProducts();
+        listenOrders();
       } else {
         document.getElementById('loginWrap').style.display = 'block';
         document.getElementById('dashboard').style.display = 'none';
@@ -259,6 +306,72 @@
     function deleteProduct(id) {
       if (!confirm('এই পণ্যটি মুছে ফেলতে চান?')) return;
       db.collection('products').doc(id).delete();
+    }
+
+    // ===== Orders =====
+    let allOrders = [];
+    let currentOrderFilter = 'all';
+
+    function listenOrders() {
+      db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        allOrders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderOrders();
+      });
+    }
+
+    function filterOrders(status, el) {
+      currentOrderFilter = status;
+      document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const listEl = document.getElementById('ordersList');
+      const filtered = currentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentOrderFilter);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="empty-msg">কোনো অর্ডার নেই</div>`;
+        return;
+      }
+
+      listEl.innerHTML = '';
+      filtered.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        const date = new Date(order.createdAt).toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        let itemsHTML = '';
+        (order.items || []).forEach(it => {
+          itemsHTML += `<div>${it.name} x${it.qty} = ৳${it.price * it.qty}</div>`;
+        });
+
+        let actionsHTML = '';
+        if (order.status === 'Pending') {
+          actionsHTML = `
+            <button class="btn-accept" onclick="updateOrderStatus('${order.id}','Accepted')">Accept</button>
+            <button class="btn-cancel" onclick="updateOrderStatus('${order.id}','Cancelled')">Cancel</button>`;
+        } else if (order.status === 'Accepted') {
+          actionsHTML = `<button class="btn-deliver" onclick="updateOrderStatus('${order.id}','Delivered')">Delivered</button>`;
+        }
+        actionsHTML += `<a class="btn-call" href="tel:${order.phone}">📞 কল</a>`;
+
+        card.innerHTML = `
+          <div class="top-row">
+            <span class="cust-name">${order.name}</span>
+            <span class="order-badge ${order.status}">${order.status}</span>
+          </div>
+          <div class="meta">📞 ${order.phone} &nbsp;•&nbsp; ${date} &nbsp;•&nbsp; ${order.source || ''}</div>
+          <div class="meta">📍 ${order.address}</div>
+          <div class="items-list">${itemsHTML}</div>
+          <div class="total-row">মোট: ৳${order.total}</div>
+          <div class="order-actions">${actionsHTML}</div>`;
+        listEl.appendChild(card);
+      });
+    }
+
+    function updateOrderStatus(id, status) {
+      db.collection('orders').doc(id).update({ status });
     }
 
     function listenProducts() {
