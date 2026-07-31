@@ -1,157 +1,212 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NASIM WORLD — Admin Panel</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-  body { background: #eaf6fc; color: #1e2a38; padding-bottom: 40px; }
+  body {
+    background: linear-gradient(160deg, #eaf6fc 0%, #dbeffa 100%);
+    color: #1e2a38;
+    padding-bottom: 50px;
+    min-height: 100vh;
+  }
 
   .topbar {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(12px);
-    padding: 14px 18px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    padding: 16px 20px;
     display: flex; align-items: center; justify-content: space-between;
     border-bottom: 1px solid rgba(14,165,233,0.25);
+    box-shadow: 0 4px 20px rgba(14,165,233,0.08);
   }
-  .topbar h1 { font-size: 1.05rem; color: #0284c7; }
+  .topbar h1 {
+    font-size: 1.05rem; color: #0284c7; letter-spacing: 0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .topbar h1::before {
+    content: "🥭"; font-size: 1.1rem;
+  }
   .logout-btn {
-    background: none; border: 1px solid rgba(14,165,233,0.35);
-    color: #0284c7; padding: 8px 14px; border-radius: 20px;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(14,165,233,0.35);
+    color: #0284c7; padding: 8px 16px; border-radius: 20px;
     font-size: 0.8rem; font-weight: bold; cursor: pointer;
+    backdrop-filter: blur(6px);
   }
+  .logout-btn:active { transform: scale(0.95); }
 
   /* ===== Login ===== */
   .login-wrap {
-    max-width: 360px; margin: 60px auto 0; padding: 0 20px;
+    max-width: 380px; margin: 70px auto 0; padding: 0 20px;
   }
   .login-card {
-    background: #fff; border-radius: 18px; padding: 28px 22px;
-    box-shadow: 0 10px 30px rgba(14,165,233,0.15);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 22px; padding: 34px 26px;
+    box-shadow: 0 20px 50px rgba(14,165,233,0.2), inset 0 1px 0 rgba(255,255,255,0.7);
     text-align: center;
   }
-  .login-card h2 { color: #0284c7; margin-bottom: 20px; font-size: 1.2rem; }
-  .login-card input {
-    width: 100%; background: #eaf6fc; border: 1px solid rgba(14,165,233,0.3);
-    border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; font-size: 0.9rem;
+  .login-card .lock-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg,#0ea5e9,#0284c7);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 20px rgba(2,132,199,0.35);
+    font-size: 1.5rem;
   }
+  .login-card h2 { color: #0284c7; margin-bottom: 22px; font-size: 1.25rem; font-weight: 700; }
+  .login-card input {
+    width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(14,165,233,0.3);
+    border-radius: 12px; padding: 13px 16px; margin-bottom: 12px; font-size: 0.9rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .login-card input:focus { border-color: #0284c7; }
   .login-card button {
     width: 100%; background: linear-gradient(90deg,#0ea5e9,#0284c7);
-    color: #fff; border: none; padding: 13px; border-radius: 25px;
-    font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 6px;
+    color: #fff; border: none; padding: 14px; border-radius: 26px;
+    font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 8px;
+    box-shadow: 0 8px 20px rgba(2,132,199,0.35);
+    letter-spacing: 0.3px;
   }
-  .login-error { color: #ef4444; font-size: 0.8rem; margin-top: 10px; min-height: 16px; }
+  .login-card button:active { transform: scale(0.97); }
+  .login-error { color: #ef4444; font-size: 0.8rem; margin-top: 12px; min-height: 16px; font-weight: 600; }
 
   /* ===== Dashboard ===== */
-  .dashboard { display: none; padding: 18px; max-width: 700px; margin: 0 auto; }
+  .dashboard { display: none; padding: 18px; max-width: 720px; margin: 0 auto; }
   .section-card {
-    background: #fff; border-radius: 16px; padding: 18px;
-    box-shadow: 0 3px 14px rgba(14,165,233,0.1);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 20px; padding: 20px;
+    box-shadow: 0 10px 34px rgba(14,165,233,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
     margin-bottom: 20px;
   }
-  .section-card h3 { color: #0284c7; font-size: 1rem; margin-bottom: 14px; }
+  .section-card h3 {
+    color: #0284c7; font-size: 1.02rem; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px; font-weight: 700;
+  }
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .form-row > * { flex: 1; }
   .section-card input, .section-card select {
-    width: 100%; background: #eaf6fc; border: 1px solid rgba(14,165,233,0.3);
-    border-radius: 10px; padding: 11px 12px; font-size: 0.85rem; margin-bottom: 10px;
+    width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(14,165,233,0.3);
+    border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 10px;
+    outline: none; transition: border-color 0.2s;
   }
+  .section-card input:focus, .section-card select:focus { border-color: #0284c7; }
   .add-btn {
     width: 100%; background: linear-gradient(90deg,#0ea5e9,#0284c7);
-    color: #fff; border: none; padding: 12px; border-radius: 22px;
+    color: #fff; border: none; padding: 13px; border-radius: 24px;
     font-size: 0.9rem; font-weight: bold; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(2,132,199,0.3);
   }
+  .add-btn:active { transform: scale(0.98); }
 
-  .category-group { margin-bottom: 18px; }
-  .category-group h4 { color: #33475a; font-size: 0.9rem; margin-bottom: 8px; }
+  .category-group { margin-bottom: 20px; }
+  .category-group h4 {
+    color: #33475a; font-size: 0.88rem; margin-bottom: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75;
+  }
   .product-row {
-    display: flex; gap: 10px; align-items: center;
-    background: #fff; border-bottom: 1px solid rgba(14,165,233,0.15);
-    padding: 10px 4px;
+    display: flex; gap: 12px; align-items: center;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(14,165,233,0.12);
+    border-radius: 14px;
+    padding: 10px; margin-bottom: 8px;
   }
-  .product-row img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #eaf6fc; }
-  .product-row .info { flex: 1; }
-  .product-row .info .name { font-size: 0.85rem; font-weight: bold; }
-  .product-row .info .price { font-size: 0.8rem; color: #f97316; }
-  .product-row .del-btn {
-    background: none; border: 1px solid #ef4444; color: #ef4444;
-    padding: 6px 10px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
+  .product-row img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eaf6fc; }
+  .product-row .info { flex: 1; min-width: 0; }
+  .product-row .info .name { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-row .info .price { font-size: 0.8rem; color: #f97316; font-weight: 600; }
+  .row-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .edit-btn {
+    background: rgba(2,132,199,0.1); border: 1px solid rgba(2,132,199,0.35); color: #0284c7;
+    padding: 7px 14px; border-radius: 16px; font-size: 0.72rem; font-weight: bold; cursor: pointer;
   }
-  .product-row .edit-btn {
-    background: none; border: 1px solid #0284c7; color: #0284c7;
-    padding: 6px 10px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
-    margin-right: 6px;
+  .cross-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #ef4444; color: #fff; border: none;
+    font-size: 0.95rem; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(239,68,68,0.4);
   }
-  .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 10px 0; }
-  .status-msg { text-align: center; font-size: 0.85rem; padding: 8px 0; min-height: 20px; }
+  .cross-btn:active { transform: scale(0.9); }
+  .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 14px 0; }
+  .status-msg { text-align: center; font-size: 0.85rem; padding: 10px 0; min-height: 20px; font-weight: 600; }
 
   /* ===== New Orders Alert Banner ===== */
   .order-alert {
     display: none;
-    max-width: 700px; margin: 14px auto 0; padding: 0 18px;
+    max-width: 720px; margin: 16px auto 0; padding: 0 18px;
   }
   .order-alert.show { display: block; }
   .order-alert .box {
     background: linear-gradient(90deg,#f97316,#ea580c);
-    color: #fff; border-radius: 14px; padding: 14px 18px;
+    color: #fff; border-radius: 16px; padding: 15px 20px;
     display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 4px 16px rgba(249,115,22,0.35);
+    box-shadow: 0 8px 26px rgba(249,115,22,0.4);
     animation: alertPulse 1.6s infinite;
   }
-  .order-alert .box .txt { font-weight: bold; font-size: 0.95rem; }
-  .order-alert .box .count { font-size: 1.6rem; font-weight: bold; }
+  .order-alert .box .txt { font-weight: bold; font-size: 0.92rem; letter-spacing: 0.2px; }
+  .order-alert .box .count {
+    font-size: 1.5rem; font-weight: 800; background: rgba(255,255,255,0.25);
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
   @keyframes alertPulse {
     0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.5); }
-    70% { box-shadow: 0 0 0 12px rgba(249,115,22,0); }
+    70% { box-shadow: 0 0 0 14px rgba(249,115,22,0); }
     100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
-  }
-  .order-del-btn {
-    background: none; border: 1px solid rgba(30,42,56,0.3); color: rgba(30,42,56,0.6);
-    padding: 8px; border-radius: 16px; font-size: 0.75rem; cursor: pointer;
-    width: 36px; display: flex; align-items: center; justify-content: center;
   }
 
   /* ===== Orders ===== */
-  .order-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .order-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .history-toggle {
-    background: #fff; border: 1px solid rgba(30,42,56,0.3); color: rgba(30,42,56,0.6);
-    padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+    background: rgba(30,42,56,0.06); border: 1px solid rgba(30,42,56,0.2); color: rgba(30,42,56,0.65);
+    padding: 7px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
     margin-bottom: 16px; display: inline-flex; align-items: center; gap: 5px;
   }
   .history-toggle.active { background: #1e2a38; color: #fff; border-color: #1e2a38; }
   .order-tab {
-    background: #eaf6fc; border: 1px solid rgba(14,165,233,0.3); color: #0284c7;
-    padding: 6px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: bold; cursor: pointer;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(14,165,233,0.3); color: #0284c7;
+    padding: 7px 14px; border-radius: 16px; font-size: 0.76rem; font-weight: bold; cursor: pointer;
   }
-  .order-tab.active { background: #0284c7; color: #fff; }
+  .order-tab.active { background: linear-gradient(90deg,#0ea5e9,#0284c7); color: #fff; border-color: transparent; }
   .order-card {
-    background: #fff; border: 1px solid rgba(14,165,233,0.2); border-radius: 14px;
-    padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(14,165,233,0.08);
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(14,165,233,0.18); border-radius: 16px;
+    padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(14,165,233,0.1);
   }
   .order-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .order-card .cust-name { font-weight: bold; font-size: 0.95rem; color: #1e2a38; }
   .order-badge {
-    font-size: 0.7rem; font-weight: bold; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.68rem; font-weight: bold; padding: 4px 11px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px;
   }
   .order-badge.Pending { background: #fff4e5; color: #f97316; }
   .order-badge.Accepted { background: #e5f6ff; color: #0284c7; }
   .order-badge.Delivered { background: #e8f9ee; color: #128C4A; }
   .order-badge.Cancelled { background: #fdeaea; color: #ef4444; }
   .order-card .meta { font-size: 0.78rem; color: rgba(30,42,56,0.6); margin-bottom: 8px; line-height: 1.6; }
-  .order-card .items-list { font-size: 0.8rem; color: #1e2a38; margin-bottom: 8px; }
+  .order-card .items-list { font-size: 0.8rem; color: #1e2a38; margin-bottom: 8px; background: rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 10px; }
   .order-card .items-list div { padding: 2px 0; }
-  .order-card .total-row { font-weight: bold; color: #f97316; font-size: 0.85rem; margin-bottom: 10px; }
-  .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .order-actions button {
-    flex: 1; min-width: 80px; border: none; padding: 8px; border-radius: 16px;
+  .order-card .total-row { font-weight: bold; color: #f97316; font-size: 0.9rem; margin-bottom: 12px; }
+  .order-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .order-actions button, .order-actions a.act-btn {
+    flex: 1; min-width: 80px; border: none; padding: 9px; border-radius: 16px;
     font-size: 0.75rem; font-weight: bold; cursor: pointer; color: #fff;
+    text-decoration: none; text-align: center;
   }
-  .btn-accept { background: #0284c7; }
+  .btn-accept { background: linear-gradient(90deg,#0ea5e9,#0284c7); }
   .btn-deliver { background: #128C4A; }
-  .btn-cancel { background: #ef4444; }
-  .btn-call { background: #25D366; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; }
+  .btn-cancel { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.35) !important; }
+  .btn-call { background: #25D366; }
 </style>
 </head>
 <body>
@@ -163,7 +218,7 @@
 
   <div class="order-alert" id="orderAlert">
     <div class="box">
-      <span class="txt">🔔 নতুন অর্ডার এসেছে</span>
+      <span class="txt">🔔 New Orders Waiting</span>
       <span class="count" id="pendingOrderCount">0</span>
     </div>
   </div>
@@ -171,9 +226,10 @@
   <!-- Login -->
   <div class="login-wrap" id="loginWrap">
     <div class="login-card">
-      <h2>অ্যাডমিন লগইন</h2>
-      <input type="email" id="loginEmail" placeholder="ইমেইল">
-      <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড">
+      <div class="lock-icon">🔒</div>
+      <h2>Admin Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
       <button onclick="doLogin()">Login</button>
       <div class="login-error" id="loginError"></div>
     </div>
@@ -183,38 +239,38 @@
   <div class="dashboard" id="dashboard">
 
     <div class="section-card">
-      <h3>সব অর্ডার</h3>
+      <h3>📦 All Orders</h3>
       <div class="order-tabs" id="orderTabs">
-        <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">সব</div>
+        <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">All</div>
         <div class="order-tab" data-filter="Pending" onclick="filterOrders('Pending', this)">Pending</div>
         <div class="order-tab" data-filter="Accepted" onclick="filterOrders('Accepted', this)">Accepted</div>
         <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
         <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
       </div>
-      <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 পুরনো সম্পন্ন অর্ডার দেখুন</div>
+      <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 View Order History</div>
       <div id="ordersList"></div>
     </div>
 
     <div class="section-card">
-      <h3>নতুন পণ্য যোগ করুন</h3>
-      <input type="text" id="pName" placeholder="পণ্যের নাম">
+      <h3>➕ Add New Product</h3>
+      <input type="text" id="pName" placeholder="Product Name">
       <div class="form-row">
-        <input type="text" id="pPrice" placeholder="দাম (৳)">
-        <input type="text" id="pOldPrice" placeholder="আগের দাম (ঐচ্ছিক)">
+        <input type="text" id="pPrice" placeholder="Price (৳)">
+        <input type="text" id="pOldPrice" placeholder="Old Price (optional)">
       </div>
-      <input type="text" id="pImage" placeholder="ছবির লিংক (URL)">
+      <input type="text" id="pImage" placeholder="Image URL">
       <select id="pCategory">
-        <option value="group1">আম</option>
-        <option value="group2">আচার</option>
-        <option value="group3">ছবি ৩</option>
-        <option value="group4">ছবি ৪</option>
+        <option value="group1">Mango (আম)</option>
+        <option value="group2">Pickle (আচার)</option>
+        <option value="group3">Category 3 (ছবি ৩)</option>
+        <option value="group4">Category 4 (ছবি ৪)</option>
       </select>
-      <button class="add-btn" id="addBtn" onclick="addProduct()">পণ্য যোগ করুন</button>
+      <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
       <div class="status-msg" id="addStatus"></div>
     </div>
 
     <div class="section-card">
-      <h3>সব পণ্য</h3>
+      <h3>🛍️ All Products</h3>
       <div id="productList"></div>
     </div>
 
@@ -236,7 +292,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const categoryLabels = { group1: "আম", group2: "আচার", group3: "ছবি ৩", group4: "ছবি ৪" };
+    const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "Category 3", group4: "Category 4" };
 
     function doLogin() {
       const email = document.getElementById('loginEmail').value.trim();
@@ -244,11 +300,11 @@
       const errEl = document.getElementById('loginError');
       errEl.textContent = '';
       if (!email || !password) {
-        errEl.textContent = 'ইমেইল ও পাসওয়ার্ড দিন';
+        errEl.textContent = 'Please enter email and password';
         return;
       }
       auth.signInWithEmailAndPassword(email, password)
-        .catch(err => { errEl.textContent = 'লগইন ব্যর্থ — ইমেইল বা পাসওয়ার্ড ভুল'; });
+        .catch(err => { errEl.textContent = 'Login failed — incorrect email or password'; });
     }
 
     function doLogout() {
@@ -280,7 +336,7 @@
       const statusEl = document.getElementById('addStatus');
 
       if (!name || !price || !src) {
-        statusEl.textContent = 'নাম, দাম ও ছবির লিংক দিন';
+        statusEl.textContent = 'Please fill in name, price, and image URL';
         statusEl.style.color = '#ef4444';
         return;
       }
@@ -288,27 +344,27 @@
       const data = { name, price, oldPrice, src, category };
 
       if (editingId) {
-        statusEl.textContent = 'আপডেট করা হচ্ছে...';
+        statusEl.textContent = 'Updating...';
         statusEl.style.color = '#0284c7';
         db.collection('products').doc(editingId).update(data)
           .then(() => {
-            statusEl.textContent = '✅ পণ্য আপডেট হয়েছে';
+            statusEl.textContent = '✅ Product updated';
             statusEl.style.color = '#128C4A';
             cancelEdit();
           })
           .catch(() => {
-            statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+            statusEl.textContent = 'Something went wrong, please try again';
             statusEl.style.color = '#ef4444';
           });
         return;
       }
 
-      statusEl.textContent = 'যোগ করা হচ্ছে...';
+      statusEl.textContent = 'Adding...';
       statusEl.style.color = '#0284c7';
 
       db.collection('products').add({ ...data, createdAt: Date.now() })
         .then(() => {
-          statusEl.textContent = '✅ পণ্য যোগ হয়েছে';
+          statusEl.textContent = '✅ Product added';
           statusEl.style.color = '#128C4A';
           document.getElementById('pName').value = '';
           document.getElementById('pPrice').value = '';
@@ -316,7 +372,7 @@
           document.getElementById('pImage').value = '';
         })
         .catch(() => {
-          statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+          statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
         });
     }
@@ -328,8 +384,8 @@
       document.getElementById('pOldPrice').value = oldPrice || '';
       document.getElementById('pImage').value = src;
       document.getElementById('pCategory').value = category;
-      document.getElementById('addBtn').textContent = 'আপডেট করুন';
-      document.getElementById('addStatus').textContent = `"${name}" এডিট করছেন`;
+      document.getElementById('addBtn').textContent = 'Update Product';
+      document.getElementById('addStatus').textContent = `Editing "${name}"`;
       document.getElementById('addStatus').style.color = '#0284c7';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -340,11 +396,11 @@
       document.getElementById('pPrice').value = '';
       document.getElementById('pOldPrice').value = '';
       document.getElementById('pImage').value = '';
-      document.getElementById('addBtn').textContent = 'পণ্য যোগ করুন';
+      document.getElementById('addBtn').textContent = 'Add Product';
     }
 
     function deleteProduct(id) {
-      if (!confirm('এই পণ্যটি মুছে ফেলতে চান?')) return;
+      if (!confirm('Delete this product?')) return;
       db.collection('products').doc(id).delete();
     }
 
@@ -403,7 +459,7 @@
     }
 
     function deleteOrder(id) {
-      if (!confirm('এই অর্ডারটি মুছে ফেলতে চান?')) return;
+      if (!confirm('Delete this order?')) return;
       db.collection('orders').doc(id).delete();
     }
 
@@ -419,7 +475,7 @@
       showHistory = !showHistory;
       const btn = document.getElementById('historyToggle');
       btn.classList.toggle('active', showHistory);
-      btn.textContent = showHistory ? '🕓 শুধু সাম্প্রতিক অর্ডার দেখুন' : '🕓 পুরনো সম্পন্ন অর্ডার দেখুন';
+      btn.textContent = showHistory ? '🕓 Show Recent Only' : '🕓 View Order History';
       renderOrders();
     }
 
@@ -437,7 +493,7 @@
       }
 
       if (filtered.length === 0) {
-        listEl.innerHTML = `<div class="empty-msg">কোনো অর্ডার নেই</div>`;
+        listEl.innerHTML = `<div class="empty-msg">No orders</div>`;
         return;
       }
 
@@ -445,7 +501,7 @@
       filtered.forEach(order => {
         const card = document.createElement('div');
         card.className = 'order-card';
-        const date = new Date(order.createdAt).toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        const date = new Date(order.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
         let itemsHTML = '';
         (order.items || []).forEach(it => {
@@ -460,8 +516,8 @@
         } else if (order.status === 'Accepted') {
           actionsHTML = `<button class="btn-deliver" onclick="updateOrderStatus('${order.id}','Delivered')">Delivered</button>`;
         }
-        actionsHTML += `<a class="btn-call" href="tel:${order.phone}">📞 কল</a>`;
-        actionsHTML += `<button class="order-del-btn" onclick="deleteOrder('${order.id}')">🗑️</button>`;
+        actionsHTML += `<a class="act-btn btn-call" href="tel:${order.phone}">📞 Call</a>`;
+        actionsHTML += `<button class="cross-btn" onclick="deleteOrder('${order.id}')" aria-label="Delete order">✕</button>`;
 
         card.innerHTML = `
           <div class="top-row">
@@ -471,7 +527,7 @@
           <div class="meta">📞 ${order.phone} &nbsp;•&nbsp; ${date} &nbsp;•&nbsp; ${order.source || ''}</div>
           <div class="meta">📍 ${order.address}</div>
           <div class="items-list">${itemsHTML}</div>
-          <div class="total-row">মোট: ৳${order.total}</div>
+          <div class="total-row">Total: ৳${order.total}</div>
           <div class="order-actions">${actionsHTML}</div>`;
         listEl.appendChild(card);
       });
@@ -498,7 +554,7 @@
           const items = grouped[key];
           let rowsHTML = '';
           if (items.length === 0) {
-            rowsHTML = `<div class="empty-msg">কোনো পণ্য নেই</div>`;
+            rowsHTML = `<div class="empty-msg">No products</div>`;
           } else {
             items.forEach(item => {
               rowsHTML += `
@@ -506,10 +562,12 @@
                   <img src="${item.src}" onerror="this.style.background='#eaf6fc'">
                   <div class="info">
                     <div class="name">${item.name}</div>
-                    <div class="price">৳${item.price}${item.oldPrice ? ' (আগে ৳' + item.oldPrice + ')' : ''}</div>
+                    <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
                   </div>
-                  <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>এডিট</button>
-                  <button class="del-btn" onclick="deleteProduct('${item.id}')">মুছুন</button>
+                  <div class="row-actions">
+                    <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
+                    <button class="cross-btn" onclick="deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
+                  </div>
                 </div>`;
             });
           }
@@ -521,4 +579,4 @@
   </script>
 
 </body>
- </html>
+</html>
