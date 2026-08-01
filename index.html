@@ -500,6 +500,61 @@
   }
   .pd-qty-row .qty-buttons span { font-size: 1rem; min-width: 20px; text-align: center; }
 
+  /* ===== Success Modal (glass) ===== */
+  .success-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 1200;
+    background: rgba(30,20,10,0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .success-overlay.active { display: flex; }
+  .success-card {
+    width: 100%;
+    max-width: 320px;
+    background: rgba(255,249,243,0.75);
+    border: 1px solid rgba(107,63,29,0.35);
+    border-radius: 22px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 15px 40px rgba(107,63,29,0.35);
+    padding: 28px 22px 22px;
+    text-align: center;
+    animation: popIn 0.35s ease forwards;
+  }
+  .success-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#A0672E,#6B3F1D);
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 18px rgba(107,63,29,0.4);
+  }
+  .success-msg {
+    color: #33475a;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .success-ok-btn {
+    width: 100%;
+    background: linear-gradient(90deg,#A0672E,#6B3F1D);
+    color: #fff; border: none; padding: 12px;
+    border-radius: 25px;
+    font-size: 0.9rem; font-weight: bold; cursor: pointer;
+    box-shadow: 0 0 15px rgba(107,63,29,0.35);
+  }
+  .success-ok-btn:active { transform: scale(0.97); }
+
   /* ===== Floating Contact Button ===== */
   .float-btn {
     position: fixed;
@@ -693,12 +748,12 @@
     <div id="cartItemsWrap"></div>
     <div class="cart-summary" id="cartSummary" style="display:none;">
       <div class="cart-total-row"><span>মোট মূল্য</span><span id="cartTotal">৳0</span></div>
-      <button class="place-order-btn" onclick="showOrderForm()">ORDER NOW</button>
+      <button class="place-order-btn" id="cartOrderNowBtn" onclick="showOrderForm()">ORDER NOW</button>
       <div class="order-form" id="orderForm">
         <input type="text" id="custName" placeholder="আপনার নাম">
         <input type="text" id="custPhone" placeholder="মোবাইল নাম্বার">
         <textarea id="custAddress" placeholder="ঠিকানা" rows="2"></textarea>
-        <button class="place-order-btn" onclick="submitOrder()">📩 অর্ডার কনফার্ম করুন</button>
+        <button class="place-order-btn" onclick="submitOrder()">Order Confirm</button>
       </div>
     </div>
   </div>
@@ -751,6 +806,15 @@
         <textarea id="pdCustAddress" placeholder="ঠিকানা" rows="2"></textarea>
         <button class="place-order-btn" onclick="confirmPdOrder()">ORDER CONFIRM</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Success Modal (glass) -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <p class="success-msg" id="successMessage"></p>
+      <button class="success-ok-btn" onclick="closeSuccessModal()">OK</button>
     </div>
   </div>
 
@@ -903,7 +967,7 @@ function bnToEn(str) {
 
     const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
     confirmBtn.disabled = true;
-    confirmBtn.textContent = 'অপেক্ষা করুন...';
+    confirmBtn.textContent = 'Please wait...';
 
     db.collection('orders').add({
       name, phone, address,
@@ -914,9 +978,9 @@ function bnToEn(str) {
       createdAt: Date.now()
     }).then(() => {
       closeProductDetail();
-      alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে! শীঘ্রই আমরা যোগাযোগ করব।');
+      showSuccessModal('Your order has been placed successfully! We will contact you soon.');
     }).catch(() => {
-      alert('দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      showSuccessModal('Sorry, something went wrong. Please try again.');
     }).finally(() => {
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'ORDER CONFIRM';
@@ -1031,6 +1095,7 @@ function orderNow(name, price, src) {
     const wrap = document.getElementById('cartItemsWrap');
     const summary = document.getElementById('cartSummary');
     document.getElementById('orderForm').classList.remove('show');
+    document.getElementById('cartOrderNowBtn').style.display = 'block';
 
     if (cart.length === 0) {
       wrap.innerHTML = `<div class="cart-empty">আপনার কার্ট খালি — পণ্য যোগ করুন</div>`;
@@ -1169,6 +1234,15 @@ function orderNow(name, price, src) {
 
   function showOrderForm() {
     document.getElementById('orderForm').classList.add('show');
+    document.getElementById('cartOrderNowBtn').style.display = 'none';
+  }
+
+  function showSuccessModal(message) {
+    document.getElementById('successMessage').textContent = message;
+    document.getElementById('successOverlay').classList.add('active');
+  }
+  function closeSuccessModal() {
+    document.getElementById('successOverlay').classList.remove('active');
   }
 
   function submitOrder() {
@@ -1190,7 +1264,7 @@ function orderNow(name, price, src) {
 
     const confirmBtn = document.querySelector('#orderForm .place-order-btn');
     confirmBtn.disabled = true;
-    confirmBtn.textContent = 'অপেক্ষা করুন...';
+    confirmBtn.textContent = 'Please wait...';
 
     db.collection('orders').add({
       name, phone, address,
@@ -1203,12 +1277,12 @@ function orderNow(name, price, src) {
       cart = [];
       updateCartCount();
       closeCart();
-      alert('✅ আপনার অর্ডারটি সফলভাবে জমা হয়েছে!');
+      showSuccessModal('Your order has been placed successfully!');
     }).catch(() => {
-      alert('দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      showSuccessModal('Sorry, something went wrong. Please try again.');
     }).finally(() => {
       confirmBtn.disabled = false;
-      confirmBtn.textContent = '📩 অর্ডার কনফার্ম করুন';
+      confirmBtn.textContent = 'Order Confirm';
     });
  }
 
@@ -1350,4 +1424,4 @@ function orderNow(name, price, src) {
   </div>
 
 </body>
-     </html>
+</html>
