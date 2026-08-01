@@ -790,20 +790,59 @@
     <div class="cta-btn" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Shop Now</div>
   </div>
 
-  <!-- Our Products (sliding category carousel, built dynamically from Firestore) -->
+  <!-- Our Products (sliding category carousel) -->
   <div class="category-slider-outer" id="gallery">
     <h2 class="section-title" style="text-transform: uppercase;">Featured Categories</h2>
     <div class="category-slider-wrap">
       <div class="category-arrow cat-prev hide" id="catPrevBtn" onclick="catSlide(-1)">&#8249;</div>
       <div class="category-viewport">
-        <div class="category-track" id="categoryTrack"></div>
+        <div class="category-track" id="categoryTrack">
+          <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
+            <img src="Download/images (2).jpeg" width="100">
+            <span>আম</span>
+          </div>
+          <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
+            <img src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
+            <span>আচার </span>
+          </div>
+          <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="photo3">
+            <span>ছবি ৩</span>
+          </div>
+          <div class="category-item" onclick="openGallery('group4', this.querySelector('img'))">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
+            <span>ছবি ৪</span>
+          </div>
+        </div>
       </div>
       <div class="category-arrow cat-next" id="catNextBtn" onclick="catSlide(1)">&#8250;</div>
     </div>
   </div>
 
-  <!-- Product Category Sections (built dynamically from Firestore) -->
-  <div id="prodCatContainer"></div>
+  <!-- Product Category Sections -->
+  <div class="prod-cat-section">
+    <div class="prod-cat-header">
+      <h3 class="prod-cat-title">আম</h3>
+      <span class="prod-cat-viewall" onclick="openGallery('group1', null)">সব দেখুন &#8594;</span>
+    </div>
+    <div class="prod-cat-underline"></div>
+    <div class="prod-cat-viewport" data-group="group1">
+      <div class="prod-cat-track" id="prodTrack-group1"></div>
+    </div>
+    <div class="prod-cat-dots" id="prodDots-group1"></div>
+  </div>
+
+  <div class="prod-cat-section">
+    <div class="prod-cat-header">
+      <h3 class="prod-cat-title">আচার</h3>
+      <span class="prod-cat-viewall" onclick="openGallery('group2', null)">সব দেখুন &#8594;</span>
+    </div>
+    <div class="prod-cat-underline"></div>
+    <div class="prod-cat-viewport" data-group="group2">
+      <div class="prod-cat-track" id="prodTrack-group2"></div>
+    </div>
+    <div class="prod-cat-dots" id="prodDots-group2"></div>
+  </div>
 
   <!-- Offer Carousel -->
   <div class="offer-section" id="offers">
@@ -960,6 +999,9 @@ function bnToEn(str) {
    }
 
   // ===== Shared direction-aware horizontal swipe helper =====
+  // Only takes over the gesture (and blocks page scroll) once it's clearly
+  // a horizontal drag. A mostly-vertical touch is left alone so the page
+  // scrolls normally.
   function initHorizontalSwipe(el, callbacks) {
     let startX = 0, startY = 0, dx = 0, direction = null;
     el.addEventListener('touchstart', (e) => {
@@ -983,6 +1025,7 @@ function bnToEn(str) {
         e.preventDefault();
         if (callbacks.onMove) callbacks.onMove(dx);
       }
+      // direction === 'y' (or not yet determined): do nothing, let the page scroll natively
     }, { passive: false });
 
     el.addEventListener('touchend', () => {
@@ -992,55 +1035,12 @@ function bnToEn(str) {
     });
   }
 
-  // ===== Categories are now loaded dynamically from Firestore ('categories' collection) =====
-  let siteCategories = [];
-
-  function getCatName(key) {
-    const c = siteCategories.find(c => c.id === key);
-    return c ? c.name : 'গ্যালারি';
-  }
-
-  async function loadCategories() {
-    try {
-      const snap = await db.collection('categories').orderBy('createdAt', 'asc').get();
-      siteCategories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    } catch (e) {
-      siteCategories = [];
-    }
-
-    // Build the featured-categories slider
-    const track = document.getElementById('categoryTrack');
-    track.innerHTML = '';
-    siteCategories.forEach(cat => {
-      const div = document.createElement('div');
-      div.className = 'category-item';
-      div.onclick = function () { openGallery(cat.id, this.querySelector('img')); };
-      div.innerHTML = `<img src="${cat.image || ''}" width="100"><span>${cat.name}</span>`;
-      track.appendChild(div);
-    });
-    updateCatSlide();
-
-    // Build a product section per category
-    const container = document.getElementById('prodCatContainer');
-    container.innerHTML = '';
-    siteCategories.forEach(cat => {
-      const section = document.createElement('div');
-      section.className = 'prod-cat-section';
-      section.innerHTML = `
-        <div class="prod-cat-header">
-          <h3 class="prod-cat-title">${cat.name}</h3>
-          <span class="prod-cat-viewall" onclick="openGallery('${cat.id}', null)">সব দেখুন &#8594;</span>
-        </div>
-        <div class="prod-cat-underline"></div>
-        <div class="prod-cat-viewport" data-group="${cat.id}">
-          <div class="prod-cat-track" id="prodTrack-${cat.id}"></div>
-        </div>
-        <div class="prod-cat-dots" id="prodDots-${cat.id}"></div>`;
-      container.appendChild(section);
-      renderProdCategory(cat.id);
-    });
-  }
-
+  const titles = {
+  group1: "আম",
+  group2: "আচার",
+  group3: "ছবি ৩ - সব ছবি",
+  group4: "ছবি ৪ - সব ছবি"
+};
   async function openGallery(key, imgEl) {
     if (imgEl) {
       imgEl.classList.remove('pulse');
@@ -1048,7 +1048,7 @@ function bnToEn(str) {
       imgEl.classList.add('pulse');
     }
     const grid = document.getElementById('modalGrid');
-    document.getElementById('modalTitle').innerHTML = getCatName(key);
+    document.getElementById('modalTitle').innerHTML = titles[key];
     grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#6B3F1D;padding:30px 0;">লোড হচ্ছে...</p>';
     document.getElementById('modalOverlay').classList.add('active');
 
@@ -1625,7 +1625,6 @@ function orderNow(name, price, src) {
   }
 
   function startCatAuto() {
-    if (catAutoInterval) clearInterval(catAutoInterval);
     catAutoInterval = setInterval(() => {
       const totalItems = catTrack.children.length;
       const maxIndex = Math.max(0, totalItems - catVisible);
@@ -1674,8 +1673,10 @@ function orderNow(name, price, src) {
   window.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     updateWishCount();
-    loadCategories();
+    updateCatSlide();
     startCatAuto();
+    renderProdCategory('group1');
+    renderProdCategory('group2');
   });
 
   // ===== Draggable WhatsApp floating button =====
