@@ -91,6 +91,9 @@
     color: #6B3F1D; font-size: 1.02rem; margin-bottom: 16px;
     display: flex; align-items: center; gap: 8px; font-weight: 700;
   }
+  .section-card h3 small {
+    font-size: 0.7rem; font-weight: 600; color: rgba(30,42,56,0.5); margin-left: auto;
+  }
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .form-row > * { flex: 1; }
   .section-card input, .section-card select {
@@ -106,6 +109,12 @@
     box-shadow: 0 8px 20px rgba(74,42,18,0.3);
   }
   .add-btn:active { transform: scale(0.98); }
+  .cancel-edit-btn {
+    width: 100%; background: rgba(30,42,56,0.08); border: 1px solid rgba(30,42,56,0.2);
+    color: #33475a; padding: 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+    cursor: pointer; margin-top: 8px; display: none;
+  }
+  .cancel-edit-btn.show { display: block; }
 
   .category-group { margin-bottom: 20px; }
   .category-group h4 {
@@ -251,6 +260,17 @@
       <div id="ordersList"></div>
     </div>
 
+    <!-- ===== Category Management (add as many categories as you like) ===== -->
+    <div class="section-card">
+      <h3>📂 Category Management</h3>
+      <input type="text" id="catName" placeholder="ক্যাটাগরির নাম (যেমনঃ কাঁঠাল)">
+      <input type="text" id="catImage" placeholder="ক্যাটাগরির ছবির লিংক (ঐচ্ছিক)">
+      <button class="add-btn" id="addCatBtn" onclick="addCategory()">Add Category</button>
+      <button class="cancel-edit-btn" id="cancelCatEditBtn" onclick="cancelCatEdit()">Cancel Edit</button>
+      <div class="status-msg" id="catStatus"></div>
+      <div id="categoryManageList" style="margin-top:14px;"></div>
+    </div>
+
     <div class="section-card">
       <h3>➕ Add New Product</h3>
       <input type="text" id="pName" placeholder="Product Name">
@@ -259,13 +279,9 @@
         <input type="text" id="pOldPrice" placeholder="Old Price (optional)">
       </div>
       <input type="text" id="pImage" placeholder="Image URL">
-      <select id="pCategory">
-        <option value="group1">Mango (আম)</option>
-        <option value="group2">Pickle (আচার)</option>
-        <option value="group3">Category 3 (ছবি ৩)</option>
-        <option value="group4">Category 4 (ছবি ৪)</option>
-      </select>
+      <select id="pCategory"></select>
       <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
+      <button class="cancel-edit-btn" id="cancelProdEditBtn" onclick="cancelEdit()">Cancel Edit</button>
       <div class="status-msg" id="addStatus"></div>
     </div>
 
@@ -292,8 +308,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "Category 3", group4: "Category 4" };
-
     function doLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
@@ -316,6 +330,7 @@
         document.getElementById('loginWrap').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         document.getElementById('logoutBtn').style.display = 'inline-block';
+        listenCategories();
         listenProducts();
         listenOrders();
       } else {
@@ -325,6 +340,120 @@
       }
     });
 
+    // ===== Category Management =====
+    let categoriesCache = [];
+    let editingCatId = null;
+
+    function listenCategories() {
+      db.collection('categories').orderBy('createdAt', 'asc').onSnapshot(snap => {
+        categoriesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderCategorySelect();
+        renderCategoryManageList();
+        renderProductList();
+      });
+    }
+
+    function addCategory() {
+      const name = document.getElementById('catName').value.trim();
+      const image = document.getElementById('catImage').value.trim();
+      const statusEl = document.getElementById('catStatus');
+
+      if (!name) {
+        statusEl.textContent = 'ক্যাটাগরির নাম লিখুন';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+
+      if (editingCatId) {
+        statusEl.textContent = 'Updating...';
+        statusEl.style.color = '#6B3F1D';
+        db.collection('categories').doc(editingCatId).update({ name, image })
+          .then(() => {
+            statusEl.textContent = '✅ Category updated';
+            statusEl.style.color = '#128C4A';
+            cancelCatEdit();
+          })
+          .catch(() => {
+            statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+            statusEl.style.color = '#ef4444';
+          });
+        return;
+      }
+
+      statusEl.textContent = 'Adding...';
+      statusEl.style.color = '#6B3F1D';
+      db.collection('categories').add({ name, image, createdAt: Date.now() })
+        .then(() => {
+          statusEl.textContent = '✅ Category added';
+          statusEl.style.color = '#128C4A';
+          document.getElementById('catName').value = '';
+          document.getElementById('catImage').value = '';
+        })
+        .catch(() => {
+          statusEl.textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+          statusEl.style.color = '#ef4444';
+        });
+    }
+
+    function editCategory(id, name, image) {
+      editingCatId = id;
+      document.getElementById('catName').value = name;
+      document.getElementById('catImage').value = image || '';
+      document.getElementById('addCatBtn').textContent = 'Update Category';
+      document.getElementById('cancelCatEditBtn').classList.add('show');
+      document.getElementById('catStatus').textContent = `Editing "${name}"`;
+      document.getElementById('catStatus').style.color = '#6B3F1D';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelCatEdit() {
+      editingCatId = null;
+      document.getElementById('catName').value = '';
+      document.getElementById('catImage').value = '';
+      document.getElementById('addCatBtn').textContent = 'Add Category';
+      document.getElementById('cancelCatEditBtn').classList.remove('show');
+      document.getElementById('catStatus').textContent = '';
+    }
+
+    function deleteCategory(id) {
+      const hasProducts = allProductsCache.some(p => p.category === id);
+      const msg = hasProducts
+        ? 'এই ক্যাটাগরিতে প্রোডাক্ট আছে। ক্যাটাগরি ডিলিট করলে ওয়েবসাইটে প্রোডাক্টগুলো আর দেখা যাবে না (প্রোডাক্টগুলো আলাদাভাবে ডিলিট করতে হবে)। তবুও ক্যাটাগরিটি ডিলিট করবেন?'
+        : 'এই ক্যাটাগরিটি ডিলিট করবেন?';
+      if (!confirm(msg)) return;
+      db.collection('categories').doc(id).delete();
+    }
+
+    function renderCategorySelect() {
+      const sel = document.getElementById('pCategory');
+      const current = sel.value;
+      if (categoriesCache.length === 0) {
+        sel.innerHTML = '<option value="">প্রথমে একটি ক্যাটাগরি যোগ করুন</option>';
+        return;
+      }
+      sel.innerHTML = categoriesCache.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      if (categoriesCache.some(c => c.id === current)) sel.value = current;
+    }
+
+    function renderCategoryManageList() {
+      const wrap = document.getElementById('categoryManageList');
+      if (categoriesCache.length === 0) {
+        wrap.innerHTML = '<div class="empty-msg">এখনো কোনো ক্যাটাগরি নেই — উপরে ফর্ম দিয়ে একটি যোগ করুন</div>';
+        return;
+      }
+      wrap.innerHTML = categoriesCache.map(c => `
+        <div class="product-row">
+          <img src="${c.image || ''}" onerror="this.style.background='#FFF9F3'">
+          <div class="info"><div class="name">${c.name}</div></div>
+          <div class="row-actions">
+            <button class="edit-btn" onclick='editCategory("${c.id}", ${JSON.stringify(c.name)}, ${JSON.stringify(c.image || "")})'>Edit</button>
+            <button class="cross-btn" onclick="deleteCategory('${c.id}')" aria-label="Delete category">✕</button>
+          </div>
+        </div>`).join('');
+    }
+
+    // ===== Products =====
+    let allProductsCache = [];
     let editingId = null;
 
     function addProduct() {
@@ -334,6 +463,12 @@
       const src = document.getElementById('pImage').value.trim();
       const category = document.getElementById('pCategory').value;
       const statusEl = document.getElementById('addStatus');
+
+      if (!category) {
+        statusEl.textContent = 'প্রথমে একটি ক্যাটাগরি যোগ করুন এবং সিলেক্ট করুন';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
 
       if (!name || !price || !src) {
         statusEl.textContent = 'Please fill in name, price, and image URL';
@@ -385,6 +520,7 @@
       document.getElementById('pImage').value = src;
       document.getElementById('pCategory').value = category;
       document.getElementById('addBtn').textContent = 'Update Product';
+      document.getElementById('cancelProdEditBtn').classList.add('show');
       document.getElementById('addStatus').textContent = `Editing "${name}"`;
       document.getElementById('addStatus').style.color = '#6B3F1D';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -397,6 +533,8 @@
       document.getElementById('pOldPrice').value = '';
       document.getElementById('pImage').value = '';
       document.getElementById('addBtn').textContent = 'Add Product';
+      document.getElementById('cancelProdEditBtn').classList.remove('show');
+      document.getElementById('addStatus').textContent = '';
     }
 
     function deleteProduct(id) {
@@ -539,44 +677,55 @@
 
     function listenProducts() {
       db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
-        const grouped = { group1: [], group2: [], group3: [], group4: [] };
-        snap.forEach(doc => {
-          const data = doc.data();
-          if (grouped[data.category]) grouped[data.category].push({ id: doc.id, ...data });
-        });
+        allProductsCache = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderProductList();
+      });
+    }
 
-        const listEl = document.getElementById('productList');
-        listEl.innerHTML = '';
+    function renderProductList() {
+      const listEl = document.getElementById('productList');
+      listEl.innerHTML = '';
 
-        Object.keys(categoryLabels).forEach(key => {
-          const group = document.createElement('div');
-          group.className = 'category-group';
-          const items = grouped[key];
-          let rowsHTML = '';
-          if (items.length === 0) {
-            rowsHTML = `<div class="empty-msg">No products</div>`;
-          } else {
-            items.forEach(item => {
-              rowsHTML += `
-                <div class="product-row">
-                  <img src="${item.src}" onerror="this.style.background='#FFF9F3'">
-                  <div class="info">
-                    <div class="name">${item.name}</div>
-                    <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
-                  </div>
-                  <div class="row-actions">
-                    <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
-                    <button class="cross-btn" onclick="deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
-                  </div>
-                </div>`;
-            });
-          }
-          group.innerHTML = `<h4>${categoryLabels[key]}</h4>${rowsHTML}`;
-          listEl.appendChild(group);
-        });
+      if (categoriesCache.length === 0) {
+        listEl.innerHTML = '<div class="empty-msg">প্রথমে একটি ক্যাটাগরি যোগ করুন</div>';
+        return;
+      }
+
+      const grouped = {};
+      categoriesCache.forEach(c => { grouped[c.id] = []; });
+      allProductsCache.forEach(item => {
+        if (!grouped[item.category]) grouped[item.category] = [];
+        grouped[item.category].push(item);
+      });
+
+      categoriesCache.forEach(cat => {
+        const group = document.createElement('div');
+        group.className = 'category-group';
+        const items = grouped[cat.id] || [];
+        let rowsHTML = '';
+        if (items.length === 0) {
+          rowsHTML = `<div class="empty-msg">No products</div>`;
+        } else {
+          items.forEach(item => {
+            rowsHTML += `
+              <div class="product-row">
+                <img src="${item.src}" onerror="this.style.background='#FFF9F3'">
+                <div class="info">
+                  <div class="name">${item.name}</div>
+                  <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
+                </div>
+                <div class="row-actions">
+                  <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
+                  <button class="cross-btn" onclick="deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
+                </div>
+              </div>`;
+          });
+        }
+        group.innerHTML = `<h4>${cat.name}</h4>${rowsHTML}`;
+        listEl.appendChild(group);
       });
     }
   </script>
 
 </body>
-                                                  </html>
+</html>
