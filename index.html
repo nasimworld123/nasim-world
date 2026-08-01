@@ -603,10 +603,14 @@
   }
   .bottom-nav .nav-item svg {
     width: 22px; height: 22px; stroke: currentColor;
-    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), background 0.3s ease, box-shadow 0.3s ease, stroke 0.3s ease, padding 0.35s cubic-bezier(.34,1.56,.64,1);
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), background 0.3s ease, box-shadow 0.3s ease, stroke 0.3s ease;
     border-radius: 50%;
-    padding: 6px;
+    padding: 9px;
     box-sizing: content-box;
+    background: transparent;
+    box-shadow: 0 0 0 0 rgba(107,63,29,0);
+    transform: translateY(0) scale(0.78);
+    will-change: transform;
   }
   .bottom-nav .nav-item:active { transform: scale(0.92); }
   .bottom-nav .nav-item.nav-selected {
@@ -615,8 +619,7 @@
   .bottom-nav .nav-item.nav-selected svg {
     background: linear-gradient(135deg, #A0672E, #6B3F1D);
     stroke: #fff;
-    padding: 12px;
-    transform: translateY(-18px) scale(1.05);
+    transform: translateY(-16px) scale(1);
     box-shadow: 0 8px 20px rgba(107,63,29,0.45), 0 0 0 5px #FFF9F3;
   }
   .bottom-nav .nav-badge {
@@ -1140,7 +1143,7 @@ function orderNow(name, price, src) {
   function navTap(el, fn) {
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('nav-selected'));
     el.classList.add('nav-selected');
-    if (fn) fn();
+    if (fn) setTimeout(fn, 350);
   }
 
   function closeAllOverlays() {
