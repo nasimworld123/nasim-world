@@ -279,7 +279,7 @@
   .category-slider-wrap { position: relative; }
   .category-viewport {
     overflow: hidden;
-    touch-action: none;
+    touch-action: pan-y;
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -358,7 +358,7 @@
     border-radius: 3px;
     margin-bottom: 14px;
   }
-  .prod-cat-viewport { overflow: hidden; touch-action: none; }
+  .prod-cat-viewport { overflow: hidden; touch-action: pan-y; }
   .prod-cat-track { display: flex; transition: transform 0.4s cubic-bezier(.25,.8,.35,1); }
   .prod-cat-page {
     flex: 0 0 100%;
@@ -846,7 +846,7 @@
   <!-- Offer Carousel -->
   <div class="offer-section" id="offers">
     <h2 class="section-title">বিশেষ অফার</h2>
-    <div class="offer-carousel" id="offerCarousel" style="touch-action: none;">
+    <div class="offer-carousel" id="offerCarousel" style="touch-action: pan-y;">
 <div class="offer-slide active"><img src="Pictures/file_0000000009e88207b2451ee4b803bd55.png"></div>
 <div class="offer-slide "><img src="Pictures/file_0000000005788207a3cce61549223a8b.png"></div>
 <div class="offer-dots" id="offerDots"></div>
@@ -996,6 +996,44 @@ function bnToEn(str) {
   const bnDigits = '০১২৩৪৫৬৭৮৯';
   return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
    }
+
+  // ===== Shared direction-aware horizontal swipe helper =====
+  // Only takes over the gesture (and blocks page scroll) once it's clearly
+  // a horizontal drag. A mostly-vertical touch is left alone so the page
+  // scrolls normally.
+  function initHorizontalSwipe(el, callbacks) {
+    let startX = 0, startY = 0, dx = 0, direction = null;
+    el.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      dx = 0; direction = null;
+      if (callbacks.onStart) callbacks.onStart();
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      dx = x - startX;
+      const dy = y - startY;
+      if (direction === null) {
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          direction = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        }
+      }
+      if (direction === 'x') {
+        e.preventDefault();
+        if (callbacks.onMove) callbacks.onMove(dx);
+      }
+      // direction === 'y' (or not yet determined): do nothing, let the page scroll natively
+    }, { passive: false });
+
+    el.addEventListener('touchend', () => {
+      if (direction === 'x' && callbacks.onEnd) callbacks.onEnd(dx);
+      else if (callbacks.onCancel) callbacks.onCancel();
+      direction = null; dx = 0;
+    });
+  }
+
   const titles = {
   group1: "আম",
   group2: "আচার",
@@ -1122,35 +1160,27 @@ function bnToEn(str) {
     const viewport = document.querySelector(`.prod-cat-viewport[data-group="${key}"]`);
     const track = document.getElementById(`prodTrack-${key}`);
     if (!viewport) return;
-    let startX = 0, currentX = 0, dragging = false;
 
-    viewport.addEventListener('touchstart', (e) => {
-      dragging = true;
-      startX = e.touches[0].clientX;
-      currentX = startX;
-      track.style.transition = 'none';
-    }, { passive: true });
-
-    viewport.addEventListener('touchmove', (e) => {
-      if (!dragging) return;
-      e.preventDefault();
-      currentX = e.touches[0].clientX;
-      const diff = currentX - startX;
-      const base = prodSliderState[key].index * 100;
-      track.style.transform = `translateX(calc(-${base}% + ${diff}px))`;
-    }, { passive: false });
-
-    viewport.addEventListener('touchend', () => {
-      if (!dragging) return;
-      dragging = false;
-      track.style.transition = '';
-      const diff = currentX - startX;
-      const threshold = 40;
-      let idx = prodSliderState[key].index;
-      if (diff < -threshold) idx += 1;
-      else if (diff > threshold) idx -= 1;
-      goToProdPage(key, idx);
-      startX = 0; currentX = 0;
+    initHorizontalSwipe(viewport, {
+      onStart: () => {
+        track.style.transition = 'none';
+      },
+      onMove: (diff) => {
+        const base = prodSliderState[key].index * 100;
+        track.style.transform = `translateX(calc(-${base}% + ${diff}px))`;
+      },
+      onEnd: (diff) => {
+        track.style.transition = '';
+        const threshold = 40;
+        let idx = prodSliderState[key].index;
+        if (diff < -threshold) idx += 1;
+        else if (diff > threshold) idx -= 1;
+        goToProdPage(key, idx);
+      },
+      onCancel: () => {
+        track.style.transition = '';
+        goToProdPage(key, prodSliderState[key].index);
+      }
     });
   }
 
@@ -1545,36 +1575,35 @@ function orderNow(name, price, src) {
   }
 
   const carousel = document.getElementById('offerCarousel');
-  let startX = 0, currentX = 0, isDragging = false;
+  let isDragging = false;
 
   setInterval(() => {
     if (!isDragging) { offerIndex = (offerIndex + 1) % offerSlides.length; showOfferSlide(offerIndex); }
   }, 3000);
 
-  carousel.addEventListener('touchstart', (e) => {
-    isDragging = true; startX = e.touches[0].clientX; currentX = startX;
-    offerSlides[offerIndex].classList.add('dragging');
-  }, { passive: true });
-
-  carousel.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    currentX = e.touches[0].clientX;
-    const diff = currentX - startX;
-    offerSlides[offerIndex].style.transform = `translateX(${diff}px)`;
-  }, { passive: false });
-
-  carousel.addEventListener('touchend', () => {
-    if (!isDragging) return;
-    isDragging = false;
-    const diff = currentX - startX;
-    const activeSlide = offerSlides[offerIndex];
-    activeSlide.classList.remove('dragging');
-    activeSlide.style.transform = '';
-    const threshold = 40;
-    if (diff < -threshold) { offerIndex = (offerIndex + 1) % offerSlides.length; showOfferSlide(offerIndex); }
-    else if (diff > threshold) { offerIndex = (offerIndex - 1 + offerSlides.length) % offerSlides.length; showOfferSlide(offerIndex); }
-    startX = 0; currentX = 0;
+  initHorizontalSwipe(carousel, {
+    onStart: () => {
+      isDragging = true;
+      offerSlides[offerIndex].classList.add('dragging');
+    },
+    onMove: (diff) => {
+      offerSlides[offerIndex].style.transform = `translateX(${diff}px)`;
+    },
+    onEnd: (diff) => {
+      isDragging = false;
+      const activeSlide = offerSlides[offerIndex];
+      activeSlide.classList.remove('dragging');
+      activeSlide.style.transform = '';
+      const threshold = 40;
+      if (diff < -threshold) { offerIndex = (offerIndex + 1) % offerSlides.length; showOfferSlide(offerIndex); }
+      else if (diff > threshold) { offerIndex = (offerIndex - 1 + offerSlides.length) % offerSlides.length; showOfferSlide(offerIndex); }
+    },
+    onCancel: () => {
+      isDragging = false;
+      const activeSlide = offerSlides[offerIndex];
+      activeSlide.classList.remove('dragging');
+      activeSlide.style.transform = '';
+    }
   });
 
   // ===== Category Slider (Featured Categories, 3 visible, auto + manual) =====
@@ -1616,36 +1645,29 @@ function orderNow(name, price, src) {
     resetCatAuto();
   }
 
-  let catStartX = 0, catCurrentX = 0, catDragging = false;
   if (catViewport) {
-    catViewport.addEventListener('touchstart', (e) => {
-      catDragging = true;
-      catStartX = e.touches[0].clientX;
-      catCurrentX = catStartX;
-      if (catAutoInterval) clearInterval(catAutoInterval);
-      catTrack.style.transition = 'none';
-    }, { passive: true });
-
-    catViewport.addEventListener('touchmove', (e) => {
-      if (!catDragging) return;
-      e.preventDefault();
-      catCurrentX = e.touches[0].clientX;
-      const diff = catCurrentX - catStartX;
-      const basePercent = (100 / catVisible) * catIndex;
-      catTrack.style.transform = `translateX(calc(-${basePercent}% + ${diff}px))`;
-    }, { passive: false });
-
-    catViewport.addEventListener('touchend', () => {
-      if (!catDragging) return;
-      catDragging = false;
-      catTrack.style.transition = '';
-      const diff = catCurrentX - catStartX;
-      const threshold = 40;
-      if (diff < -threshold) catIndex += 1;
-      else if (diff > threshold) catIndex -= 1;
-      updateCatSlide();
-      startCatAuto();
-      catStartX = 0; catCurrentX = 0;
+    initHorizontalSwipe(catViewport, {
+      onStart: () => {
+        if (catAutoInterval) clearInterval(catAutoInterval);
+        catTrack.style.transition = 'none';
+      },
+      onMove: (diff) => {
+        const basePercent = (100 / catVisible) * catIndex;
+        catTrack.style.transform = `translateX(calc(-${basePercent}% + ${diff}px))`;
+      },
+      onEnd: (diff) => {
+        catTrack.style.transition = '';
+        const threshold = 40;
+        if (diff < -threshold) catIndex += 1;
+        else if (diff > threshold) catIndex -= 1;
+        updateCatSlide();
+        startCatAuto();
+      },
+      onCancel: () => {
+        catTrack.style.transition = '';
+        updateCatSlide();
+        startCatAuto();
+      }
     });
   }
 
