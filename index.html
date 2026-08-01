@@ -274,23 +274,26 @@
     margin: 34px 0 20px;
   }
 
-  /* ===== Circle/Square Photos Row ===== */
-  .circle-section { padding: 0 16px; }
-  .circle-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
+  /* ===== Category Slider (3 visible, with arrows) ===== */
+  .category-slider-outer { padding: 0 16px; }
+  .category-slider-wrap { position: relative; }
+  .category-viewport {
+    overflow: hidden;
+    touch-action: none;
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255,255,255,0.6);
     border-radius: 20px;
-    padding: 16px 12px;
+    padding: 16px 8px;
     box-shadow: 0 8px 26px rgba(107,63,29,0.1);
   }
-  .circle-item { flex: 1 1 22%; text-align: center; cursor: pointer; }
-  .circle-item img {
+  .category-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(.25,.8,.35,1);
+  }
+  .category-item { flex: 0 0 33.3333%; text-align: center; cursor: pointer; padding: 0 6px; box-sizing: border-box; }
+  .category-item img {
     width: 100%;
     aspect-ratio: 1/1;
     max-width: 90px;
@@ -301,14 +304,35 @@
     transition: transform 0.2s ease;
     margin: 0 auto;
   }
-  .circle-item:active img { transform: scale(0.95); }
+  .category-item:active img { transform: scale(0.95); }
   @keyframes clickPulse {
     0% { transform: scale(1); }
     50% { transform: scale(0.88); }
     100% { transform: scale(1); }
   }
-  .circle-item img.pulse { animation: clickPulse 0.35s ease; }
-  .circle-item span { display: block; margin-top: 8px; font-size: 0.8rem; color: #33475a; }
+  .category-item img.pulse { animation: clickPulse 0.35s ease; }
+  .category-item span { display: block; margin-top: 8px; font-size: 0.8rem; color: #33475a; }
+  .category-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#A0672E,#6B3F1D);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 4px 14px rgba(107,63,29,0.4);
+  }
+  .category-arrow:active { transform: translateY(-50%) scale(0.9); }
+  .category-arrow.cat-prev { left: -4px; }
+  .category-arrow.cat-next { right: -4px; }
+  .category-arrow.hide { display: none; }
 
   /* ===== Offer Carousel (Facebook Cover size) ===== */
   .offer-section { padding: 0 16px; }
@@ -323,7 +347,7 @@
   }
   .offer-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease, transform 0.3s ease; }
   .offer-slide.active { opacity: 1; }
-  .offer-slide.dragging { transition: none; transform: translateY(-10px) scale(1.02); box-shadow: 0 12px 25px rgba(107,63,29,0.25); }
+  .offer-slide.dragging { transition: none; }
   .offer-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .offer-placeholder {
     width: 100%; height: 100%;
@@ -687,38 +711,44 @@
     <div class="cta-btn" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Shop Now</div>
   </div>
 
+  <!-- Our Products (sliding category carousel) -->
+  <div class="category-slider-outer" id="gallery">
+    <h2 class="section-title" style="text-transform: uppercase;">Featured Categories</h2>
+    <div class="category-slider-wrap">
+      <div class="category-arrow cat-prev hide" id="catPrevBtn" onclick="catSlide(-1)">&#8249;</div>
+      <div class="category-viewport">
+        <div class="category-track" id="categoryTrack">
+          <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
+            <img src="Download/images (2).jpeg" width="100">
+            <span>আম</span>
+          </div>
+          <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
+            <img src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
+            <span>আচার </span>
+          </div>
+          <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="photo3">
+            <span>ছবি ৩</span>
+          </div>
+          <div class="category-item" onclick="openGallery('group4', this.querySelector('img'))">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
+            <span>ছবি ৪</span>
+          </div>
+        </div>
+      </div>
+      <div class="category-arrow cat-next" id="catNextBtn" onclick="catSlide(1)">&#8250;</div>
+    </div>
+  </div>
+
   <!-- Offer Carousel -->
   <div class="offer-section" id="offers">
     <h2 class="section-title">বিশেষ অফার</h2>
-    <div class="offer-carousel" id="offerCarousel" style="touch-action: pan-y;">
+    <div class="offer-carousel" id="offerCarousel" style="touch-action: none;">
 <div class="offer-slide active"><img src="Pictures/file_0000000009e88207b2451ee4b803bd55.png"></div>
 <div class="offer-slide "><img src="Pictures/file_0000000005788207a3cce61549223a8b.png"></div>
 <div class="offer-dots" id="offerDots"></div>
 </div>
 </div>
-
-  <!-- Circle Photos -->
-  <div class="circle-section" id="gallery">
-    <h2 class="section-title">Our Products</h2>
-    <div class="circle-row">
-      <div class="circle-item" onclick="openGallery('group1', this.querySelector('img'))">
-        <img src="Download/images (2).jpeg" width="100">
-        <span>আম</span>
-      </div>
-      <div class="circle-item" onclick="openGallery('group2', this.querySelector('img'))">
-        <img src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
-        <span>আচার </span>
-      </div>
-      <div class="circle-item" onclick="openGallery('group3', this.querySelector('img'))">
-        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="photo3">
-        <span>ছবি ৩</span>
-      </div>
-      <div class="circle-item" onclick="openGallery('group4', this.querySelector('img'))">
-        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
-        <span>ছবি ৪</span>
-      </div>
-    </div>
-  </div>
 
   <!-- About / Info -->
   <div class="about-section" id="about">
@@ -1321,10 +1351,11 @@ function orderNow(name, price, src) {
 
   carousel.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
+    e.preventDefault();
     currentX = e.touches[0].clientX;
     const diff = currentX - startX;
-    offerSlides[offerIndex].style.transform = `translateY(-10px) translateX(${diff}px) scale(1.02)`;
-  }, { passive: true });
+    offerSlides[offerIndex].style.transform = `translateX(${diff}px)`;
+  }, { passive: false });
 
   carousel.addEventListener('touchend', () => {
     if (!isDragging) return;
@@ -1339,9 +1370,83 @@ function orderNow(name, price, src) {
     startX = 0; currentX = 0;
   });
 
+  // ===== Category Slider (Featured Categories, 3 visible, auto + manual) =====
+  const catTrack = document.getElementById('categoryTrack');
+  const catViewport = document.querySelector('.category-viewport');
+  const catVisible = 3;
+  let catIndex = 0;
+  let catAutoInterval = null;
+
+  function updateCatSlide() {
+    const totalItems = catTrack.children.length;
+    const maxIndex = Math.max(0, totalItems - catVisible);
+    catIndex = Math.max(0, Math.min(catIndex, maxIndex));
+    const percent = (100 / catVisible) * catIndex;
+    catTrack.style.transform = `translateX(-${percent}%)`;
+    const prevBtn = document.getElementById('catPrevBtn');
+    const nextBtn = document.getElementById('catNextBtn');
+    prevBtn.classList.toggle('hide', catIndex <= 0);
+    nextBtn.classList.toggle('hide', catIndex >= maxIndex);
+  }
+
+  function startCatAuto() {
+    catAutoInterval = setInterval(() => {
+      const totalItems = catTrack.children.length;
+      const maxIndex = Math.max(0, totalItems - catVisible);
+      catIndex = catIndex >= maxIndex ? 0 : catIndex + 1;
+      updateCatSlide();
+    }, 2500);
+  }
+
+  function resetCatAuto() {
+    if (catAutoInterval) clearInterval(catAutoInterval);
+    startCatAuto();
+  }
+
+  function catSlide(dir) {
+    catIndex += dir;
+    updateCatSlide();
+    resetCatAuto();
+  }
+
+  let catStartX = 0, catCurrentX = 0, catDragging = false;
+  if (catViewport) {
+    catViewport.addEventListener('touchstart', (e) => {
+      catDragging = true;
+      catStartX = e.touches[0].clientX;
+      catCurrentX = catStartX;
+      if (catAutoInterval) clearInterval(catAutoInterval);
+      catTrack.style.transition = 'none';
+    }, { passive: true });
+
+    catViewport.addEventListener('touchmove', (e) => {
+      if (!catDragging) return;
+      e.preventDefault();
+      catCurrentX = e.touches[0].clientX;
+      const diff = catCurrentX - catStartX;
+      const basePercent = (100 / catVisible) * catIndex;
+      catTrack.style.transform = `translateX(calc(-${basePercent}% + ${diff}px))`;
+    }, { passive: false });
+
+    catViewport.addEventListener('touchend', () => {
+      if (!catDragging) return;
+      catDragging = false;
+      catTrack.style.transition = '';
+      const diff = catCurrentX - catStartX;
+      const threshold = 40;
+      if (diff < -threshold) catIndex += 1;
+      else if (diff > threshold) catIndex -= 1;
+      updateCatSlide();
+      startCatAuto();
+      catStartX = 0; catCurrentX = 0;
+    });
+  }
+
   window.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     updateWishCount();
+    updateCatSlide();
+    startCatAuto();
   });
 
   // ===== Draggable WhatsApp floating button =====
