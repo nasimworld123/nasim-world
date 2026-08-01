@@ -8,7 +8,7 @@
   * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
   html { scroll-behavior: smooth; }
   body {
-    background: linear-gradient(180deg, #F5FBF8 0%, #EAF7F0 100%);
+    background: linear-gradient(180deg, #FFF9F3 0%, #FBEFE1 100%);
     color: #1e2a38;
     padding-bottom: 90px;
   }
@@ -26,20 +26,20 @@
     background: rgba(255,255,255,0.6);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(4,120,87,0.25);
+    border-bottom: 1px solid rgba(107,63,29,0.25);
   }
   .navbar .logo {
     font-weight: bold;
     font-size: 1.05rem;
-    color: #047857;
+    color: #6B3F1D;
     letter-spacing: 0.5px;
   }
   .navbar .menu-btn {
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: rgba(4,120,87,0.1);
-    border: 1px solid rgba(4,120,87,0.3);
+    background: rgba(107,63,29,0.1);
+    border: 1px solid rgba(107,63,29,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,10 +49,10 @@
   .navbar .menu-btn::before,
   .navbar .menu-btn::after { display:none; }
   .navbar .menu-icon {
-    width: 18px; height: 2px; background: #047857; position: relative;
+    width: 18px; height: 2px; background: #6B3F1D; position: relative;
   }
   .navbar .menu-icon::before, .navbar .menu-icon::after {
-    content:""; position:absolute; left:0; width:18px; height:2px; background:#047857;
+    content:""; position:absolute; left:0; width:18px; height:2px; background:#6B3F1D;
   }
   .navbar .menu-icon::before { top: -6px; }
   .navbar .menu-icon::after { top: 6px; }
@@ -61,8 +61,8 @@
     position: relative;
     width: 36px; height: 36px;
     border-radius: 10px;
-    background: rgba(4,120,87,0.1);
-    border: 1px solid rgba(4,120,87,0.3);
+    background: rgba(107,63,29,0.1);
+    border: 1px solid rgba(107,63,29,0.3);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
     cursor: pointer;
@@ -70,7 +70,7 @@
   .cart-count {
     position: absolute;
     top: -6px; right: -6px;
-    background: #065F46;
+    background: #4A2A12;
     color: #fff;
     font-size: 0.65rem;
     font-weight: bold;
@@ -82,18 +82,18 @@
 
   /* ===== Cart Modal ===== */
   .cart-overlay {
-    display: none; position: fixed; inset: 0; background: #F5FBF8;
+    display: none; position: fixed; inset: 0; background: #FFF9F3;
     z-index: 999; padding: 20px 16px; overflow-y: auto;
   }
   .cart-overlay.active { display: block; }
   .cart-item {
     display: flex; gap: 12px; align-items: center;
     background: #fff; border: none;
-    border-bottom: 1px solid rgba(4,120,87,0.15);
+    border-bottom: 1px solid rgba(107,63,29,0.15);
     border-radius: 0; padding: 14px 4px;
     box-shadow: none;
   }
-  .cart-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(4,120,87,0.15); }
+  .cart-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(107,63,29,0.15); }
   .cart-item-info { flex: 1; }
   .cart-item-info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; margin-bottom: 6px; }
   .cart-item-info .price { display: none; }
@@ -106,11 +106,11 @@
   }
   .qty-control button {
     width: 24px; height: 24px; border-radius: 50%;
-    background: rgba(4,120,87,0.1); border: 1px solid rgba(4,120,87,0.35);
-    color: #047857; font-size: 0.9rem; cursor: pointer;
+    background: rgba(107,63,29,0.1); border: 1px solid rgba(107,63,29,0.35);
+    color: #6B3F1D; font-size: 0.9rem; cursor: pointer;
   }
   .qty-control span { font-size: 0.85rem; min-width: 16px; text-align: center; color: #1e2a38; }
-  .qty-control .line-total { color: #065F46; font-size: 0.85rem; font-weight: bold; }
+  .qty-control .line-total { color: #4A2A12; font-size: 0.85rem; font-weight: bold; }
   .remove-item {
     background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
   }
@@ -119,7 +119,7 @@
     position: sticky; bottom: 0;
     background: rgba(255,255,255,0.96);
     backdrop-filter: blur(14px);
-    border-top: 1px solid rgba(4,120,87,0.25);
+    border-top: 1px solid rgba(107,63,29,0.25);
     padding: 14px 4px 4px;
     margin-top: 14px;
   }
@@ -128,13 +128,13 @@
     font-size: 1rem; font-weight: bold; color: #1e2a38;
     margin-bottom: 10px;
   }
-  .cart-total-row span:last-child { color: #065F46; }
+  .cart-total-row span:last-child { color: #4A2A12; }
   .place-order-btn {
     width: 100%;
-    background: linear-gradient(90deg,#10B981,#047857);
+    background: linear-gradient(90deg,#A0672E,#6B3F1D);
     color: #fff; border: none; padding: 13px; border-radius: 25px;
     font-size: 0.95rem; font-weight: bold; cursor: pointer;
-    box-shadow: 0 0 15px rgba(4,120,87,0.35);
+    box-shadow: 0 0 15px rgba(107,63,29,0.35);
   }
   .place-order-btn:active { transform: scale(0.97); }
   .order-form {
@@ -145,7 +145,7 @@
   .order-form input, .order-form textarea {
     width: 100%;
     background: #fff;
-    border: 1px solid rgba(4,120,87,0.3);
+    border: 1px solid rgba(107,63,29,0.3);
     border-radius: 10px;
     padding: 10px 12px;
     color: #1e2a38;
@@ -163,11 +163,11 @@
     background: rgba(255,255,255,0.92);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(4,120,87,0.3);
+    border-left: 1px solid rgba(107,63,29,0.3);
     z-index: 600;
     padding: 70px 24px;
     transition: right 0.35s ease;
-    box-shadow: -8px 0 30px rgba(4,120,87,0.15);
+    box-shadow: -8px 0 30px rgba(107,63,29,0.15);
   }
   .nav-links.open { right: 0; }
   .nav-links a {
@@ -175,15 +175,15 @@
     padding: 14px 0;
     font-size: 1.05rem;
     color: #1e2a38;
-    border-bottom: 1px solid rgba(4,120,87,0.15);
+    border-bottom: 1px solid rgba(107,63,29,0.15);
   }
-  .nav-links a:active { color: #047857; }
+  .nav-links a:active { color: #6B3F1D; }
   .nav-close {
     position: absolute;
     top: 18px; right: 18px;
     width: 34px; height: 34px;
     border-radius: 50%;
-    background: #047857;
+    background: #6B3F1D;
     border: none;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
@@ -204,7 +204,7 @@
     aspect-ratio: 820 / 312;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #E6F7EF, #BFE8D3);
+    background: linear-gradient(135deg, #FCEEDD, #E8C9A0);
   }
   .hero img {
     width: 100%;
@@ -222,7 +222,7 @@
     color: rgba(30,42,56,0.4);
     font-size: 0.85rem;
     padding: 0 20px;
-    border: 2px dashed rgba(4,120,87,0.4);
+    border: 2px dashed rgba(107,63,29,0.4);
   }
 
   /* Glass strip right under the cover photo */
@@ -231,11 +231,11 @@
     position: relative;
     z-index: 20;
     background: rgba(255,255,255,0.75);
-    border: 1px solid rgba(4,120,87,0.3);
+    border: 1px solid rgba(107,63,29,0.3);
     border-radius: 18px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 10px 30px rgba(4,120,87,0.18);
+    box-shadow: 0 10px 30px rgba(107,63,29,0.18);
     padding: 16px 18px;
     display: flex;
     align-items: center;
@@ -249,13 +249,13 @@
   }
   .hero-glass .cta-btn {
     flex-shrink: 0;
-    background: linear-gradient(90deg,#10B981,#047857);
+    background: linear-gradient(90deg,#A0672E,#6B3F1D);
     color: #fff;
     font-weight: bold;
     font-size: 0.85rem;
     padding: 10px 16px;
     border-radius: 30px;
-    box-shadow: 0 0 16px rgba(4,120,87,0.4);
+    box-shadow: 0 0 16px rgba(107,63,29,0.4);
     cursor: pointer;
     white-space: nowrap;
   }
@@ -264,7 +264,7 @@
   /* ===== Section Titles ===== */
   .section-title {
     text-align: center;
-    background: linear-gradient(90deg,#047857,#10B981);
+    background: linear-gradient(90deg,#6B3F1D,#A0672E);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -287,7 +287,7 @@
     border: 1px solid rgba(255,255,255,0.6);
     border-radius: 20px;
     padding: 16px 12px;
-    box-shadow: 0 8px 26px rgba(4,120,87,0.1);
+    box-shadow: 0 8px 26px rgba(107,63,29,0.1);
   }
   .circle-item { flex: 1 1 22%; text-align: center; cursor: pointer; }
   .circle-item img {
@@ -296,8 +296,8 @@
     max-width: 90px;
     border-radius: 18px;
     object-fit: cover;
-    border: 3px solid rgba(4,120,87,0.55);
-    box-shadow: 0 0 15px rgba(4,120,87,0.25);
+    border: 3px solid rgba(107,63,29,0.55);
+    box-shadow: 0 0 15px rgba(107,63,29,0.25);
     transition: transform 0.2s ease;
     margin: 0 auto;
   }
@@ -318,12 +318,12 @@
     aspect-ratio: 820 / 312;
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(4,120,87,0.35);
-    box-shadow: 0 0 20px rgba(4,120,87,0.15);
+    border: 1px solid rgba(107,63,29,0.35);
+    box-shadow: 0 0 20px rgba(107,63,29,0.15);
   }
   .offer-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease, transform 0.3s ease; }
   .offer-slide.active { opacity: 1; }
-  .offer-slide.dragging { transition: none; transform: translateY(-10px) scale(1.02); box-shadow: 0 12px 25px rgba(4,120,87,0.25); }
+  .offer-slide.dragging { transition: none; transform: translateY(-10px) scale(1.02); box-shadow: 0 12px 25px rgba(107,63,29,0.25); }
   .offer-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .offer-placeholder {
     width: 100%; height: 100%;
@@ -332,18 +332,18 @@
     color: rgba(30,42,56,0.45);
     font-size: 0.85rem;
     padding: 0 16px;
-    border: 2px dashed rgba(4,120,87,0.4);
-    background: linear-gradient(135deg, #E6F7EF, #BFE8D3);
+    border: 2px dashed rgba(107,63,29,0.4);
+    background: linear-gradient(135deg, #FCEEDD, #E8C9A0);
   }
   .offer-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
   .offer-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.6); transition: background 0.3s ease, transform 0.3s ease; }
-  .offer-dot.active { background: #047857; transform: scale(1.3); }
+  .offer-dot.active { background: #6B3F1D; transform: scale(1.3); }
 
   /* ===== About / Info Glass Card ===== */
   .about-section { padding: 0 16px; }
   .glass-card {
     background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(4,120,87,0.25);
+    border: 1px solid rgba(107,63,29,0.25);
     border-radius: 18px;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -356,23 +356,23 @@
 
   /* ===== Modal / Lightbox Gallery ===== */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: #F5FBF8;
+    display: none; position: fixed; inset: 0; background: #FFF9F3;
     z-index: 999; padding: 20px 16px; overflow-y: auto;
   }
   .modal-overlay.active { display: block; }
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
   .modal-overlay.active .modal-header, .cart-overlay.active .modal-header { animation: slideDown 0.4s ease forwards; }
-  .modal-header h3 { color: #047857; font-size: 1.1rem; }
+  .modal-header h3 { color: #6B3F1D; font-size: 1.1rem; }
   .modal-close {
-    background: #047857; border: none; color: #fff;
+    background: #6B3F1D; border: none; color: #fff;
     width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer;
   }
   .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .modal-card {
     position: relative;
-    background: #fff; border: 1px solid rgba(4,120,87,0.2); border-radius: 16px;
+    background: #fff; border: 1px solid rgba(107,63,29,0.2); border-radius: 16px;
     overflow: hidden; text-align: center; padding-bottom: 10px; opacity: 0; transform: scale(0.85);
-    box-shadow: 0 3px 14px rgba(4,120,87,0.1);
+    box-shadow: 0 3px 14px rgba(107,63,29,0.1);
   }
   .wish-heart {
     position: absolute; top: 8px; right: 8px; z-index: 5;
@@ -388,8 +388,8 @@
     position: relative;
     width: 36px; height: 36px;
     border-radius: 10px;
-    background: rgba(4,120,87,0.1);
-    border: 1px solid rgba(4,120,87,0.3);
+    background: rgba(107,63,29,0.1);
+    border: 1px solid rgba(107,63,29,0.3);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
     cursor: pointer;
@@ -409,13 +409,13 @@
   .wish-item {
     display: flex; gap: 12px; align-items: center;
     background: #fff; border: none;
-    border-bottom: 1px solid rgba(4,120,87,0.15);
+    border-bottom: 1px solid rgba(107,63,29,0.15);
     padding: 14px 4px;
   }
-  .wish-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(4,120,87,0.15); cursor: pointer; }
+  .wish-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(107,63,29,0.15); cursor: pointer; }
   .wish-item .info { flex: 1; cursor: pointer; }
   .wish-item .info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; margin-bottom: 4px; }
-  .wish-item .info .price { font-size: 0.8rem; color: #065F46; font-weight: bold; }
+  .wish-item .info .price { font-size: 0.8rem; color: #4A2A12; font-weight: bold; }
   .wish-remove {
     background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
   }
@@ -445,7 +445,7 @@
     padding: 0 8px;
   }
   .product-price {
-    color: #065F46;
+    color: #4A2A12;
     font-size: 0.95rem;
     font-weight: bold;
   }
@@ -455,7 +455,7 @@
     text-decoration: line-through;
   }
   .product-save {
-    background: #10B981;
+    background: #A0672E;
     color: #fff;
     font-size: 0.68rem;
     font-weight: bold;
@@ -467,15 +467,15 @@
     width: calc(100% - 16px);
     margin: 8px auto 0;
     background: transparent;
-    color: #047857;
-    border: 1.5px solid #047857;
+    color: #6B3F1D;
+    border: 1.5px solid #6B3F1D;
     padding: 9px 10px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: bold;
     cursor: pointer;
   }
-  .add-cart-btn:active { transform: scale(0.96); background: rgba(4,120,87,0.08); }
+  .add-cart-btn:active { transform: scale(0.96); background: rgba(107,63,29,0.08); }
   @keyframes slideDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
 
@@ -483,20 +483,20 @@
   .pd-wrap { padding: 4px; }
   .pd-image {
     width: 100%; aspect-ratio: 1/1; object-fit: cover;
-    border-radius: 16px; border: 1px solid rgba(4,120,87,0.2);
-    box-shadow: 0 3px 14px rgba(4,120,87,0.1);
+    border-radius: 16px; border: 1px solid rgba(107,63,29,0.2);
+    box-shadow: 0 3px 14px rgba(107,63,29,0.1);
     margin-bottom: 16px;
   }
   .pd-name { color: #1e2a38; font-size: 1.1rem; margin-bottom: 10px; }
   .pd-price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-  .pd-price { color: #065F46; font-size: 1.3rem; font-weight: bold; }
+  .pd-price { color: #4A2A12; font-size: 1.3rem; font-weight: bold; }
   .pd-old-price { color: rgba(30,42,56,0.4); font-size: 1rem; text-decoration: line-through; }
   .pd-qty-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 0.95rem; color: #1e2a38; }
   .pd-qty-row .qty-buttons { display: flex; align-items: center; gap: 10px; }
   .pd-qty-row .qty-buttons button {
     width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(4,120,87,0.1); border: 1px solid rgba(4,120,87,0.35);
-    color: #047857; font-size: 1.1rem; cursor: pointer;
+    background: rgba(107,63,29,0.1); border: 1px solid rgba(107,63,29,0.35);
+    color: #6B3F1D; font-size: 1.1rem; cursor: pointer;
   }
   .pd-qty-row .qty-buttons span { font-size: 1rem; min-width: 20px; text-align: center; }
 
@@ -529,8 +529,8 @@
     background: rgba(255,255,255,0.65);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(4,120,87,0.25);
-    box-shadow: 0 -6px 24px rgba(4,120,87,0.12);
+    border-top: 1px solid rgba(107,63,29,0.25);
+    box-shadow: 0 -6px 24px rgba(107,63,29,0.12);
   }
   .bottom-nav .nav-item {
     position: relative;
@@ -546,12 +546,27 @@
     padding: 4px 0;
     transition: color 0.2s ease;
   }
-  .bottom-nav .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .bottom-nav .nav-item svg {
+    width: 22px; height: 22px; stroke: currentColor;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), background 0.3s ease, box-shadow 0.3s ease, stroke 0.3s ease, padding 0.35s cubic-bezier(.34,1.56,.64,1);
+    border-radius: 50%;
+    padding: 6px;
+    box-sizing: content-box;
+  }
   .bottom-nav .nav-item:active { transform: scale(0.92); }
-  .bottom-nav .nav-item.active-home { color: #047857; }
+  .bottom-nav .nav-item.nav-selected {
+    color: #6B3F1D;
+  }
+  .bottom-nav .nav-item.nav-selected svg {
+    background: linear-gradient(135deg, #A0672E, #6B3F1D);
+    stroke: #fff;
+    padding: 12px;
+    transform: translateY(-18px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(107,63,29,0.45), 0 0 0 5px #FFF9F3;
+  }
   .bottom-nav .nav-badge {
     position: absolute; top: -2px; right: 22%;
-    background: #065F46; color: #fff; font-size: 0.6rem; font-weight: bold;
+    background: #4A2A12; color: #fff; font-size: 0.6rem; font-weight: bold;
     min-width: 15px; height: 15px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; padding: 0 3px;
   }
@@ -568,17 +583,17 @@
     margin-top: 40px;
     padding: 26px 18px 10px;
     text-align: center;
-    border-top: 1px solid rgba(4,120,87,0.2);
+    border-top: 1px solid rgba(107,63,29,0.2);
     color: rgba(30,42,56,0.55);
     font-size: 0.8rem;
   }
-  .footer .brand { color: #047857; font-weight: bold; margin-bottom: 6px; font-size: 0.95rem; }
+  .footer .brand { color: #6B3F1D; font-weight: bold; margin-bottom: 6px; font-size: 0.95rem; }
   .footer .socials { margin: 12px 0; display:flex; justify-content:center; gap:10px; }
   .footer .socials a {
     width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(4,120,87,0.1); border: 1px solid rgba(4,120,87,0.3);
+    background: rgba(107,63,29,0.1); border: 1px solid rgba(107,63,29,0.3);
     display:flex; align-items:center; justify-content:center; font-size:0.85rem;
-    color: #047857;
+    color: #6B3F1D;
   }
 </style>
 </head>
@@ -704,7 +719,7 @@
       <button class="modal-close" onclick="closeSearch()">✕</button>
     </div>
     <input type="text" id="searchInput" placeholder="প্রোডাক্টের নাম লিখুন..." oninput="performSearch(this.value)"
-      style="width:100%;background:#fff;border:1px solid rgba(4,120,87,0.3);border-radius:12px;padding:12px 14px;font-size:0.9rem;margin-bottom:16px;color:#1e2a38;">
+      style="width:100%;background:#fff;border:1px solid rgba(107,63,29,0.3);border-radius:12px;padding:12px 14px;font-size:0.9rem;margin-bottom:16px;color:#1e2a38;">
     <div class="modal-grid" id="searchGrid"></div>
   </div>
 
@@ -795,7 +810,7 @@ function bnToEn(str) {
     }
     const grid = document.getElementById('modalGrid');
     document.getElementById('modalTitle').innerHTML = titles[key];
-    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#047857;padding:30px 0;">লোড হচ্ছে...</p>';
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#6B3F1D;padding:30px 0;">লোড হচ্ছে...</p>';
     document.getElementById('modalOverlay').classList.add('active');
 
     let items = [];
@@ -1057,6 +1072,12 @@ function orderNow(name, price, src) {
   function closeCart() { document.getElementById('cartOverlay').classList.remove('active'); }
 
   // ===== Bottom Navigation Bar actions =====
+  function navTap(el, fn) {
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('nav-selected'));
+    el.classList.add('nav-selected');
+    if (fn) fn();
+  }
+
   function closeAllOverlays() {
     document.getElementById('modalOverlay').classList.remove('active');
     document.getElementById('cartOverlay').classList.remove('active');
@@ -1304,29 +1325,29 @@ function orderNow(name, price, src) {
 
   <!-- Bottom Navigation Bar -->
   <div class="bottom-nav">
-    <div class="nav-item active-home" onclick="goHome()">
+    <div class="nav-item nav-selected" onclick="navTap(this, goHome)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
       <span>Home</span>
     </div>
-    <div class="nav-item" onclick="navOpenCart()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-      <span id="navCartCount" class="nav-badge">0</span>
-      <span>Cart</span>
-    </div>
-    <div class="nav-item" onclick="navOpenWishlist()">
+    <div class="nav-item" onclick="navTap(this, navOpenWishlist)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9C0.7 8.4 2 5 5.2 5c1.9 0 3.3 1 4.8 3 1.5-2 2.9-3 4.8-3C18 5 19.3 8.4 21.5 12 19 16.4 12 21 12 21z"/></svg>
       <span id="navWishCount" class="nav-badge">0</span>
       <span>Wishlist</span>
     </div>
-    <div class="nav-item" onclick="openSearch()">
+    <div class="nav-item" onclick="navTap(this, navOpenCart)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span id="navCartCount" class="nav-badge">0</span>
+      <span>Cart</span>
+    </div>
+    <div class="nav-item" onclick="navTap(this, openSearch)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <span>Search</span>
     </div>
-    <div class="nav-item" onclick="goAccount()">
+    <div class="nav-item" onclick="navTap(this, goAccount)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       <span>Account</span>
     </div>
   </div>
 
 </body>
-</html>
+     </html>
