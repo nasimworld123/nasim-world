@@ -166,6 +166,9 @@
   .mini-item-header .info { flex: 1; min-width: 0; }
   .mini-item-header .info .name { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mini-item-header .info .price { font-size: 0.8rem; color: #f97316; font-weight: 600; }
+  .mini-item-header .info .stock-label { font-size: 0.72rem; font-weight: 700; margin-top: 2px; }
+  .mini-item-header .info .stock-label.in { color: #16a34a; }
+  .mini-item-header .info .stock-label.out { color: #ef4444; }
   .mini-item-header .mini-chevron {
     width: 26px; height: 26px; border-radius: 50%;
     background: rgba(27,42,74,0.1); display:flex; align-items:center; justify-content:center;
@@ -500,6 +503,11 @@
             <img id="previewImg-product" src="" alt="">
             <span class="status-text" id="previewStatus-product">যাচাই হচ্ছে...</span>
           </div>
+          <select id="pStockStatus" onchange="onStockStatusChange()">
+            <option value="in">In Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+          <input type="text" id="pStockQty" placeholder="স্টক সংখ্যা (ঐচ্ছিক — খালি রাখলে সংখ্যা দেখাবে না)">
           <select id="pCategory">
             <option value="group1">Mango (আম)</option>
             <option value="group2">Pickle (আচার)</option>
@@ -545,6 +553,23 @@
     const db = firebase.firestore();
 
     const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "আমসত্ত্ব", group4: "Category 4" };
+
+    // ===== Stock helpers =====
+    function bnToEnAdmin(str) {
+      const bnDigits = '০১২৩৪৫৬৭৮৯';
+      return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
+    }
+    function onStockStatusChange() {
+      const status = document.getElementById('pStockStatus').value;
+      document.getElementById('pStockQty').style.display = (status === 'in') ? 'block' : 'none';
+      if (status === 'out') document.getElementById('pStockQty').value = '';
+    }
+    function stockLabelFor(stock) {
+      if (stock === undefined || stock === null || stock === '') return { text: 'In Stock', cls: 'in' };
+      const n = parseInt(bnToEnAdmin(stock), 10);
+      if (isNaN(n) || n <= 0) return { text: 'Out of Stock', cls: 'out' };
+      return { text: `In Stock: ${n}`, cls: 'in' };
+    }
 
     // ===== Accordion controls =====
     function toggleSection(key) {
@@ -724,6 +749,8 @@
       const oldPrice = document.getElementById('pOldPrice').value.trim();
       const src = document.getElementById('pImage').value.trim();
       const category = document.getElementById('pCategory').value;
+      const stockStatus = document.getElementById('pStockStatus').value;
+      const stockQtyRaw = document.getElementById('pStockQty').value.trim();
       const statusEl = document.getElementById('addStatus');
       const addBtn = document.getElementById('addBtn');
 
@@ -734,6 +761,15 @@
       }
 
       const data = { name, price, oldPrice, src, category };
+      if (stockStatus === 'out') {
+        data.stock = 0;
+      } else if (stockQtyRaw !== '') {
+        const stockNum = parseInt(bnToEnAdmin(stockQtyRaw), 10);
+        data.stock = isNaN(stockNum) || stockNum <= 0 ? 1 : stockNum;
+      } else if (editingId) {
+        // "In Stock" with no quantity typed while editing: clear any previously saved number
+        data.stock = firebase.firestore.FieldValue.delete();
+      }
       productSubmitting = true;
       addBtn.disabled = true;
 
@@ -766,6 +802,9 @@
           document.getElementById('pOldPrice').value = '';
           document.getElementById('pImage').value = '';
           document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
+          document.getElementById('pStockStatus').value = 'in';
+          document.getElementById('pStockQty').value = '';
+          document.getElementById('pStockQty').style.display = 'block';
         })
         .catch(() => {
           statusEl.textContent = 'Something went wrong, please try again';
@@ -774,7 +813,7 @@
         .finally(() => { productSubmitting = false; addBtn.disabled = false; });
     }
 
-    function editProduct(id, name, price, oldPrice, src, category) {
+    function editProduct(id, name, price, oldPrice, src, category, stock) {
       editingId = id;
       document.getElementById('pName').value = name;
       document.getElementById('pPrice').value = price;
@@ -783,6 +822,12 @@
       imgInput.value = src;
       imgInput.dispatchEvent(new Event('input'));
       document.getElementById('pCategory').value = category;
+
+      const isOut = (stock !== undefined && stock !== null && stock !== '' && parseInt(bnToEnAdmin(stock), 10) <= 0);
+      document.getElementById('pStockStatus').value = isOut ? 'out' : 'in';
+      document.getElementById('pStockQty').value = (!isOut && stock !== undefined && stock !== null && stock !== '') ? stock : '';
+      document.getElementById('pStockQty').style.display = isOut ? 'none' : 'block';
+
       document.getElementById('addBtn').textContent = 'Update Product';
       document.getElementById('cancelEditBtn').classList.add('show');
       document.getElementById('addStatus').textContent = `Editing "${name}"`;
@@ -800,6 +845,9 @@
       document.getElementById('pOldPrice').value = '';
       document.getElementById('pImage').value = '';
       document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
+      document.getElementById('pStockStatus').value = 'in';
+      document.getElementById('pStockQty').value = '';
+      document.getElementById('pStockQty').style.display = 'block';
       document.getElementById('addBtn').textContent = 'Add Product';
       document.getElementById('cancelEditBtn').classList.remove('show');
       document.getElementById('addStatus').textContent = '';
@@ -967,6 +1015,7 @@
             rowsHTML = `<div class="empty-msg">No products</div>`;
           } else {
             items.forEach(item => {
+              const stockInfo = stockLabelFor(item.stock);
               rowsHTML += `
                 <div class="mini-item">
                   <div class="mini-item-header" onclick="toggleMiniItem(this)">
@@ -974,12 +1023,13 @@
                     <div class="info">
                       <div class="name">${item.name}</div>
                       <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
+                      <div class="stock-label ${stockInfo.cls}">${stockInfo.text}</div>
                     </div>
                     <div class="mini-chevron">▾</div>
                   </div>
                   <div class="mini-item-body">
                     <div class="mini-item-body-inner">
-                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
+                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}", ${JSON.stringify(item.stock !== undefined ? item.stock : "")})'>Edit</button>
                       <button class="cross-btn" onclick="event.stopPropagation(); deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
                     </div>
                   </div>
