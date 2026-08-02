@@ -252,6 +252,31 @@
     </div>
 
     <div class="section-card">
+      <h3>🖼️ Site Images</h3>
+      <input type="text" id="heroImageInput" placeholder="Hero / Cover Image URL">
+
+      <div class="form-row">
+        <input type="text" id="catLabel-group1" placeholder="Category name" value="আম">
+        <input type="text" id="catImage-group1" placeholder="Thumbnail Image URL">
+      </div>
+      <div class="form-row">
+        <input type="text" id="catLabel-group2" placeholder="Category name" value="আচার">
+        <input type="text" id="catImage-group2" placeholder="Thumbnail Image URL">
+      </div>
+      <div class="form-row">
+        <input type="text" id="catLabel-group3" placeholder="Category name" value="আমসত্ত্ব">
+        <input type="text" id="catImage-group3" placeholder="Thumbnail Image URL">
+      </div>
+      <div class="form-row">
+        <input type="text" id="catLabel-group4" placeholder="Category name" value="ছবি ৪">
+        <input type="text" id="catImage-group4" placeholder="Thumbnail Image URL">
+      </div>
+
+      <button class="add-btn" onclick="saveSiteSettings()">Save Site Images</button>
+      <div class="status-msg" id="settingsStatus"></div>
+    </div>
+
+    <div class="section-card">
       <h3>➕ Add New Product</h3>
       <input type="text" id="pName" placeholder="Product Name">
       <div class="form-row">
@@ -262,7 +287,7 @@
       <select id="pCategory">
         <option value="group1">Mango (আম)</option>
         <option value="group2">Pickle (আচার)</option>
-        <option value="group3">Category 3 (ছবি ৩)</option>
+        <option value="group3">আমসত্ত্ব</option>
         <option value="group4">Category 4 (ছবি ৪)</option>
       </select>
       <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
@@ -292,7 +317,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "Category 3", group4: "Category 4" };
+    const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "আমসত্ত্ব", group4: "Category 4" };
 
     function doLogin() {
       const email = document.getElementById('loginEmail').value.trim();
@@ -318,12 +343,58 @@
         document.getElementById('logoutBtn').style.display = 'inline-block';
         listenProducts();
         listenOrders();
+        loadSiteSettingsForm();
       } else {
         document.getElementById('loginWrap').style.display = 'block';
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'none';
       }
     });
+
+    // ===== Site Settings (hero image, category thumbnails/labels) =====
+    async function loadSiteSettingsForm() {
+      try {
+        const doc = await db.collection('settings').doc('site').get();
+        if (!doc.exists) return;
+        const data = doc.data();
+        if (data.heroImage) document.getElementById('heroImageInput').value = data.heroImage;
+        const catImages = data.categoryImages || {};
+        const catLabels = data.categoryLabels || {};
+        ['group1', 'group2', 'group3', 'group4'].forEach(key => {
+          if (catImages[key]) document.getElementById(`catImage-${key}`).value = catImages[key];
+          if (catLabels[key]) document.getElementById(`catLabel-${key}`).value = catLabels[key];
+        });
+      } catch (e) {}
+    }
+
+    function saveSiteSettings() {
+      const statusEl = document.getElementById('settingsStatus');
+      const heroImage = document.getElementById('heroImageInput').value.trim();
+      const categoryImages = {};
+      const categoryLabelsData = {};
+      ['group1', 'group2', 'group3', 'group4'].forEach(key => {
+        const img = document.getElementById(`catImage-${key}`).value.trim();
+        const label = document.getElementById(`catLabel-${key}`).value.trim();
+        if (img) categoryImages[key] = img;
+        if (label) categoryLabelsData[key] = label;
+      });
+
+      statusEl.textContent = 'Saving...';
+      statusEl.style.color = '#6B3F1D';
+
+      const payload = { categoryImages, categoryLabels: categoryLabelsData };
+      if (heroImage) payload.heroImage = heroImage;
+
+      db.collection('settings').doc('site').set(payload, { merge: true })
+        .then(() => {
+          statusEl.textContent = '✅ Site images updated';
+          statusEl.style.color = '#128C4A';
+        })
+        .catch(() => {
+          statusEl.textContent = 'Something went wrong, please try again';
+          statusEl.style.color = '#ef4444';
+        });
+    }
 
     let editingId = null;
 
