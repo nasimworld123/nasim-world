@@ -303,6 +303,7 @@
     box-shadow: 0 0 15px rgba(107,63,29,0.25);
     transition: transform 0.2s ease;
     margin: 0 auto;
+    background: linear-gradient(135deg, #FCEEDD, #E8C9A0);
   }
   .category-item:active img { transform: scale(0.95); }
   @keyframes clickPulse {
@@ -378,7 +379,7 @@
     padding-bottom: 10px;
     box-shadow: 0 3px 14px rgba(107,63,29,0.08);
   }
-  .prod-cat-card-inner img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; cursor: pointer; }
+  .prod-cat-card-inner img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; cursor: pointer; background: linear-gradient(135deg, #FCEEDD, #E8C9A0); }
   .prod-cat-name {
     color: #1e2a38;
     font-size: 0.85rem;
@@ -530,7 +531,7 @@
   .modal-card:nth-child(4){animation-delay:.26s!important}
   .modal-card:nth-child(5){animation-delay:.33s!important}
   .modal-card:nth-child(6){animation-delay:.40s!important}
-  .modal-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+  .modal-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: linear-gradient(135deg, #FCEEDD, #E8C9A0); }
   .product-name {
     color: #1e2a38;
     font-size: 0.9rem;
@@ -589,6 +590,7 @@
     border-radius: 16px; border: 1px solid rgba(107,63,29,0.2);
     box-shadow: 0 3px 14px rgba(107,63,29,0.1);
     margin-bottom: 16px;
+    background: linear-gradient(135deg, #FCEEDD, #E8C9A0);
   }
   .pd-name { color: #1e2a38; font-size: 1.1rem; margin-bottom: 10px; }
   .pd-price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
@@ -762,7 +764,7 @@
 
   <!-- Navbar -->
   <div class="navbar">
-    <div class="logo" onclick="secretAdminTap()"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;"></div>
+    <div class="logo" onclick="secretAdminTap()"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='NASIM WORLD';"></div>
     <div style="display:flex; align-items:center; gap:10px;">
       <div class="cart-icon" onclick="openCart()">
         🛒<span class="cart-count" id="cartCount">0</span>
@@ -783,7 +785,7 @@
 
   <!-- Hero Cover Photo -->
   <div class="hero" id="hero">
-    <img id="heroImg" src="Pictures/file_0000000072ec81fa90368de9c45c9528.png" width="300">
+    <img id="heroImg" src="Pictures/file_0000000072ec81fa90368de9c45c9528.png" width="300" onerror="this.style.opacity='0';">
   </div>
   <div class="hero-glass">
     <div class="tagline">সেরা পণ্য, সেরা দামে — এখনই দেখুন</div>
@@ -798,19 +800,19 @@
       <div class="category-viewport">
         <div class="category-track" id="categoryTrack">
           <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
-            <img id="catImg-group1" src="Download/images (2).jpeg" width="100">
+            <img id="catImg-group1" src="Download/images (2).jpeg" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group1">আম</span>
           </div>
           <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
-            <img id="catImg-group2" src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
+            <img id="catImg-group2" src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group2">আচার </span>
           </div>
           <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
-            <img id="catImg-group3" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="আমসত্ত্ব">
+            <img id="catImg-group3" src="" alt="আমসত্ত্ব" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group3">আমসত্ত্ব</span>
           </div>
           <div class="category-item" onclick="openGallery('group4', this.querySelector('img'))">
-            <img id="catImg-group4" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
+            <img id="catImg-group4" src="" alt="photo4" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group4">ছবি ৪</span>
           </div>
         </div>
@@ -848,8 +850,8 @@
   <div class="offer-section" id="offers">
     <h2 class="section-title">বিশেষ অফার</h2>
     <div class="offer-carousel" id="offerCarousel" style="touch-action: pan-y;">
-<div class="offer-slide active"><img src="Pictures/file_0000000009e88207b2451ee4b803bd55.png"></div>
-<div class="offer-slide "><img src="Pictures/file_0000000005788207a3cce61549223a8b.png"></div>
+<div class="offer-slide active"><img src="Pictures/file_0000000009e88207b2451ee4b803bd55.png" onerror="this.style.opacity='0';"></div>
+<div class="offer-slide "><img src="Pictures/file_0000000005788207a3cce61549223a8b.png" onerror="this.style.opacity='0';"></div>
 <div class="offer-dots" id="offerDots"></div>
 </div>
 </div>
@@ -1079,7 +1081,7 @@ function bnToEn(str) {
 
       card.innerHTML = `
         <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
-        <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})'>
+        <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
@@ -1125,7 +1127,7 @@ function bnToEn(str) {
       card.className = 'prod-cat-card';
       card.innerHTML = `
         <div class="prod-cat-card-inner">
-          <img src="${item.src}" onclick='openProductDetail(${JSON.stringify(item)})'>
+          <img src="${item.src}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
           <p class="prod-cat-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
           <div class="prod-cat-price-row">${priceHTML}</div>
           <button class="prod-cat-addbtn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>Add To Cart</button>
@@ -1306,7 +1308,7 @@ function bnToEn(str) {
       el.className = 'wish-item';
       let priceHTML = `৳${item.price}`;
       el.innerHTML = `
-        <img src="${item.src}" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})'>
+        <img src="${item.src}" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <div class="info" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})'>
           <div class="name">${item.name}</div>
           <div class="price">${priceHTML}</div>
@@ -1379,7 +1381,7 @@ function orderNow(name, price, src) {
       const el = document.createElement('div');
       el.className = 'cart-item';
     el.innerHTML = `
-        <img src="${item.src}">
+        <img src="${item.src}" onerror="this.onerror=null; this.removeAttribute('src');">
         <div class="cart-item-info">
           <div class="name">${item.name}</div>
           <div class="qty-control">
@@ -1492,7 +1494,7 @@ function orderNow(name, price, src) {
       }
       card.innerHTML = `
         <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
-        <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})'>
+        <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
@@ -1679,7 +1681,7 @@ function orderNow(name, price, src) {
 
       if (data.heroImage) {
         const heroImg = document.getElementById('heroImg');
-        if (heroImg) heroImg.src = data.heroImage;
+        if (heroImg) { heroImg.style.opacity = '1'; heroImg.src = data.heroImage; }
       }
 
       const catImages = data.categoryImages || {};
