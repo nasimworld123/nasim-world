@@ -106,6 +106,38 @@
     box-shadow: 0 8px 20px rgba(74,42,18,0.3);
   }
   .add-btn:active { transform: scale(0.98); }
+  .add-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .cancel-edit-btn {
+    display: none;
+    width: 100%; background: rgba(107,63,29,0.08); border: 1px solid rgba(107,63,29,0.3);
+    color: #6B3F1D; padding: 11px; border-radius: 24px;
+    font-size: 0.85rem; font-weight: bold; cursor: pointer;
+    margin-top: 8px;
+  }
+  .cancel-edit-btn.show { display: block; }
+
+  /* ---- Live image preview boxes ---- */
+  .img-preview-wrap {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.6);
+    border: 1px dashed rgba(107,63,29,0.35);
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin: -2px 0 10px;
+    font-size: 0.72rem;
+    color: rgba(30,42,56,0.6);
+  }
+  .img-preview-wrap.show { display: flex; }
+  .img-preview-wrap img {
+    width: 46px; height: 46px; border-radius: 8px; object-fit: cover;
+    background: #FFF9F3; border: 1px solid rgba(107,63,29,0.2); flex-shrink: 0;
+  }
+  .img-preview-wrap.ok { border-color: rgba(18,140,74,0.5); }
+  .img-preview-wrap.ok .status-text { color: #128C4A; font-weight: 700; }
+  .img-preview-wrap.bad { border-color: rgba(239,68,68,0.5); }
+  .img-preview-wrap.bad .status-text { color: #ef4444; font-weight: 700; }
 
   .category-group { margin-bottom: 20px; }
   .category-group h4 {
@@ -254,25 +286,48 @@
     <div class="section-card">
       <h3>🖼️ Site Images</h3>
       <input type="text" id="heroImageInput" placeholder="Hero / Cover Image URL">
+      <div class="img-preview-wrap" id="preview-hero">
+        <img id="previewImg-hero" src="" alt="">
+        <span class="status-text" id="previewStatus-hero">যাচাই হচ্ছে...</span>
+      </div>
 
       <div class="form-row">
         <input type="text" id="catLabel-group1" placeholder="Category name" value="আম">
         <input type="text" id="catImage-group1" placeholder="Thumbnail Image URL">
       </div>
+      <div class="img-preview-wrap" id="preview-group1">
+        <img id="previewImg-group1" src="" alt="">
+        <span class="status-text" id="previewStatus-group1">যাচাই হচ্ছে...</span>
+      </div>
+
       <div class="form-row">
         <input type="text" id="catLabel-group2" placeholder="Category name" value="আচার">
         <input type="text" id="catImage-group2" placeholder="Thumbnail Image URL">
       </div>
+      <div class="img-preview-wrap" id="preview-group2">
+        <img id="previewImg-group2" src="" alt="">
+        <span class="status-text" id="previewStatus-group2">যাচাই হচ্ছে...</span>
+      </div>
+
       <div class="form-row">
         <input type="text" id="catLabel-group3" placeholder="Category name" value="আমসত্ত্ব">
         <input type="text" id="catImage-group3" placeholder="Thumbnail Image URL">
       </div>
+      <div class="img-preview-wrap" id="preview-group3">
+        <img id="previewImg-group3" src="" alt="">
+        <span class="status-text" id="previewStatus-group3">যাচাই হচ্ছে...</span>
+      </div>
+
       <div class="form-row">
         <input type="text" id="catLabel-group4" placeholder="Category name" value="ছবি ৪">
         <input type="text" id="catImage-group4" placeholder="Thumbnail Image URL">
       </div>
+      <div class="img-preview-wrap" id="preview-group4">
+        <img id="previewImg-group4" src="" alt="">
+        <span class="status-text" id="previewStatus-group4">যাচাই হচ্ছে...</span>
+      </div>
 
-      <button class="add-btn" onclick="saveSiteSettings()">Save Site Images</button>
+      <button class="add-btn" id="saveSiteImagesBtn" onclick="saveSiteSettings()">Save Site Images</button>
       <div class="status-msg" id="settingsStatus"></div>
     </div>
 
@@ -284,6 +339,10 @@
         <input type="text" id="pOldPrice" placeholder="Old Price (optional)">
       </div>
       <input type="text" id="pImage" placeholder="Image URL">
+      <div class="img-preview-wrap" id="preview-product">
+        <img id="previewImg-product" src="" alt="">
+        <span class="status-text" id="previewStatus-product">যাচাই হচ্ছে...</span>
+      </div>
       <select id="pCategory">
         <option value="group1">Mango (আম)</option>
         <option value="group2">Pickle (আচার)</option>
@@ -291,6 +350,7 @@
         <option value="group4">Category 4 (ছবি ৪)</option>
       </select>
       <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
+      <button class="cancel-edit-btn" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
       <div class="status-msg" id="addStatus"></div>
     </div>
 
@@ -351,17 +411,71 @@
       }
     });
 
+    // ===== Live image URL preview =====
+    // Every time an image-URL field changes, show a small thumbnail so the
+    // admin can confirm the link actually loads BEFORE saving/adding.
+    function wireImagePreview(inputId, previewKey) {
+      const input = document.getElementById(inputId);
+      const wrap = document.getElementById(`preview-${previewKey}`);
+      const img = document.getElementById(`previewImg-${previewKey}`);
+      const statusText = document.getElementById(`previewStatus-${previewKey}`);
+      if (!input || !wrap || !img || !statusText) return;
+
+      let debounceTimer = null;
+      input.addEventListener('input', () => {
+        const url = input.value.trim();
+        clearTimeout(debounceTimer);
+        if (!url) {
+          wrap.classList.remove('show', 'ok', 'bad');
+          return;
+        }
+        debounceTimer = setTimeout(() => {
+          wrap.classList.add('show');
+          wrap.classList.remove('ok', 'bad');
+          statusText.textContent = 'ছবি যাচাই হচ্ছে...';
+          img.src = url;
+        }, 400);
+      });
+
+      img.addEventListener('load', () => {
+        if (!img.src) return;
+        wrap.classList.add('ok');
+        wrap.classList.remove('bad');
+        statusText.textContent = '✅ ছবি ঠিক আছে';
+      });
+      img.addEventListener('error', () => {
+        if (!img.src) return;
+        wrap.classList.add('bad');
+        wrap.classList.remove('ok');
+        statusText.textContent = '❌ এই লিংকে ছবি পাওয়া যায়নি — লিংক ঠিক আছে কিনা যাচাই করুন';
+      });
+    }
+
+    wireImagePreview('heroImageInput', 'hero');
+    wireImagePreview('catImage-group1', 'group1');
+    wireImagePreview('catImage-group2', 'group2');
+    wireImagePreview('catImage-group3', 'group3');
+    wireImagePreview('catImage-group4', 'group4');
+    wireImagePreview('pImage', 'product');
+
     // ===== Site Settings (hero image, category thumbnails/labels) =====
     async function loadSiteSettingsForm() {
       try {
         const doc = await db.collection('settings').doc('site').get();
         if (!doc.exists) return;
         const data = doc.data();
-        if (data.heroImage) document.getElementById('heroImageInput').value = data.heroImage;
+        if (data.heroImage) {
+          document.getElementById('heroImageInput').value = data.heroImage;
+          document.getElementById('heroImageInput').dispatchEvent(new Event('input'));
+        }
         const catImages = data.categoryImages || {};
         const catLabels = data.categoryLabels || {};
         ['group1', 'group2', 'group3', 'group4'].forEach(key => {
-          if (catImages[key]) document.getElementById(`catImage-${key}`).value = catImages[key];
+          if (catImages[key]) {
+            const el = document.getElementById(`catImage-${key}`);
+            el.value = catImages[key];
+            el.dispatchEvent(new Event('input'));
+          }
           if (catLabels[key]) document.getElementById(`catLabel-${key}`).value = catLabels[key];
         });
       } catch (e) {}
@@ -369,6 +483,7 @@
 
     function saveSiteSettings() {
       const statusEl = document.getElementById('settingsStatus');
+      const btn = document.getElementById('saveSiteImagesBtn');
       const heroImage = document.getElementById('heroImageInput').value.trim();
       const categoryImages = {};
       const categoryLabelsData = {};
@@ -379,6 +494,7 @@
         if (label) categoryLabelsData[key] = label;
       });
 
+      btn.disabled = true;
       statusEl.textContent = 'Saving...';
       statusEl.style.color = '#6B3F1D';
 
@@ -393,18 +509,22 @@
         .catch(() => {
           statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
-        });
+        })
+        .finally(() => { btn.disabled = false; });
     }
 
     let editingId = null;
+    let productSubmitting = false;
 
     function addProduct() {
+      if (productSubmitting) return; // guard against double-tap creating duplicates
       const name = document.getElementById('pName').value.trim();
       const price = document.getElementById('pPrice').value.trim();
       const oldPrice = document.getElementById('pOldPrice').value.trim();
       const src = document.getElementById('pImage').value.trim();
       const category = document.getElementById('pCategory').value;
       const statusEl = document.getElementById('addStatus');
+      const addBtn = document.getElementById('addBtn');
 
       if (!name || !price || !src) {
         statusEl.textContent = 'Please fill in name, price, and image URL';
@@ -413,6 +533,8 @@
       }
 
       const data = { name, price, oldPrice, src, category };
+      productSubmitting = true;
+      addBtn.disabled = true;
 
       if (editingId) {
         statusEl.textContent = 'Updating...';
@@ -426,7 +548,8 @@
           .catch(() => {
             statusEl.textContent = 'Something went wrong, please try again';
             statusEl.style.color = '#ef4444';
-          });
+          })
+          .finally(() => { productSubmitting = false; addBtn.disabled = false; });
         return;
       }
 
@@ -441,11 +564,13 @@
           document.getElementById('pPrice').value = '';
           document.getElementById('pOldPrice').value = '';
           document.getElementById('pImage').value = '';
+          document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
         })
         .catch(() => {
           statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
-        });
+        })
+        .finally(() => { productSubmitting = false; addBtn.disabled = false; });
     }
 
     function editProduct(id, name, price, oldPrice, src, category) {
@@ -453,9 +578,12 @@
       document.getElementById('pName').value = name;
       document.getElementById('pPrice').value = price;
       document.getElementById('pOldPrice').value = oldPrice || '';
-      document.getElementById('pImage').value = src;
+      const imgInput = document.getElementById('pImage');
+      imgInput.value = src;
+      imgInput.dispatchEvent(new Event('input'));
       document.getElementById('pCategory').value = category;
       document.getElementById('addBtn').textContent = 'Update Product';
+      document.getElementById('cancelEditBtn').classList.add('show');
       document.getElementById('addStatus').textContent = `Editing "${name}"`;
       document.getElementById('addStatus').style.color = '#6B3F1D';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -467,7 +595,10 @@
       document.getElementById('pPrice').value = '';
       document.getElementById('pOldPrice').value = '';
       document.getElementById('pImage').value = '';
+      document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
       document.getElementById('addBtn').textContent = 'Add Product';
+      document.getElementById('cancelEditBtn').classList.remove('show');
+      document.getElementById('addStatus').textContent = '';
     }
 
     function deleteProduct(id) {
@@ -630,7 +761,7 @@
             items.forEach(item => {
               rowsHTML += `
                 <div class="product-row">
-                  <img src="${item.src}" onerror="this.style.background='#FFF9F3'">
+                  <img src="${item.src}" onerror="this.style.background='#FFF9F3'; this.alt='ছবি লোড হয়নি';">
                   <div class="info">
                     <div class="name">${item.name}</div>
                     <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
@@ -650,4 +781,4 @@
   </script>
 
 </body>
-                                                  </html>
+</html>
