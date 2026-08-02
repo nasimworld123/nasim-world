@@ -78,19 +78,53 @@
 
   /* ===== Dashboard ===== */
   .dashboard { display: none; padding: 18px; max-width: 720px; margin: 0 auto; }
+
+  /* ---- Accordion section card ---- */
   .section-card {
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.6);
-    border-radius: 20px; padding: 20px;
+    border-radius: 20px;
     box-shadow: 0 10px 34px rgba(27,42,74,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    overflow: hidden;
   }
-  .section-card h3 {
-    color: #1B2A4A; font-size: 1.02rem; margin-bottom: 16px;
+  .section-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-card-header h3 {
+    color: #1B2A4A; font-size: 1.02rem;
     display: flex; align-items: center; gap: 8px; font-weight: 700;
   }
+  .section-card-header .chevron {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(27,42,74,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: #1B2A4A;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+  .section-card.open .section-card-header .chevron { transform: rotate(180deg); }
+  .section-card-header .badge-count {
+    background: #f97316; color: #fff; font-size: 0.68rem; font-weight: bold;
+    padding: 2px 9px; border-radius: 10px; margin-left: 8px;
+  }
+  .section-card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .section-card.open .section-card-body {
+    max-height: 4000px;
+  }
+  .section-card-body-inner {
+    padding: 0 20px 20px;
+  }
+
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .form-row > * { flex: 1; }
   .section-card input, .section-card select {
@@ -116,6 +150,55 @@
   }
   .cancel-edit-btn.show { display: block; }
 
+  /* ---- Per-product mini accordion (inside "All Products") ---- */
+  .mini-item {
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.5);
+  }
+  .mini-item-header {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px; cursor: pointer;
+  }
+  .mini-item-header img { width: 46px; height: 46px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #FFFFFF; }
+  .mini-item-header .info { flex: 1; min-width: 0; }
+  .mini-item-header .info .name { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-item-header .info .price { font-size: 0.8rem; color: #f97316; font-weight: 600; }
+  .mini-item-header .mini-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(27,42,74,0.1); display:flex; align-items:center; justify-content:center;
+    font-size: 0.75rem; color: #1B2A4A; flex-shrink:0;
+    transition: transform 0.3s ease;
+  }
+  .mini-item.open .mini-item-header .mini-chevron { transform: rotate(180deg); }
+  .mini-item-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .mini-item.open .mini-item-body { max-height: 500px; }
+  .mini-item-body-inner { padding: 0 10px 12px; display: flex; gap: 8px; }
+  .mini-item-body-inner .edit-btn { flex: 1; }
+  .mini-item-body-inner .cross-btn { flex-shrink: 0; }
+
+  .category-group { margin-bottom: 20px; }
+  .category-group h4 {
+    color: #33475a; font-size: 0.88rem; margin-bottom: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75;
+  }
+  .edit-btn {
+    background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.35); color: #1B2A4A;
+    padding: 9px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+  }
+  .cross-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #ef4444; color: #fff; border: none;
+    font-size: 0.95rem; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(239,68,68,0.4);
+  }
+  .cross-btn:active { transform: scale(0.9); }
+  .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 14px 0; }
+  .status-msg { text-align: center; font-size: 0.85rem; padding: 10px 0; min-height: 20px; font-weight: 600; }
+
   /* ---- Live image preview boxes ---- */
   .img-preview-wrap {
     display: none;
@@ -139,37 +222,33 @@
   .img-preview-wrap.bad { border-color: rgba(239,68,68,0.5); }
   .img-preview-wrap.bad .status-text { color: #ef4444; font-weight: 700; }
 
-  .category-group { margin-bottom: 20px; }
-  .category-group h4 {
-    color: #33475a; font-size: 0.88rem; margin-bottom: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75;
-  }
-  .product-row {
-    display: flex; gap: 12px; align-items: center;
-    background: rgba(255,255,255,0.55);
-    border: 1px solid rgba(27,42,74,0.12);
+  /* ---- Site Images: one card per image, collapsed by default ---- */
+  .img-field-item {
+    border: 1px solid rgba(27,42,74,0.15);
     border-radius: 14px;
-    padding: 10px; margin-bottom: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.5);
   }
-  .product-row img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #FFFFFF; }
-  .product-row .info { flex: 1; min-width: 0; }
-  .product-row .info .name { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .product-row .info .price { font-size: 0.8rem; color: #f97316; font-weight: 600; }
-  .row-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .edit-btn {
-    background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.35); color: #1B2A4A;
-    padding: 7px 14px; border-radius: 16px; font-size: 0.72rem; font-weight: bold; cursor: pointer;
+  .img-field-header {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px 12px; cursor: pointer;
   }
-  .cross-btn {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: #ef4444; color: #fff; border: none;
-    font-size: 0.95rem; font-weight: bold; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(239,68,68,0.4);
+  .img-field-header .thumb {
+    width: 42px; height: 42px; border-radius: 8px; object-fit: cover;
+    background: #FFFFFF; border: 1px solid rgba(27,42,74,0.2); flex-shrink: 0;
   }
-  .cross-btn:active { transform: scale(0.9); }
-  .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 14px 0; }
-  .status-msg { text-align: center; font-size: 0.85rem; padding: 10px 0; min-height: 20px; font-weight: 600; }
+  .img-field-header .label { flex: 1; font-size: 0.85rem; font-weight: bold; color: #1e2a38; }
+  .img-field-header .mini-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(27,42,74,0.1); display:flex; align-items:center; justify-content:center;
+    font-size: 0.75rem; color: #1B2A4A; flex-shrink:0;
+    transition: transform 0.3s ease;
+  }
+  .img-field-item.open .img-field-header .mini-chevron { transform: rotate(180deg); }
+  .img-field-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .img-field-item.open .img-field-body { max-height: 500px; }
+  .img-field-body-inner { padding: 0 12px 14px; }
 
   /* ===== New Orders Alert Banner ===== */
   .order-alert {
@@ -270,93 +349,181 @@
   <!-- Dashboard -->
   <div class="dashboard" id="dashboard">
 
-    <div class="section-card">
-      <h3>📦 All Orders</h3>
-      <div class="order-tabs" id="orderTabs">
-        <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">All</div>
-        <div class="order-tab" data-filter="Pending" onclick="filterOrders('Pending', this)">Pending</div>
-        <div class="order-tab" data-filter="Accepted" onclick="filterOrders('Accepted', this)">Accepted</div>
-        <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
-        <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
+    <!-- ===== All Orders (accordion) ===== -->
+    <div class="section-card" id="sectionCard-orders">
+      <div class="section-card-header" onclick="toggleSection('orders')">
+        <h3>📦 All Orders <span class="badge-count" id="sectionOrderCount" style="display:none;">0</span></h3>
+        <div class="chevron">▾</div>
       </div>
-      <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 View Order History</div>
-      <div id="ordersList"></div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div class="order-tabs" id="orderTabs">
+            <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">All</div>
+            <div class="order-tab" data-filter="Pending" onclick="filterOrders('Pending', this)">Pending</div>
+            <div class="order-tab" data-filter="Accepted" onclick="filterOrders('Accepted', this)">Accepted</div>
+            <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
+            <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
+          </div>
+          <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 View Order History</div>
+          <div id="ordersList"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="section-card">
-      <h3>🖼️ Site Images</h3>
-      <input type="text" id="heroImageInput" placeholder="Hero / Cover Image URL">
-      <div class="img-preview-wrap" id="preview-hero">
-        <img id="previewImg-hero" src="" alt="">
-        <span class="status-text" id="previewStatus-hero">যাচাই হচ্ছে...</span>
+    <!-- ===== Site Images (accordion, each image field collapsed) ===== -->
+    <div class="section-card" id="sectionCard-images">
+      <div class="section-card-header" onclick="toggleSection('images')">
+        <h3>🖼️ Site Images</h3>
+        <div class="chevron">▾</div>
       </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
 
-      <div class="form-row">
-        <input type="text" id="catLabel-group1" placeholder="Category name" value="আম">
-        <input type="text" id="catImage-group1" placeholder="Thumbnail Image URL">
-      </div>
-      <div class="img-preview-wrap" id="preview-group1">
-        <img id="previewImg-group1" src="" alt="">
-        <span class="status-text" id="previewStatus-group1">যাচাই হচ্ছে...</span>
-      </div>
+          <div class="img-field-item" id="imgField-hero">
+            <div class="img-field-header" onclick="toggleImgField('hero')">
+              <img class="thumb" id="thumb-hero" src="" alt="">
+              <span class="label">Hero / Cover Image</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="heroImageInput" placeholder="Hero / Cover Image URL">
+                <div class="img-preview-wrap" id="preview-hero">
+                  <img id="previewImg-hero" src="" alt="">
+                  <span class="status-text" id="previewStatus-hero">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="form-row">
-        <input type="text" id="catLabel-group2" placeholder="Category name" value="আচার">
-        <input type="text" id="catImage-group2" placeholder="Thumbnail Image URL">
-      </div>
-      <div class="img-preview-wrap" id="preview-group2">
-        <img id="previewImg-group2" src="" alt="">
-        <span class="status-text" id="previewStatus-group2">যাচাই হচ্ছে...</span>
-      </div>
+          <div class="img-field-item" id="imgField-group1">
+            <div class="img-field-header" onclick="toggleImgField('group1')">
+              <img class="thumb" id="thumb-group1" src="" alt="">
+              <span class="label" id="fieldLabel-group1">আম</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group1" placeholder="Category name" value="আম">
+                  <input type="text" id="catImage-group1" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group1">
+                  <img id="previewImg-group1" src="" alt="">
+                  <span class="status-text" id="previewStatus-group1">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="form-row">
-        <input type="text" id="catLabel-group3" placeholder="Category name" value="আমসত্ত্ব">
-        <input type="text" id="catImage-group3" placeholder="Thumbnail Image URL">
-      </div>
-      <div class="img-preview-wrap" id="preview-group3">
-        <img id="previewImg-group3" src="" alt="">
-        <span class="status-text" id="previewStatus-group3">যাচাই হচ্ছে...</span>
-      </div>
+          <div class="img-field-item" id="imgField-group2">
+            <div class="img-field-header" onclick="toggleImgField('group2')">
+              <img class="thumb" id="thumb-group2" src="" alt="">
+              <span class="label" id="fieldLabel-group2">আচার</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group2" placeholder="Category name" value="আচার">
+                  <input type="text" id="catImage-group2" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group2">
+                  <img id="previewImg-group2" src="" alt="">
+                  <span class="status-text" id="previewStatus-group2">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="form-row">
-        <input type="text" id="catLabel-group4" placeholder="Category name" value="ছবি ৪">
-        <input type="text" id="catImage-group4" placeholder="Thumbnail Image URL">
-      </div>
-      <div class="img-preview-wrap" id="preview-group4">
-        <img id="previewImg-group4" src="" alt="">
-        <span class="status-text" id="previewStatus-group4">যাচাই হচ্ছে...</span>
-      </div>
+          <div class="img-field-item" id="imgField-group3">
+            <div class="img-field-header" onclick="toggleImgField('group3')">
+              <img class="thumb" id="thumb-group3" src="" alt="">
+              <span class="label" id="fieldLabel-group3">আমসত্ত্ব</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group3" placeholder="Category name" value="আমসত্ত্ব">
+                  <input type="text" id="catImage-group3" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group3">
+                  <img id="previewImg-group3" src="" alt="">
+                  <span class="status-text" id="previewStatus-group3">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <button class="add-btn" id="saveSiteImagesBtn" onclick="saveSiteSettings()">Save Site Images</button>
-      <div class="status-msg" id="settingsStatus"></div>
+          <div class="img-field-item" id="imgField-group4">
+            <div class="img-field-header" onclick="toggleImgField('group4')">
+              <img class="thumb" id="thumb-group4" src="" alt="">
+              <span class="label" id="fieldLabel-group4">ছবি ৪</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group4" placeholder="Category name" value="ছবি ৪">
+                  <input type="text" id="catImage-group4" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group4">
+                  <img id="previewImg-group4" src="" alt="">
+                  <span class="status-text" id="previewStatus-group4">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-btn" id="saveSiteImagesBtn" onclick="saveSiteSettings()">Save Site Images</button>
+          <div class="status-msg" id="settingsStatus"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="section-card">
-      <h3>➕ Add New Product</h3>
-      <input type="text" id="pName" placeholder="Product Name">
-      <div class="form-row">
-        <input type="text" id="pPrice" placeholder="Price (৳)">
-        <input type="text" id="pOldPrice" placeholder="Old Price (optional)">
+    <!-- ===== Add New Product (accordion) ===== -->
+    <div class="section-card" id="sectionCard-add">
+      <div class="section-card-header" onclick="toggleSection('add')">
+        <h3>➕ Add New Product</h3>
+        <div class="chevron">▾</div>
       </div>
-      <input type="text" id="pImage" placeholder="Image URL">
-      <div class="img-preview-wrap" id="preview-product">
-        <img id="previewImg-product" src="" alt="">
-        <span class="status-text" id="previewStatus-product">যাচাই হচ্ছে...</span>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <input type="text" id="pName" placeholder="Product Name">
+          <div class="form-row">
+            <input type="text" id="pPrice" placeholder="Price (৳)">
+            <input type="text" id="pOldPrice" placeholder="Old Price (optional)">
+          </div>
+          <input type="text" id="pImage" placeholder="Image URL">
+          <div class="img-preview-wrap" id="preview-product">
+            <img id="previewImg-product" src="" alt="">
+            <span class="status-text" id="previewStatus-product">যাচাই হচ্ছে...</span>
+          </div>
+          <select id="pCategory">
+            <option value="group1">Mango (আম)</option>
+            <option value="group2">Pickle (আচার)</option>
+            <option value="group3">আমসত্ত্ব</option>
+            <option value="group4">Category 4 (ছবি ৪)</option>
+          </select>
+          <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
+          <button class="cancel-edit-btn" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
+          <div class="status-msg" id="addStatus"></div>
+        </div>
       </div>
-      <select id="pCategory">
-        <option value="group1">Mango (আম)</option>
-        <option value="group2">Pickle (আচার)</option>
-        <option value="group3">আমসত্ত্ব</option>
-        <option value="group4">Category 4 (ছবি ৪)</option>
-      </select>
-      <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
-      <button class="cancel-edit-btn" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
-      <div class="status-msg" id="addStatus"></div>
     </div>
 
-    <div class="section-card">
-      <h3>🛍️ All Products</h3>
-      <div id="productList"></div>
+    <!-- ===== All Products (accordion, each product collapsed) ===== -->
+    <div class="section-card" id="sectionCard-products">
+      <div class="section-card-header" onclick="toggleSection('products')">
+        <h3>🛍️ All Products</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div id="productList"></div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -378,6 +545,29 @@
     const db = firebase.firestore();
 
     const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "আমসত্ত্ব", group4: "Category 4" };
+
+    // ===== Accordion controls =====
+    function toggleSection(key) {
+      const card = document.getElementById(`sectionCard-${key}`);
+      const isOpen = card.classList.contains('open');
+      // close all sections first (only one open at a time keeps the page short)
+      document.querySelectorAll('.section-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    }
+
+    function toggleImgField(key) {
+      const item = document.getElementById(`imgField-${key}`);
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.img-field-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    function toggleMiniItem(el) {
+      const item = el.closest('.mini-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.mini-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
 
     function doLogin() {
       const email = document.getElementById('loginEmail').value.trim();
@@ -442,6 +632,9 @@
         wrap.classList.add('ok');
         wrap.classList.remove('bad');
         statusText.textContent = '✅ ছবি ঠিক আছে';
+        // also mirror into the collapsed header thumbnail, if one exists
+        const headerThumb = document.getElementById(`thumb-${previewKey}`);
+        if (headerThumb) headerThumb.src = img.src;
       });
       img.addEventListener('error', () => {
         if (!img.src) return;
@@ -476,7 +669,11 @@
             el.value = catImages[key];
             el.dispatchEvent(new Event('input'));
           }
-          if (catLabels[key]) document.getElementById(`catLabel-${key}`).value = catLabels[key];
+          if (catLabels[key]) {
+            document.getElementById(`catLabel-${key}`).value = catLabels[key];
+            const fieldLabelEl = document.getElementById(`fieldLabel-${key}`);
+            if (fieldLabelEl) fieldLabelEl.textContent = catLabels[key];
+          }
         });
       } catch (e) {}
     }
@@ -491,7 +688,11 @@
         const img = document.getElementById(`catImage-${key}`).value.trim();
         const label = document.getElementById(`catLabel-${key}`).value.trim();
         if (img) categoryImages[key] = img;
-        if (label) categoryLabelsData[key] = label;
+        if (label) {
+          categoryLabelsData[key] = label;
+          const fieldLabelEl = document.getElementById(`fieldLabel-${key}`);
+          if (fieldLabelEl) fieldLabelEl.textContent = label;
+        }
       });
 
       btn.disabled = true;
@@ -586,6 +787,9 @@
       document.getElementById('cancelEditBtn').classList.add('show');
       document.getElementById('addStatus').textContent = `Editing "${name}"`;
       document.getElementById('addStatus').style.color = '#1B2A4A';
+      // open the "Add New Product" section so the admin lands right on the form
+      document.querySelectorAll('.section-card').forEach(c => c.classList.remove('open'));
+      document.getElementById('sectionCard-add').classList.add('open');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -648,12 +852,16 @@
         const pendingCount = allOrders.filter(o => o.status === 'Pending').length;
         const alertBox = document.getElementById('orderAlert');
         document.getElementById('pendingOrderCount').textContent = pendingCount;
+        const sectionOrderCount = document.getElementById('sectionOrderCount');
         if (pendingCount > 0) {
           alertBox.classList.add('show');
           document.title = `(${pendingCount}) NASIM WORLD — Admin`;
+          sectionOrderCount.style.display = 'inline-block';
+          sectionOrderCount.textContent = pendingCount;
         } else {
           alertBox.classList.remove('show');
           document.title = 'NASIM WORLD — Admin';
+          sectionOrderCount.style.display = 'none';
         }
 
         renderOrders();
@@ -760,15 +968,20 @@
           } else {
             items.forEach(item => {
               rowsHTML += `
-                <div class="product-row">
-                  <img src="${item.src}" onerror="this.style.background='#FFFFFF'; this.alt='ছবি লোড হয়নি';">
-                  <div class="info">
-                    <div class="name">${item.name}</div>
-                    <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
+                <div class="mini-item">
+                  <div class="mini-item-header" onclick="toggleMiniItem(this)">
+                    <img src="${item.src}" onerror="this.style.background='#FFFFFF'; this.alt='ছবি লোড হয়নি';">
+                    <div class="info">
+                      <div class="name">${item.name}</div>
+                      <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
+                    </div>
+                    <div class="mini-chevron">▾</div>
                   </div>
-                  <div class="row-actions">
-                    <button class="edit-btn" onclick='editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
-                    <button class="cross-btn" onclick="deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
+                  <div class="mini-item-body">
+                    <div class="mini-item-body-inner">
+                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}")'>Edit</button>
+                      <button class="cross-btn" onclick="event.stopPropagation(); deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
+                    </div>
                   </div>
                 </div>`;
             });
