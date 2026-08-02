@@ -783,7 +783,7 @@
 
   <!-- Hero Cover Photo -->
   <div class="hero" id="hero">
-    <img src="Pictures/file_0000000072ec81fa90368de9c45c9528.png" width="300">
+    <img id="heroImg" src="Pictures/file_0000000072ec81fa90368de9c45c9528.png" width="300">
   </div>
   <div class="hero-glass">
     <div class="tagline">সেরা পণ্য, সেরা দামে — এখনই দেখুন</div>
@@ -798,20 +798,20 @@
       <div class="category-viewport">
         <div class="category-track" id="categoryTrack">
           <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
-            <img src="Download/images (2).jpeg" width="100">
-            <span>আম</span>
+            <img id="catImg-group1" src="Download/images (2).jpeg" width="100">
+            <span id="catLabel-group1">আম</span>
           </div>
           <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
-            <img src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
-            <span>আচার </span>
+            <img id="catImg-group2" src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100">
+            <span id="catLabel-group2">আচার </span>
           </div>
           <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
-            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="photo3">
-            <span>ছবি ৩</span>
+            <img id="catImg-group3" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80" alt="আমসত্ত্ব">
+            <span id="catLabel-group3">আমসত্ত্ব</span>
           </div>
           <div class="category-item" onclick="openGallery('group4', this.querySelector('img'))">
-            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
-            <span>ছবি ৪</span>
+            <img id="catImg-group4" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80" alt="photo4">
+            <span id="catLabel-group4">ছবি ৪</span>
           </div>
         </div>
       </div>
@@ -1038,7 +1038,7 @@ function bnToEn(str) {
   const titles = {
   group1: "আম",
   group2: "আচার",
-  group3: "ছবি ৩ - সব ছবি",
+  group3: "আমসত্ত্ব",
   group4: "ছবি ৪ - সব ছবি"
 };
   async function openGallery(key, imgEl) {
@@ -1670,6 +1670,36 @@ function orderNow(name, price, src) {
     });
   }
 
+  // ===== Site Settings (hero image, category thumbnails/labels) — editable from Admin Panel =====
+  async function loadSiteSettings() {
+    try {
+      const doc = await db.collection('settings').doc('site').get();
+      if (!doc.exists) return;
+      const data = doc.data();
+
+      if (data.heroImage) {
+        const heroImg = document.getElementById('heroImg');
+        if (heroImg) heroImg.src = data.heroImage;
+      }
+
+      const catImages = data.categoryImages || {};
+      const catLabels = data.categoryLabels || {};
+      ['group1', 'group2', 'group3', 'group4'].forEach(key => {
+        if (catImages[key]) {
+          const img = document.getElementById(`catImg-${key}`);
+          if (img) img.src = catImages[key];
+        }
+        if (catLabels[key]) {
+          const label = document.getElementById(`catLabel-${key}`);
+          if (label) label.textContent = catLabels[key];
+          titles[key] = catLabels[key];
+        }
+      });
+    } catch (e) {
+      // Keep the default hardcoded images/labels if settings can't be loaded
+    }
+  }
+
   window.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     updateWishCount();
@@ -1677,6 +1707,7 @@ function orderNow(name, price, src) {
     startCatAuto();
     renderProdCategory('group1');
     renderProdCategory('group2');
+    loadSiteSettings();
   });
 
   // ===== Draggable WhatsApp floating button =====
