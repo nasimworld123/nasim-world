@@ -137,6 +137,7 @@
     box-shadow: 0 0 15px rgba(27,42,74,0.35);
   }
   .place-order-btn:active { transform: scale(0.97); }
+  .place-order-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
   .order-form {
     margin-top: 12px;
     display: none;
@@ -377,6 +378,7 @@
     text-align: center;
     padding-bottom: 10px;
     box-shadow: 0 3px 14px rgba(27,42,74,0.08);
+    position: relative;
   }
   .prod-cat-card-inner img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; cursor: pointer; background: linear-gradient(135deg, #DCE6F2, #B9C8DE); }
   .prod-cat-name {
@@ -389,7 +391,7 @@
   }
   .prod-cat-price-row {
     display: flex; align-items: center; justify-content: center; gap: 6px;
-    flex-wrap: wrap; margin: 0 0 8px; padding: 0 8px;
+    flex-wrap: wrap; margin: 0 0 4px; padding: 0 8px;
   }
   .prod-cat-price { color: #14213D; font-size: 0.9rem; font-weight: bold; }
   .prod-cat-oldprice { color: rgba(30,42,56,0.4); font-size: 0.75rem; text-decoration: line-through; }
@@ -397,12 +399,6 @@
     background: #2C4870; color: #fff; font-size: 0.62rem; font-weight: bold;
     padding: 2px 6px; border-radius: 10px;
   }
-  .prod-cat-addbtn {
-    display: block; width: calc(100% - 16px); margin: auto auto 0;
-    background: transparent; color: #1B2A4A; border: 1.5px solid #1B2A4A;
-    padding: 7px 8px; border-radius: 18px; font-size: 0.74rem; font-weight: bold; cursor: pointer;
-  }
-  .prod-cat-addbtn:active { transform: scale(0.96); background: rgba(27,42,74,0.08); }
   .prod-cat-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
   .prod-cat-dot {
     width: 7px; height: 7px; border-radius: 50%;
@@ -412,6 +408,49 @@
   }
   .prod-cat-dot.active { background: #1B2A4A; transform: scale(1.3); }
   .prod-cat-empty { padding: 24px; text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; width: 100%; }
+
+  /* ===== Stock badge + Add to Cart / Buy Now action row (used on all product cards) ===== */
+  .stock-row {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin: 0 0 8px; padding: 0 8px;
+    font-size: 0.74rem; font-weight: 700;
+  }
+  .stock-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .stock-dot.in { background: #16a34a; }
+  .stock-dot.out { background: #ef4444; }
+  .stock-text.in { color: #16a34a; }
+  .stock-text.out { color: #ef4444; }
+  .card-wish-heart {
+    position: absolute; top: 8px; right: 8px; z-index: 5;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .card-wish-heart.active { color: #ef4444; }
+  .card-wish-heart:not(.active) { color: rgba(30,42,56,0.35); }
+  .card-action-row {
+    display: flex; gap: 8px;
+    width: calc(100% - 16px);
+    margin: auto 8px 0;
+  }
+  .card-action-row > button { flex: 1; }
+  .btn-outline-cart {
+    background: transparent; color: #1B2A4A; border: 1.5px solid #1B2A4A;
+    padding: 7px 6px; border-radius: 18px; font-size: 0.7rem; font-weight: bold; cursor: pointer;
+  }
+  .btn-outline-cart:active { transform: scale(0.96); background: rgba(27,42,74,0.08); }
+  .btn-outline-cart:disabled {
+    color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25);
+    cursor: not-allowed; background: rgba(30,42,56,0.04);
+  }
+  .btn-solid-buy {
+    background: linear-gradient(90deg,#f97316,#ea580c); color: #fff; border: none;
+    padding: 7px 6px; border-radius: 18px; font-size: 0.7rem; font-weight: bold; cursor: pointer;
+  }
+  .btn-solid-buy:active { transform: scale(0.96); }
+  .btn-solid-buy:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
   /* ===== Offer Carousel (Facebook Cover size) ===== */
   .offer-section { padding: 0 16px; }
@@ -476,6 +515,7 @@
     background: #fff; border: 1px solid rgba(27,42,74,0.2); border-radius: 16px;
     overflow: hidden; text-align: center; padding-bottom: 10px; opacity: 0; transform: scale(0.85);
     box-shadow: 0 3px 14px rgba(27,42,74,0.1);
+    display: flex; flex-direction: column;
   }
   .wish-heart {
     position: absolute; top: 8px; right: 8px; z-index: 5;
@@ -544,7 +584,7 @@
     justify-content: center;
     gap: 7px;
     flex-wrap: wrap;
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     padding: 0 8px;
   }
   .product-price {
@@ -565,20 +605,6 @@
     padding: 2px 7px;
     border-radius: 10px;
   }
-  .add-cart-btn {
-    display: block;
-    width: calc(100% - 16px);
-    margin: 8px auto 0;
-    background: transparent;
-    color: #1B2A4A;
-    border: 1.5px solid #1B2A4A;
-    padding: 9px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .add-cart-btn:active { transform: scale(0.96); background: rgba(27,42,74,0.08); }
   @keyframes slideDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
 
@@ -592,9 +618,10 @@
     background: linear-gradient(135deg, #DCE6F2, #B9C8DE);
   }
   .pd-name { color: #1e2a38; font-size: 1.1rem; margin-bottom: 10px; }
-  .pd-price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .pd-price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
   .pd-price { color: #14213D; font-size: 1.3rem; font-weight: bold; }
   .pd-old-price { color: rgba(30,42,56,0.4); font-size: 1rem; text-decoration: line-through; }
+  .pd-stock-row { display: flex; align-items: center; gap: 6px; margin-bottom: 18px; font-size: 0.85rem; font-weight: 700; }
   .pd-qty-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 0.95rem; color: #1e2a38; }
   .pd-qty-row .qty-buttons { display: flex; align-items: center; gap: 10px; }
   .pd-qty-row .qty-buttons button {
@@ -603,6 +630,15 @@
     color: #1B2A4A; font-size: 1.1rem; cursor: pointer;
   }
   .pd-qty-row .qty-buttons span { font-size: 1rem; min-width: 20px; text-align: center; }
+  .pd-btn-row { display: flex; gap: 10px; }
+  .pd-btn-row .place-order-btn { flex: 1; }
+  .pd-addcart-btn {
+    flex: 1;
+    background: transparent; color: #1B2A4A; border: 1.5px solid #1B2A4A;
+    padding: 13px; border-radius: 25px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
+  }
+  .pd-addcart-btn:active { transform: scale(0.97); background: rgba(27,42,74,0.08); }
+  .pd-addcart-btn:disabled { color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25); cursor: not-allowed; }
 
   /* ===== Success Modal (glass) ===== */
   .success-overlay {
@@ -953,6 +989,10 @@
         <span id="pdPrice" class="pd-price"></span>
         <span id="pdOldPrice" class="pd-old-price"></span>
       </div>
+      <div class="pd-stock-row" id="pdStockRow">
+        <span class="stock-dot" id="pdStockDot"></span>
+        <span id="pdStockText"></span>
+      </div>
       <div class="pd-qty-row">
         <span>পরিমাণ</span>
         <div class="qty-buttons">
@@ -961,7 +1001,10 @@
           <button onclick="pdChangeQty(1)">+</button>
         </div>
       </div>
-      <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()">ORDER NOW</button>
+      <div class="pd-btn-row">
+        <button class="pd-addcart-btn" id="pdAddCartBtn" onclick="pdAddToCart()">ADD TO CART</button>
+        <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()">ORDER NOW</button>
+      </div>
       <div class="order-form" id="pdOrderForm">
         <input type="text" id="pdCustName" placeholder="আপনার নাম">
         <input type="text" id="pdCustPhone" placeholder="মোবাইল নাম্বার">
@@ -1022,6 +1065,36 @@ function bnToEn(str) {
   const bnDigits = '০১২৩৪৫৬৭৮৯';
   return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
    }
+
+  // ===== Stock helper =====
+  // item.stock is left unset by default (always shows "In Stock" so old
+  // products keep working). Admin can set a number: 0 = Out of Stock,
+  // any positive number = In Stock with that quantity shown.
+  function getStockState(item) {
+    if (item.stock === undefined || item.stock === null || item.stock === '') {
+      return { inStock: true, label: 'In Stock' };
+    }
+    const n = parseInt(bnToEn(item.stock), 10);
+    if (isNaN(n) || n <= 0) return { inStock: false, label: 'Out of Stock' };
+    return { inStock: true, label: `In Stock: ${n}` };
+  }
+
+  function stockRowHTML(stock) {
+    return `<div class="stock-row"><span class="stock-dot ${stock.inStock ? 'in' : 'out'}"></span><span class="stock-text ${stock.inStock ? 'in' : 'out'}">${stock.label}</span></div>`;
+  }
+
+  function cardActionRowHTML(item, stock) {
+    if (stock.inStock) {
+      return `<div class="card-action-row">
+        <button class="btn-outline-cart" onclick='event.stopPropagation(); addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>ADD TO CART</button>
+        <button class="btn-solid-buy" onclick='event.stopPropagation(); orderNow(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>BUY NOW</button>
+      </div>`;
+    }
+    return `<div class="card-action-row">
+      <button class="btn-outline-cart" disabled>UNAVAILABLE</button>
+      <button class="btn-solid-buy" disabled>BUY NOW</button>
+    </div>`;
+  }
 
   // ===== Shared direction-aware horizontal swipe helper =====
   // Only takes over the gesture (and blocks page scroll) once it's clearly
@@ -1101,13 +1174,15 @@ function bnToEn(str) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
+      const stock = getStockState(item);
 
       card.innerHTML = `
         <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
-        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
+        ${stockRowHTML(stock)}
+        ${cardActionRowHTML(item, stock)}`;
       grid.appendChild(card);
       if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
     });
@@ -1146,16 +1221,23 @@ function bnToEn(str) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="prod-cat-oldprice">৳${item.oldPrice}</span><span class="prod-cat-save">Save ৳${save}</span>`;
       }
+      const stock = getStockState(item);
       const card = document.createElement('div');
       card.className = 'prod-cat-card';
       card.innerHTML = `
         <div class="prod-cat-card-inner">
+          <div class="card-wish-heart" id="wish-cat-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
           <img src="${item.src}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
           <p class="prod-cat-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
           <div class="prod-cat-price-row">${priceHTML}</div>
-          <button class="prod-cat-addbtn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>Add To Cart</button>
+          ${stockRowHTML(stock)}
+          ${cardActionRowHTML(item, stock)}
         </div>`;
       track.appendChild(card);
+      if (isInWishlist(item.name)) {
+        const h = document.getElementById(`wish-cat-${item.name}`);
+        if (h) h.classList.add('active');
+      }
     });
 
     const maxIndex = Math.max(0, items.length - prodVisible);
@@ -1208,7 +1290,7 @@ function bnToEn(str) {
     });
   }
 
-  // ===== Single Product Detail (Order Now — email only, no WhatsApp) =====
+  // ===== Single Product Detail (Order Now / Add to Cart) =====
   let pdCurrentItem = null;
   let pdCurrentQty = 1;
 
@@ -1226,8 +1308,29 @@ function bnToEn(str) {
       oldPriceEl.style.display = 'none';
     }
     document.getElementById('pdQty').textContent = pdCurrentQty;
+
+    const stock = getStockState(item);
+    document.getElementById('pdStockDot').className = `stock-dot ${stock.inStock ? 'in' : 'out'}`;
+    const pdStockTextEl = document.getElementById('pdStockText');
+    pdStockTextEl.textContent = stock.label;
+    pdStockTextEl.className = `stock-text ${stock.inStock ? 'in' : 'out'}`;
+
+    const addCartBtn = document.getElementById('pdAddCartBtn');
+    const orderNowBtn = document.getElementById('pdOrderNowBtn');
+    if (stock.inStock) {
+      addCartBtn.disabled = false;
+      addCartBtn.textContent = 'ADD TO CART';
+      orderNowBtn.disabled = false;
+      orderNowBtn.textContent = 'ORDER NOW';
+    } else {
+      addCartBtn.disabled = true;
+      addCartBtn.textContent = 'UNAVAILABLE';
+      orderNowBtn.disabled = true;
+      orderNowBtn.textContent = 'UNAVAILABLE';
+    }
+
     document.getElementById('pdOrderForm').classList.remove('show');
-    document.getElementById('pdOrderNowBtn').style.display = 'block';
+    orderNowBtn.style.display = 'block';
     document.getElementById('productDetailOverlay').classList.add('active');
   }
 
@@ -1241,12 +1344,28 @@ function bnToEn(str) {
     document.getElementById('pdQty').textContent = pdCurrentQty;
   }
 
+  function pdAddToCart() {
+    if (!pdCurrentItem) return;
+    const stock = getStockState(pdCurrentItem);
+    if (!stock.inStock) return;
+    for (let i = 0; i < pdCurrentQty; i++) {
+      addToCart(pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+    }
+    closeProductDetail();
+    openCart();
+  }
+
   function showPdOrderForm() {
+    if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) return;
     document.getElementById('pdOrderForm').classList.add('show');
     document.getElementById('pdOrderNowBtn').style.display = 'none';
   }
 
   function confirmPdOrder() {
+    if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) {
+      showSuccessModal('দুঃখিত, এই পণ্যটি বর্তমানে স্টকে নেই।');
+      return;
+    }
     const name = document.getElementById('pdCustName').value.trim();
     const phone = document.getElementById('pdCustPhone').value.trim();
     const address = document.getElementById('pdCustAddress').value.trim();
@@ -1303,12 +1422,15 @@ function bnToEn(str) {
   function toggleWishlist(item) {
     const idx = wishlist.findIndex(i => i.name === item.name);
     const heartEl = document.getElementById(`wish-${item.name}`);
+    const heartElCat = document.getElementById(`wish-cat-${item.name}`);
     if (idx > -1) {
       wishlist.splice(idx, 1);
       if (heartEl) heartEl.classList.remove('active');
+      if (heartElCat) heartElCat.classList.remove('active');
     } else {
       wishlist.push(item);
       if (heartEl) heartEl.classList.add('active');
+      if (heartElCat) heartElCat.classList.add('active');
     }
     saveWishlist();
   }
@@ -1515,12 +1637,14 @@ function orderNow(name, price, src) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
+      const stock = getStockState(item);
       card.innerHTML = `
         <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
-        <button class="add-cart-btn" onclick='addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>🛒 Add To Cart</button>`;
+        ${stockRowHTML(stock)}
+        ${cardActionRowHTML(item, stock)}`;
       grid.appendChild(card);
       if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
     });
