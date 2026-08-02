@@ -297,7 +297,7 @@
     width: 100%;
     aspect-ratio: 1/1;
     max-width: 90px;
-    border-radius: 0;
+    border-radius: 10px;
     object-fit: cover;
     box-shadow: 0 0 15px rgba(27,42,74,0.25);
     transition: transform 0.2s ease;
@@ -843,6 +843,30 @@
       <div class="prod-cat-track" id="prodTrack-group2"></div>
     </div>
     <div class="prod-cat-dots" id="prodDots-group2"></div>
+  </div>
+
+  <div class="prod-cat-section">
+    <div class="prod-cat-header">
+      <h3 class="prod-cat-title">আমসত্ত্ব</h3>
+      <span class="prod-cat-viewall" onclick="openGallery('group3', null)">সব দেখুন &#8594;</span>
+    </div>
+    <div class="prod-cat-underline"></div>
+    <div class="prod-cat-viewport" data-group="group3">
+      <div class="prod-cat-track" id="prodTrack-group3"></div>
+    </div>
+    <div class="prod-cat-dots" id="prodDots-group3"></div>
+  </div>
+
+  <div class="prod-cat-section">
+    <div class="prod-cat-header">
+      <h3 class="prod-cat-title">ছবি ৪</h3>
+      <span class="prod-cat-viewall" onclick="openGallery('group4', null)">সব দেখুন &#8594;</span>
+    </div>
+    <div class="prod-cat-underline"></div>
+    <div class="prod-cat-viewport" data-group="group4">
+      <div class="prod-cat-track" id="prodTrack-group4"></div>
+    </div>
+    <div class="prod-cat-dots" id="prodDots-group4"></div>
   </div>
 
   <!-- Offer Carousel -->
@@ -1708,6 +1732,8 @@ function orderNow(name, price, src) {
     startCatAuto();
     renderProdCategory('group1');
     renderProdCategory('group2');
+    renderProdCategory('group3');
+    renderProdCategory('group4');
     loadSiteSettings();
   });
 
