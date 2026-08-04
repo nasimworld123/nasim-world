@@ -253,6 +253,18 @@
   .img-field-item.open .img-field-body { max-height: 500px; }
   .img-field-body-inner { padding: 0 12px 14px; }
 
+  /* ---- Delivery charge fields ---- */
+  .delivery-field-item {
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.5);
+  }
+  .delivery-field-item label {
+    display: block; font-size: 0.8rem; font-weight: 700; color: #1e2a38; margin-bottom: 6px;
+  }
+
   /* ===== New Orders Alert Banner ===== */
   .order-alert {
     display: none;
@@ -369,6 +381,28 @@
           </div>
           <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 View Order History</div>
           <div id="ordersList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Delivery Charge (accordion) ===== -->
+    <div class="section-card" id="sectionCard-delivery">
+      <div class="section-card-header" onclick="toggleSection('delivery')">
+        <h3>🚚 ডেলিভারি চার্জ</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div class="delivery-field-item">
+            <label>ঢাকার ভিতরে ডেলিভারি চার্জ (৳)</label>
+            <input type="text" id="deliveryInsideInput" placeholder="যেমনঃ 60">
+          </div>
+          <div class="delivery-field-item">
+            <label>ঢাকার বাইরে ডেলিভারি চার্জ (৳)</label>
+            <input type="text" id="deliveryOutsideInput" placeholder="যেমনঃ 120">
+          </div>
+          <button class="add-btn" id="saveDeliveryBtn" onclick="saveDeliveryCharges()">Save Delivery Charges</button>
+          <div class="status-msg" id="deliveryStatus"></div>
         </div>
       </div>
     </div>
@@ -627,8 +661,6 @@
     });
 
     // ===== Live image URL preview =====
-    // Every time an image-URL field changes, show a small thumbnail so the
-    // admin can confirm the link actually loads BEFORE saving/adding.
     function wireImagePreview(inputId, previewKey) {
       const input = document.getElementById(inputId);
       const wrap = document.getElementById(`preview-${previewKey}`);
@@ -657,7 +689,6 @@
         wrap.classList.add('ok');
         wrap.classList.remove('bad');
         statusText.textContent = '✅ ছবি ঠিক আছে';
-        // also mirror into the collapsed header thumbnail, if one exists
         const headerThumb = document.getElementById(`thumb-${previewKey}`);
         if (headerThumb) headerThumb.src = img.src;
       });
@@ -676,7 +707,7 @@
     wireImagePreview('catImage-group4', 'group4');
     wireImagePreview('pImage', 'product');
 
-    // ===== Site Settings (hero image, category thumbnails/labels) =====
+    // ===== Site Settings (hero image, category thumbnails/labels, delivery charges) =====
     async function loadSiteSettingsForm() {
       try {
         const doc = await db.collection('settings').doc('site').get();
@@ -700,6 +731,8 @@
             if (fieldLabelEl) fieldLabelEl.textContent = catLabels[key];
           }
         });
+        if (data.deliveryInside !== undefined) document.getElementById('deliveryInsideInput').value = data.deliveryInside;
+        if (data.deliveryOutside !== undefined) document.getElementById('deliveryOutsideInput').value = data.deliveryOutside;
       } catch (e) {}
     }
 
@@ -739,11 +772,50 @@
         .finally(() => { btn.disabled = false; });
     }
 
+    // ===== Delivery Charges =====
+    function saveDeliveryCharges() {
+      const statusEl = document.getElementById('deliveryStatus');
+      const btn = document.getElementById('saveDeliveryBtn');
+      const inside = document.getElementById('deliveryInsideInput').value.trim();
+      const outside = document.getElementById('deliveryOutsideInput').value.trim();
+
+      const insideNum = parseFloat(bnToEnAdmin(inside));
+      const outsideNum = parseFloat(bnToEnAdmin(outside));
+      if (inside !== '' && isNaN(insideNum)) {
+        statusEl.textContent = 'সঠিক সংখ্যা লিখুন (ভিতরে ঢাকা)';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+      if (outside !== '' && isNaN(outsideNum)) {
+        statusEl.textContent = 'সঠিক সংখ্যা লিখুন (বাইরে ঢাকা)';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = 'Saving...';
+      statusEl.style.color = '#1B2A4A';
+
+      db.collection('settings').doc('site').set({
+        deliveryInside: isNaN(insideNum) ? 0 : insideNum,
+        deliveryOutside: isNaN(outsideNum) ? 0 : outsideNum
+      }, { merge: true })
+        .then(() => {
+          statusEl.textContent = '✅ ডেলিভারি চার্জ সেভ হয়েছে';
+          statusEl.style.color = '#128C4A';
+        })
+        .catch(() => {
+          statusEl.textContent = 'Something went wrong, please try again';
+          statusEl.style.color = '#ef4444';
+        })
+        .finally(() => { btn.disabled = false; });
+    }
+
     let editingId = null;
     let productSubmitting = false;
 
     function addProduct() {
-      if (productSubmitting) return; // guard against double-tap creating duplicates
+      if (productSubmitting) return;
       const name = document.getElementById('pName').value.trim();
       const price = document.getElementById('pPrice').value.trim();
       const oldPrice = document.getElementById('pOldPrice').value.trim();
@@ -767,7 +839,6 @@
         const stockNum = parseInt(bnToEnAdmin(stockQtyRaw), 10);
         data.stock = isNaN(stockNum) || stockNum <= 0 ? 1 : stockNum;
       } else if (editingId) {
-        // "In Stock" with no quantity typed while editing: clear any previously saved number
         data.stock = firebase.firestore.FieldValue.delete();
       }
       productSubmitting = true;
@@ -832,7 +903,6 @@
       document.getElementById('cancelEditBtn').classList.add('show');
       document.getElementById('addStatus').textContent = `Editing "${name}"`;
       document.getElementById('addStatus').style.color = '#1B2A4A';
-      // open the "Add New Product" section so the admin lands right on the form
       document.querySelectorAll('.section-card').forEach(c => c.classList.remove('open'));
       document.getElementById('sectionCard-add').classList.add('open');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -888,7 +958,6 @@
         allOrders.forEach(o => knownOrderIds.add(o.id));
         ordersFirstLoad = false;
 
-        // Auto-delete completed orders older than 2 weeks
         const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
         allOrders.forEach(o => {
           const isDone = (o.status === 'Delivered' || o.status === 'Cancelled');
@@ -965,6 +1034,7 @@
         (order.items || []).forEach(it => {
           itemsHTML += `<div>${it.name} x${it.qty} = ৳${it.price * it.qty}</div>`;
         });
+        const deliveryHTML = order.deliveryArea ? `<div>ডেলিভারি (${order.deliveryArea}): ৳${order.deliveryFee || 0}</div>` : '';
 
         let actionsHTML = '';
         if (order.status === 'Pending') {
@@ -979,12 +1049,12 @@
 
         card.innerHTML = `
           <div class="top-row">
-            <span class="cust-name">${order.name}</span>
+            <span class="cust-name">${order.orderId ? order.orderId + ' — ' : ''}${order.name}</span>
             <span class="order-badge ${order.status}">${order.status}</span>
           </div>
           <div class="meta">📞 ${order.phone} &nbsp;•&nbsp; ${date} &nbsp;•&nbsp; ${order.source || ''}</div>
           <div class="meta">📍 ${order.address}</div>
-          <div class="items-list">${itemsHTML}</div>
+          <div class="items-list">${itemsHTML}${deliveryHTML}</div>
           <div class="total-row">Total: ৳${order.total}</div>
           <div class="order-actions">${actionsHTML}</div>`;
         listEl.appendChild(card);
