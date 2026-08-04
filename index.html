@@ -1566,9 +1566,9 @@ function bnToEn(str) {
     const subtotal = numPrice * pdCurrentQty;
     const area = document.getElementById('pdDeliveryArea').value;
     const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
-    document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
+    document.getElementById('pdSubtotalDisplay').textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
     const liveSubtotalEl = document.getElementById('pdLiveSubtotal');
-    if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${subtotal}`;
+    if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
     document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
     document.getElementById('pdTotalDisplay').textContent = `৳${subtotal + fee}`;
   }
@@ -1749,7 +1749,7 @@ function bnToEn(str) {
               <span>${item.qty}</span>
               <button onclick="changeQty(${i}, 1)">+</button>
             </div>
-            <span class="line-total">৳${item.price * item.qty}</span>
+            <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
           </div>
         </div>
         <button class="remove-item" onclick="removeItem(${i})">✕</button>`;
