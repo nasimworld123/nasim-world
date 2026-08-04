@@ -144,7 +144,7 @@
     display: none;
   }
   .order-form.show { display: block; }
-  .order-form input, .order-form textarea {
+  .order-form input, .order-form textarea, .order-form select {
     width: 100%;
     background: #fff;
     border: 1px solid rgba(27,42,74,0.3);
@@ -155,6 +155,13 @@
     margin-bottom: 8px;
   }
   .order-form input::placeholder, .order-form textarea::placeholder { color: rgba(30,42,56,0.4); }
+  .field-error { color: #ef4444; font-size: 0.75rem; margin: -4px 0 8px; display: none; font-weight: 600; }
+  .field-error.show { display: block; }
+  .delivery-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.85rem; color: #1e2a38; margin-bottom: 6px;
+  }
+  .delivery-row span:last-child { font-weight: bold; color: #14213D; }
 
   .nav-links {
     position: fixed;
@@ -438,16 +445,6 @@
   .stock-dot.out { background: #ef4444; animation: stockPulseOut 1.8s infinite; }
   .stock-text.in { color: #16a34a; }
   .stock-text.out { color: #ef4444; }
-  .card-wish-heart {
-    position: absolute; top: 8px; right: 8px; z-index: 5;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.05rem; cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  }
-  .card-wish-heart.active { color: #ef4444; }
-  .card-wish-heart:not(.active) { color: rgba(30,42,56,0.35); }
   .card-action-row {
     display: flex; gap: 8px;
     width: calc(100% - 16px);
@@ -531,52 +528,6 @@
     box-shadow: 0 3px 14px rgba(27,42,74,0.1);
     display: flex; flex-direction: column;
   }
-  .wish-heart {
-    position: absolute; top: 8px; right: 8px; z-index: 5;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.05rem; cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  }
-  .wish-heart.active { color: #ef4444; }
-  .wish-heart:not(.active) { color: rgba(30,42,56,0.35); }
-  .wishlist-icon {
-    position: relative;
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    background: rgba(27,42,74,0.1);
-    border: 1px solid rgba(27,42,74,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-    cursor: pointer;
-  }
-  .wishlist-count {
-    position: absolute;
-    top: -6px; right: -6px;
-    background: #ef4444;
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: bold;
-    min-width: 17px; height: 17px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 3px;
-  }
-  .wish-item {
-    display: flex; gap: 12px; align-items: center;
-    background: #fff; border: none;
-    border-bottom: 1px solid rgba(27,42,74,0.15);
-    padding: 14px 4px;
-  }
-  .wish-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(27,42,74,0.15); cursor: pointer; }
-  .wish-item .info { flex: 1; cursor: pointer; }
-  .wish-item .info .name { font-size: 0.85rem; font-weight: bold; color: #1e2a38; margin-bottom: 4px; }
-  .wish-item .info .price { font-size: 0.8rem; color: #14213D; font-weight: bold; }
-  .wish-remove {
-    background: none; border: none; color: #1e2a38; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;
-  }
-  .wish-empty { text-align: center; color: rgba(30,42,56,0.4); padding: 40px 0; font-size: 0.9rem; }
   .modal-overlay.active .modal-card { animation: popIn 0.4s ease forwards; }
   .modal-card:nth-child(1){animation-delay:.05s!important}
   .modal-card:nth-child(2){animation-delay:.12s!important}
@@ -797,6 +748,65 @@
   }
   .float-btn:active { transform: scale(0.95); }
 
+  /* ===== Track Order Page ===== */
+  .track-hero-card {
+    background: #fff;
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 22px;
+    padding: 30px 22px 26px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(27,42,74,0.1);
+    margin-bottom: 18px;
+  }
+  .track-hero-icon {
+    width: 220px; max-width: 78%; margin: 0 auto 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .track-hero-icon svg { width: 100%; height: auto; }
+  .track-hero-card h2 {
+    font-size: 1.35rem; font-weight: 800; color: #1e2a38; margin-bottom: 10px;
+  }
+  .track-hero-card p {
+    font-size: 0.85rem; color: rgba(30,42,56,0.55); line-height: 1.5; margin-bottom: 22px;
+  }
+  .track-id-input-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: #F4F7FB; border: 1px solid rgba(27,42,74,0.2);
+    border-radius: 14px; padding: 13px 16px; margin-bottom: 14px;
+  }
+  .track-id-input-wrap svg { flex-shrink: 0; color: #1B2A4A; width: 20px; height: 20px; }
+  .track-id-input-wrap input {
+    flex: 1; border: none; background: transparent; outline: none;
+    font-size: 0.9rem; color: #1e2a38;
+  }
+  .track-id-input-wrap input::placeholder { color: rgba(30,42,56,0.4); }
+  .track-order-btn {
+    width: 100%;
+    background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border: none;
+    padding: 14px; border-radius: 14px; font-weight: bold; font-size: 0.9rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 8px 20px rgba(27,42,74,0.3);
+  }
+  .track-order-btn:active { transform: scale(0.98); }
+  .track-order-card {
+    background: #fff; border: 1px solid rgba(27,42,74,0.18); border-radius: 14px;
+    padding: 14px; margin-bottom: 10px;
+  }
+  .track-order-card .order-id { font-weight: 800; color: #1B2A4A; font-size: 0.9rem; }
+  .track-order-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .track-order-card .date { font-size: 0.75rem; color: rgba(30,42,56,0.55); }
+  .track-badge {
+    font-size: 0.68rem; font-weight: bold; padding: 4px 11px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .track-badge.Pending { background: #fff4e5; color: #f97316; }
+  .track-badge.Accepted { background: #e5f6ff; color: #1B2A4A; }
+  .track-badge.Delivered { background: #e8f9ee; color: #128C4A; }
+  .track-badge.Cancelled { background: #fdeaea; color: #ef4444; }
+  .track-items { font-size: 0.8rem; color: #1e2a38; margin: 6px 0; }
+  .track-items div { padding: 1px 0; }
+  .track-total { font-weight: bold; color: #14213D; font-size: 0.85rem; }
+
   /* ===== Footer ===== */
   .footer {
     margin-top: 40px;
@@ -813,6 +823,18 @@
     background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.3);
     display:flex; align-items:center; justify-content:center; font-size:0.85rem;
     color: #1B2A4A;
+  }
+
+  /* ===== Desktop responsiveness: keep the mobile-style shell centered ===== */
+  @media (min-width: 640px) {
+    body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 50px rgba(27,42,74,0.15); }
+    .bottom-nav, .cart-overlay, .modal-overlay, .nav-links {
+      left: 50%; right: auto; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+    }
+    .nav-links.open { right: auto; }
+    .nav-links { transition: opacity 0.35s ease, visibility 0.35s ease; opacity: 0; visibility: hidden; }
+    .nav-links.open { opacity: 1; visibility: visible; }
   }
 </style>
 </head>
@@ -836,6 +858,7 @@
     <a href="#hero">Home</a>
     <a href="#offers">Offers</a>
     <a href="#gallery">Products</a>
+    <a href="javascript:void(0)" onclick="document.getElementById('navLinks').classList.remove('open'); document.getElementById('navOverlay').classList.remove('show'); openTrackOrder();">Track Order</a>
     <a href="#about">Contact</a>
   </div>
 
@@ -966,24 +989,22 @@
     </div>
     <div id="cartItemsWrap"></div>
     <div class="cart-summary" id="cartSummary" style="display:none;">
+      <div class="delivery-row"><span>পণ্যের মূল্য</span><span id="cartSubtotal">৳0</span></div>
+      <div class="delivery-row"><span>ডেলিভারি চার্জ</span><span id="cartDeliveryFee">৳0</span></div>
       <div class="cart-total-row"><span>মোট মূল্য</span><span id="cartTotal">৳0</span></div>
       <button class="place-order-btn" id="cartOrderNowBtn" onclick="showOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <div class="order-form" id="orderForm">
         <input type="text" id="custName" placeholder="আপনার নাম">
-        <input type="text" id="custPhone" placeholder="মোবাইল নাম্বার">
+        <input type="tel" id="custPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
+        <div class="field-error" id="custPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
         <textarea id="custAddress" placeholder="ঠিকানা" rows="2"></textarea>
+        <select id="custDeliveryArea" onchange="updateCartSummary()">
+          <option value="inside">ঢাকার ভিতরে</option>
+          <option value="outside">ঢাকার বাইরে</option>
+        </select>
         <button class="place-order-btn" onclick="submitOrder()">Order Confirm</button>
       </div>
     </div>
-  </div>
-
-  <!-- Wishlist Modal -->
-  <div class="cart-overlay" id="wishlistOverlay">
-    <div class="modal-header">
-      <h3>❤️ আমার পছন্দ</h3>
-      <button class="modal-close" onclick="closeWishlist()">✕</button>
-    </div>
-    <div id="wishlistItemsWrap"></div>
   </div>
 
   <!-- Search Modal -->
@@ -995,6 +1016,90 @@
     <input type="text" id="searchInput" placeholder="প্রোডাক্টের নাম লিখুন..." oninput="performSearch(this.value)"
       style="width:100%;background:#fff;border:1px solid rgba(27,42,74,0.3);border-radius:12px;padding:12px 14px;font-size:0.9rem;margin-bottom:16px;color:#1e2a38;">
     <div class="modal-grid" id="searchGrid"></div>
+  </div>
+
+  <!-- Track Order Page -->
+  <div class="modal-overlay" id="trackOrderOverlay">
+    <div class="modal-header">
+      <h3>📦 আমার অর্ডার</h3>
+      <button class="modal-close" onclick="closeTrackOrder()">✕</button>
+    </div>
+    <div class="track-hero-card">
+      <div class="track-hero-icon">
+        <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+          <!-- faint background accents -->
+          <circle cx="255" cy="35" r="22" fill="none" stroke="#DCE6F2" stroke-width="2"/>
+          <path d="M240 35c0-8 7-15 15-15s15 7 15 15c0 10-15 24-15 24s-15-14-15-24z" fill="none" stroke="#DCE6F2" stroke-width="2"/>
+          <g opacity="0.55" stroke="#DCE6F2" stroke-width="2" fill="none">
+            <rect x="205" y="20" width="26" height="16" rx="2"/>
+            <rect x="231" y="24" width="10" height="12"/>
+            <circle cx="213" cy="38" r="3.5"/>
+            <circle cx="228" cy="38" r="3.5"/>
+          </g>
+          <!-- ground shadow -->
+          <ellipse cx="150" cy="176" rx="140" ry="6" fill="#EDF1F8"/>
+
+          <!-- stacked boxes behind phone -->
+          <rect x="14" y="112" width="30" height="30" rx="3" fill="#EDF1F8" stroke="#B9C8DE" stroke-width="1.5"/>
+          <rect x="24" y="96" width="30" height="30" rx="3" fill="#DCE6F2" stroke="#B9C8DE" stroke-width="1.5"/>
+
+          <!-- phone -->
+          <rect x="34" y="18" width="98" height="158" rx="18" fill="#fff" stroke="#1B2A4A" stroke-width="4.5"/>
+          <rect x="46" y="34" width="74" height="112" rx="6" fill="#F4F7FB"/>
+          <!-- route dotted line -->
+          <path d="M58 128 L68 112 L62 96 L86 80 L80 58" fill="none" stroke="#2C4870" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/>
+          <circle cx="58" cy="128" r="4.5" fill="#1B2A4A"/>
+          <!-- pin -->
+          <path d="M80 58c0-8 6.5-14.5 14.5-14.5S109 50 109 58c0 10-14.5 24-14.5 24S80 68 80 58z" fill="#1B2A4A"/>
+          <circle cx="94.5" cy="57" r="5" fill="#fff"/>
+          <!-- info chip under screen -->
+          <rect x="46" y="150" width="74" height="16" rx="5" fill="#DCE6F2"/>
+          <circle cx="56" cy="158" r="3.6" fill="#1B2A4A"/>
+          <rect x="65" y="154.5" width="38" height="3.4" rx="1.7" fill="#2C4870"/>
+          <rect x="65" y="160.5" width="24" height="2.6" rx="1.3" fill="#8FA6C7"/>
+          <!-- phone top notch -->
+          <rect x="72" y="24" width="22" height="4" rx="2" fill="#1B2A4A"/>
+
+          <!-- delivery scooter group -->
+          <g transform="translate(140,58)">
+            <!-- delivery box on front -->
+            <rect x="18" y="46" width="34" height="30" rx="4" fill="#1B2A4A"/>
+            <rect x="18" y="46" width="34" height="8" fill="#2C4870"/>
+            <rect x="32" y="46" width="4" height="30" fill="#2C4870"/>
+            <!-- handlebar + stem -->
+            <path d="M60 40 q-10 -2 -16 6" fill="none" stroke="#1B2A4A" stroke-width="4.5" stroke-linecap="round"/>
+            <rect x="58" y="20" width="5" height="24" rx="2.5" fill="#1B2A4A"/>
+            <circle cx="60.5" cy="17" r="4.5" fill="#2C4870"/>
+            <!-- scooter body -->
+            <path d="M40 76c0-5 3-9 8-9h44c9 0 18 5 24 14l6 11H36c-3 0-4-3-3-6z" fill="#2C4870"/>
+            <path d="M40 76c0-5 3-9 8-9h20v18H43c-3 0-4-3-3-6z" fill="#1B2A4A"/>
+            <!-- rider -->
+            <circle cx="80" cy="6" r="11" fill="#F4C89A"/>
+            <path d="M80 6c2-5 8-6 8 1v3" fill="none" stroke="#1e2a38" stroke-width="2" stroke-linecap="round"/>
+            <path d="M67 30c0-10 6-17 16-17s16 7 16 17v8H67v-8z" fill="#2C4870"/>
+            <path d="M65 46l10-18 10 5-8 15z" fill="#1B2A4A"/>
+            <path d="M78 46l6-18 9 3-6 17z" fill="#2C4870"/>
+            <!-- wheels -->
+            <circle cx="48" cy="92" r="15" fill="#1e2a38"/>
+            <circle cx="48" cy="92" r="6.5" fill="#DCE6F2"/>
+            <circle cx="118" cy="92" r="15" fill="#1e2a38"/>
+            <circle cx="118" cy="92" r="6.5" fill="#DCE6F2"/>
+            <rect x="60" y="86" width="52" height="5" rx="2.5" fill="#1B2A4A"/>
+          </g>
+        </svg>
+      </div>
+      <h2>Track Your Order</h2>
+      <p>নিচে আপনার অর্ডার আইডি দিন, সাথে সাথে অর্ডারের সর্বশেষ অবস্থা জানতে পারবেন</p>
+      <div class="track-id-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+        <input type="text" id="trackOrderIdInput" placeholder="Enter Order ID (e.g. NW-20)">
+      </div>
+      <button class="track-order-btn" onclick="searchMyOrders()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Track Order
+      </button>
+    </div>
+    <div id="trackOrderResults"></div>
   </div>
 
   <!-- Product Detail Modal -->
@@ -1028,8 +1133,16 @@
       </div>
       <div class="order-form" id="pdOrderForm">
         <input type="text" id="pdCustName" placeholder="আপনার নাম">
-        <input type="text" id="pdCustPhone" placeholder="মোবাইল নাম্বার">
+        <input type="tel" id="pdCustPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
+        <div class="field-error" id="pdCustPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
         <textarea id="pdCustAddress" placeholder="ঠিকানা" rows="2"></textarea>
+        <select id="pdDeliveryArea" onchange="updatePdTotal()">
+          <option value="inside">ঢাকার ভিতরে</option>
+          <option value="outside">ঢাকার বাইরে</option>
+        </select>
+        <div class="delivery-row"><span>পণ্যের মূল্য</span><span id="pdSubtotalDisplay">৳0</span></div>
+        <div class="delivery-row"><span>ডেলিভারি চার্জ</span><span id="pdDeliveryFeeDisplay">৳0</span></div>
+        <div class="delivery-row" style="font-weight:bold;"><span>মোট</span><span id="pdTotalDisplay">৳0</span></div>
         <button class="place-order-btn" onclick="confirmPdOrder()">ORDER CONFIRM</button>
       </div>
     </div>
@@ -1087,14 +1200,20 @@ function bnToEn(str) {
   return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
    }
 
+  // ===== Phone validation (Bangladeshi 11-digit mobile numbers) =====
+  function isValidBDPhone(phone) {
+    const cleaned = bnToEn(phone).replace(/[\s-]/g, '');
+    return /^01[3-9]\d{8}$/.test(cleaned);
+  }
+
+  // ===== Delivery charge settings (fetched from admin) =====
+  let deliveryCharges = { inside: 0, outside: 0 };
+
   // ===== Icon snippets used inside dynamic buttons =====
   const cartIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>';
   const arrowIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   // ===== Stock helper =====
-  // item.stock is left unset by default (always shows "In Stock" so old
-  // products keep working). Admin can set a number: 0 = Out of Stock,
-  // any positive number = In Stock with that quantity shown.
   function getStockState(item) {
     if (item.stock === undefined || item.stock === null || item.stock === '') {
       return { inStock: true, label: 'In Stock' };
@@ -1111,7 +1230,7 @@ function bnToEn(str) {
   function cardActionRowHTML(item, stock) {
     if (stock.inStock) {
       return `<div class="card-action-row">
-        <button class="btn-outline-cart" onclick='event.stopPropagation(); addToCart(${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>${cartIconSVG}ADD TO CART</button>
+        <button class="btn-outline-cart" onclick='event.stopPropagation(); addToCart(${JSON.stringify(item.id || "")}, ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>${cartIconSVG}ADD TO CART</button>
       </div>`;
     }
     return `<div class="card-action-row">
@@ -1120,9 +1239,6 @@ function bnToEn(str) {
   }
 
   // ===== Shared direction-aware horizontal swipe helper =====
-  // Only takes over the gesture (and blocks page scroll) once it's clearly
-  // a horizontal drag. A mostly-vertical touch is left alone so the page
-  // scrolls normally.
   function initHorizontalSwipe(el, callbacks) {
     let startX = 0, startY = 0, dx = 0, direction = null;
     el.addEventListener('touchstart', (e) => {
@@ -1146,7 +1262,6 @@ function bnToEn(str) {
         e.preventDefault();
         if (callbacks.onMove) callbacks.onMove(dx);
       }
-      // direction === 'y' (or not yet determined): do nothing, let the page scroll natively
     }, { passive: false });
 
     el.addEventListener('touchend', () => {
@@ -1176,7 +1291,7 @@ function bnToEn(str) {
     let items = [];
     try {
       const snap = await db.collection('products').where('category', '==', key).get();
-      items = snap.docs.map(doc => doc.data());
+      items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (e) {
       grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#ef4444;padding:30px 0;">লোড করতে সমস্যা হয়েছে</p>';
       return;
@@ -1200,14 +1315,12 @@ function bnToEn(str) {
       const stock = getStockState(item);
 
       card.innerHTML = `
-        <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         ${stockRowHTML(stock)}
         ${cardActionRowHTML(item, stock)}`;
       grid.appendChild(card);
-      if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
     });
   }
   function closeGallery() { document.getElementById('modalOverlay').classList.remove('active'); }
@@ -1224,7 +1337,7 @@ function bnToEn(str) {
     let items = [];
     try {
       const snap = await db.collection('products').where('category', '==', key).get();
-      items = snap.docs.map(doc => doc.data());
+      items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (e) {
       track.innerHTML = '<p class="prod-cat-empty">লোড করতে সমস্যা হয়েছে</p>';
       return;
@@ -1249,7 +1362,6 @@ function bnToEn(str) {
       card.className = 'prod-cat-card';
       card.innerHTML = `
         <div class="prod-cat-card-inner">
-          <div class="card-wish-heart" id="wish-cat-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
           <img src="${item.src}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
           <p class="prod-cat-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
           <div class="prod-cat-price-row">${priceHTML}</div>
@@ -1257,10 +1369,6 @@ function bnToEn(str) {
           ${cardActionRowHTML(item, stock)}
         </div>`;
       track.appendChild(card);
-      if (isInWishlist(item.name)) {
-        const h = document.getElementById(`wish-cat-${item.name}`);
-        if (h) h.classList.add('active');
-      }
     });
 
     const maxIndex = Math.max(0, items.length - prodVisible);
@@ -1354,8 +1462,10 @@ function bnToEn(str) {
       orderNowLabel.textContent = 'UNAVAILABLE';
     }
 
+    document.getElementById('pdCustPhoneError').classList.remove('show');
     document.getElementById('pdOrderForm').classList.remove('show');
     orderNowBtn.style.display = 'flex';
+    updatePdTotal();
     document.getElementById('productDetailOverlay').classList.add('active');
   }
 
@@ -1367,6 +1477,18 @@ function bnToEn(str) {
     pdCurrentQty += delta;
     if (pdCurrentQty < 1) pdCurrentQty = 1;
     document.getElementById('pdQty').textContent = pdCurrentQty;
+    updatePdTotal();
+  }
+
+  function updatePdTotal() {
+    if (!pdCurrentItem) return;
+    const numPrice = parseFloat(bnToEn(pdCurrentItem.price)) || 0;
+    const subtotal = numPrice * pdCurrentQty;
+    const area = document.getElementById('pdDeliveryArea').value;
+    const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
+    document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
+    document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
+    document.getElementById('pdTotalDisplay').textContent = `৳${subtotal + fee}`;
   }
 
   function pdAddToCart() {
@@ -1374,7 +1496,7 @@ function bnToEn(str) {
     const stock = getStockState(pdCurrentItem);
     if (!stock.inStock) return;
     for (let i = 0; i < pdCurrentQty; i++) {
-      addToCart(pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+      addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
     }
     closeProductDetail();
     openCart();
@@ -1384,9 +1506,23 @@ function bnToEn(str) {
     if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) return;
     document.getElementById('pdOrderForm').classList.add('show');
     document.getElementById('pdOrderNowBtn').style.display = 'none';
+    updatePdTotal();
   }
 
-  function confirmPdOrder() {
+  // ===== Sequential human-readable Order IDs (NW-1, NW-2, ...) =====
+  async function getNextOrderId() {
+    const counterRef = db.collection('settings').doc('orderCounter');
+    const next = await db.runTransaction(async (tx) => {
+      const doc = await tx.get(counterRef);
+      const current = doc.exists && doc.data().count ? doc.data().count : 0;
+      const updated = current + 1;
+      tx.set(counterRef, { count: updated }, { merge: true });
+      return updated;
+    });
+    return `NW-${next}`;
+  }
+
+  async function confirmPdOrder() {
     if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) {
       showSuccessModal('দুঃখিত, এই পণ্যটি বর্তমানে স্টকে নেই।');
       return;
@@ -1394,121 +1530,80 @@ function bnToEn(str) {
     const name = document.getElementById('pdCustName').value.trim();
     const phone = document.getElementById('pdCustPhone').value.trim();
     const address = document.getElementById('pdCustAddress').value.trim();
+    const area = document.getElementById('pdDeliveryArea').value;
+    const phoneErrorEl = document.getElementById('pdCustPhoneError');
 
     if (!name || !phone || !address) {
       alert('দয়া করে নাম, নাম্বার ও ঠিকানা লিখুন');
       return;
     }
+    if (!isValidBDPhone(phone)) {
+      phoneErrorEl.classList.add('show');
+      return;
+    }
+    phoneErrorEl.classList.remove('show');
 
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
-    const total = numPrice * pdCurrentQty;
+    const subtotal = numPrice * pdCurrentQty;
+    const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
+    const total = subtotal + deliveryFee;
 
     const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
 
-    db.collection('orders').add({
-      name, phone, address,
-      items: [{ name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
-      total: total,
-      status: 'Pending',
-      source: 'Single Product',
-      createdAt: Date.now()
-    }).then(() => {
+    try {
+      const orderId = await getNextOrderId();
+      await db.collection('orders').add({
+        orderId, name, phone, address,
+        deliveryArea: area === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে',
+        deliveryFee: deliveryFee,
+        items: [{ id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
+        total: total,
+        status: 'Pending',
+        source: 'Single Product',
+        createdAt: Date.now()
+      });
+      await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
       closeProductDetail();
-      showSuccessModal('Your order has been placed successfully! We will contact you soon.');
-    }).catch(() => {
+      showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
+    } catch (e) {
       showSuccessModal('Sorry, something went wrong. Please try again.');
-    }).finally(() => {
+    } finally {
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'ORDER CONFIRM';
-    });
-  }
-
-  // ===== Wishlist (no login, saved on this device) =====
-  let wishlist = JSON.parse(localStorage.getItem('nasimWishlist') || '[]');
-
-  function isInWishlist(name) {
-    return wishlist.some(i => i.name === name);
-  }
-
-  function saveWishlist() {
-    localStorage.setItem('nasimWishlist', JSON.stringify(wishlist));
-    updateWishCount();
-  }
-
-  function updateWishCount() {
-    const wishCountEl = document.getElementById('wishCount');
-    if (wishCountEl) wishCountEl.textContent = wishlist.length;
-    const navWish = document.getElementById('navWishCount');
-    if (navWish) navWish.textContent = wishlist.length;
-  }
-
-  function toggleWishlist(item) {
-    const idx = wishlist.findIndex(i => i.name === item.name);
-    const heartEl = document.getElementById(`wish-${item.name}`);
-    const heartElCat = document.getElementById(`wish-cat-${item.name}`);
-    if (idx > -1) {
-      wishlist.splice(idx, 1);
-      if (heartEl) heartEl.classList.remove('active');
-      if (heartElCat) heartElCat.classList.remove('active');
-    } else {
-      wishlist.push(item);
-      if (heartEl) heartEl.classList.add('active');
-      if (heartElCat) heartElCat.classList.add('active');
     }
-    saveWishlist();
   }
 
-  function removeFromWishlist(name) {
-    wishlist = wishlist.filter(i => i.name !== name);
-    saveWishlist();
-    renderWishlist();
-  }
-
-  function renderWishlist() {
-    const wrap = document.getElementById('wishlistItemsWrap');
-    if (wishlist.length === 0) {
-      wrap.innerHTML = `<div class="wish-empty">আপনার পছন্দের তালিকা খালি</div>`;
-      return;
+  // ===== Stock auto-decrement on order placement =====
+  async function decrementStockForItems(itemList) {
+    for (const it of itemList) {
+      if (!it.id) continue;
+      try {
+        await db.runTransaction(async (tx) => {
+          const ref = db.collection('products').doc(it.id);
+          const doc = await tx.get(ref);
+          if (!doc.exists) return;
+          const data = doc.data();
+          if (data.stock === undefined || data.stock === null || data.stock === '') return;
+          const current = parseInt(bnToEn(data.stock), 10);
+          if (isNaN(current)) return;
+          const next = Math.max(0, current - it.qty);
+          tx.update(ref, { stock: next });
+        });
+      } catch (e) { /* silently skip on failure so the order itself is not blocked */ }
     }
-    wrap.innerHTML = "";
-    wishlist.forEach(item => {
-      const el = document.createElement('div');
-      el.className = 'wish-item';
-      let priceHTML = `৳${item.price}`;
-      el.innerHTML = `
-        <img src="${item.src}" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
-        <div class="info" onclick='closeWishlist(); openProductDetail(${JSON.stringify(item)})'>
-          <div class="name">${item.name}</div>
-          <div class="price">${priceHTML}</div>
-        </div>
-        <button class="wish-remove" onclick='removeFromWishlist(${JSON.stringify(item.name)})'>✕</button>`;
-      wrap.appendChild(el);
-    });
   }
-
-  function openWishlist() {
-    renderWishlist();
-    document.getElementById('wishlistOverlay').classList.add('active');
-  }
-  function closeWishlist() { document.getElementById('wishlistOverlay').classList.remove('active'); }
 
   let cart = JSON.parse(localStorage.getItem('nasimCart') || '[]');
 
-  function addToCart(name, price, src) {
+  function addToCart(id, name, price, src) {
   const numPrice = parseFloat(bnToEn(price));
   const existing = cart.find(i => i.name === name);
   if (existing) { existing.qty++; }
-  else { cart.push({ name, price: numPrice, src, qty: 1 }); }
+  else { cart.push({ id: id || null, name, price: numPrice, src, qty: 1 }); }
   updateCartCount();
   }
-function orderNow(name, price, src) {
-    cart = [{ name, price: parseFloat(bnToEn(price)), src, qty: 1 }];
-    updateCartCount();
-    openCart();
-    showOrderForm();
-}
  function updateCartCount() {
     localStorage.setItem('nasimCart', JSON.stringify(cart));
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
@@ -1532,10 +1627,24 @@ function orderNow(name, price, src) {
     renderCart();
   }
 
+  function cartSubtotal() {
+    return cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  }
+
+  function updateCartSummary() {
+    const subtotal = cartSubtotal();
+    const area = document.getElementById('custDeliveryArea').value;
+    const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
+    document.getElementById('cartSubtotal').textContent = `৳${subtotal}`;
+    document.getElementById('cartDeliveryFee').textContent = `৳${fee}`;
+    document.getElementById('cartTotal').textContent = `৳${subtotal + fee}`;
+  }
+
   function renderCart() {
     const wrap = document.getElementById('cartItemsWrap');
     const summary = document.getElementById('cartSummary');
     document.getElementById('orderForm').classList.remove('show');
+    document.getElementById('custPhoneError').classList.remove('show');
     document.getElementById('cartOrderNowBtn').style.display = 'flex';
 
     if (cart.length === 0) {
@@ -1545,9 +1654,7 @@ function orderNow(name, price, src) {
     }
 
     wrap.innerHTML = "";
-    let total = 0;
     cart.forEach((item, i) => {
-      total += item.price * item.qty;
       const el = document.createElement('div');
       el.className = 'cart-item';
     el.innerHTML = `
@@ -1567,7 +1674,7 @@ function orderNow(name, price, src) {
       wrap.appendChild(el);
     });
 
-    document.getElementById('cartTotal').textContent = `৳${total}`;
+    updateCartSummary();
     summary.style.display = 'block';
   }
 
@@ -1587,9 +1694,9 @@ function orderNow(name, price, src) {
   function closeAllOverlays() {
     document.getElementById('modalOverlay').classList.remove('active');
     document.getElementById('cartOverlay').classList.remove('active');
-    document.getElementById('wishlistOverlay').classList.remove('active');
     document.getElementById('searchOverlay').classList.remove('active');
     document.getElementById('productDetailOverlay').classList.remove('active');
+    document.getElementById('trackOrderOverlay').classList.remove('active');
   }
 
   // ===== Hidden admin access: tap logo 5 times within 2 seconds =====
@@ -1620,9 +1727,55 @@ function orderNow(name, price, src) {
     openCart();
   }
 
-  function navOpenWishlist() {
+  function navOpenTrack() {
     closeAllOverlays();
-    openWishlist();
+    openTrackOrder();
+  }
+
+  // ===== Track Order (by Order ID, e.g. NW-20) =====
+  function openTrackOrder() {
+    document.getElementById('trackOrderOverlay').classList.add('active');
+    document.getElementById('trackOrderResults').innerHTML = '';
+    document.getElementById('trackOrderIdInput').value = '';
+  }
+  function closeTrackOrder() { document.getElementById('trackOrderOverlay').classList.remove('active'); }
+
+  async function searchMyOrders() {
+    const rawId = document.getElementById('trackOrderIdInput').value.trim();
+    const resultsEl = document.getElementById('trackOrderResults');
+    if (!rawId) {
+      resultsEl.innerHTML = '<p style="text-align:center;color:#ef4444;padding:20px 0;font-size:0.85rem;">অর্ডার আইডি লিখুন</p>';
+      return;
+    }
+    // Accept with or without the "NW-" prefix, case-insensitive
+    let orderId = bnToEn(rawId).toUpperCase().replace(/\s+/g, '');
+    if (!orderId.startsWith('NW-')) orderId = 'NW-' + orderId.replace(/^NW-?/, '');
+    resultsEl.innerHTML = '<p style="text-align:center;color:#1B2A4A;padding:20px 0;">খোঁজা হচ্ছে...</p>';
+    try {
+      const snap = await db.collection('orders').where('orderId', '==', orderId).limit(1).get();
+      if (snap.empty) {
+        resultsEl.innerHTML = '<p style="text-align:center;color:rgba(30,42,56,0.5);padding:20px 0;font-size:0.85rem;">এই আইডিতে কোনো অর্ডার পাওয়া যায়নি</p>';
+        return;
+      }
+      const order = snap.docs[0].data();
+      const date = new Date(order.createdAt).toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      let itemsHTML = '';
+      (order.items || []).forEach(it => { itemsHTML += `<div>${it.name} x${it.qty}</div>`; });
+      resultsEl.innerHTML = '';
+      const card = document.createElement('div');
+      card.className = 'track-order-card';
+      card.innerHTML = `
+        <div class="top-row">
+          <span class="order-id">${order.orderId || ''}</span>
+          <span class="track-badge ${order.status}">${order.status}</span>
+        </div>
+        <div class="date" style="margin-bottom:6px;">${date}</div>
+        <div class="track-items">${itemsHTML}</div>
+        <div class="track-total">মোট: ৳${order.total}</div>`;
+      resultsEl.appendChild(card);
+    } catch (e) {
+      resultsEl.innerHTML = '<p style="text-align:center;color:#ef4444;padding:20px 0;font-size:0.85rem;">লোড করতে সমস্যা হয়েছে</p>';
+    }
   }
 
   // ===== Search =====
@@ -1637,7 +1790,7 @@ function orderNow(name, price, src) {
     if (!allProductsCache) {
       try {
         const snap = await db.collection('products').get();
-        allProductsCache = snap.docs.map(d => d.data());
+        allProductsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       } catch (e) { allProductsCache = []; }
     }
   }
@@ -1664,20 +1817,19 @@ function orderNow(name, price, src) {
       }
       const stock = getStockState(item);
       card.innerHTML = `
-        <div class="wish-heart" id="wish-${item.name}" onclick='event.stopPropagation(); toggleWishlist(${JSON.stringify(item)})'>♥</div>
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
         <p class="product-name" onclick='openProductDetail(${JSON.stringify(item)})'>${item.name}</p>
         <div class="product-price-row">${priceHTML}</div>
         ${stockRowHTML(stock)}
         ${cardActionRowHTML(item, stock)}`;
       grid.appendChild(card);
-      if (isInWishlist(item.name)) document.getElementById(`wish-${item.name}`).classList.add('active');
     });
   }
 
   function showOrderForm() {
     document.getElementById('orderForm').classList.add('show');
     document.getElementById('cartOrderNowBtn').style.display = 'none';
+    updateCartSummary();
   }
 
   function showSuccessModal(message) {
@@ -1688,45 +1840,58 @@ function orderNow(name, price, src) {
     document.getElementById('successOverlay').classList.remove('active');
   }
 
-  function submitOrder() {
+  async function submitOrder() {
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
+    const area = document.getElementById('custDeliveryArea').value;
+    const phoneErrorEl = document.getElementById('custPhoneError');
 
     if (!name || !phone || !address) {
       alert('দয়া করে নাম, নাম্বার ও ঠিকানা লিখুন');
       return;
     }
+    if (!isValidBDPhone(phone)) {
+      phoneErrorEl.classList.add('show');
+      return;
+    }
+    phoneErrorEl.classList.remove('show');
 
     let itemsArr = [];
-    let total = 0;
     cart.forEach(item => {
-      itemsArr.push({ name: item.name, price: item.price, qty: item.qty });
-      total += item.price * item.qty;
+      itemsArr.push({ id: item.id || null, name: item.name, price: item.price, qty: item.qty });
     });
+    const subtotal = cartSubtotal();
+    const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
+    const total = subtotal + deliveryFee;
 
     const confirmBtn = document.querySelector('#orderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
 
-    db.collection('orders').add({
-      name, phone, address,
-      items: itemsArr,
-      total: total,
-      status: 'Pending',
-      source: 'Cart',
-      createdAt: Date.now()
-    }).then(() => {
+    try {
+      const orderId = await getNextOrderId();
+      await db.collection('orders').add({
+        orderId, name, phone: bnToEn(phone), address,
+        deliveryArea: area === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে',
+        deliveryFee: deliveryFee,
+        items: itemsArr,
+        total: total,
+        status: 'Pending',
+        source: 'Cart',
+        createdAt: Date.now()
+      });
+      await decrementStockForItems(itemsArr);
       cart = [];
       updateCartCount();
       closeCart();
-      showSuccessModal('Your order has been placed successfully!');
-    }).catch(() => {
+      showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
+    } catch (e) {
       showSuccessModal('Sorry, something went wrong. Please try again.');
-    }).finally(() => {
+    } finally {
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'Order Confirm';
-    });
+    }
  }
 
   const offerSlides = document.querySelectorAll('.offer-slide');
@@ -1844,7 +2009,7 @@ function orderNow(name, price, src) {
     });
   }
 
-  // ===== Site Settings (hero image, category thumbnails/labels) — editable from Admin Panel =====
+  // ===== Site Settings (hero image, category thumbnails/labels, delivery charges) — editable from Admin Panel =====
   async function loadSiteSettings() {
     try {
       const doc = await db.collection('settings').doc('site').get();
@@ -1869,6 +2034,9 @@ function orderNow(name, price, src) {
           titles[key] = catLabels[key];
         }
       });
+
+      if (data.deliveryInside !== undefined) deliveryCharges.inside = parseFloat(bnToEn(data.deliveryInside)) || 0;
+      if (data.deliveryOutside !== undefined) deliveryCharges.outside = parseFloat(bnToEn(data.deliveryOutside)) || 0;
     } catch (e) {
       // Keep the default hardcoded images/labels if settings can't be loaded
     }
@@ -1876,7 +2044,6 @@ function orderNow(name, price, src) {
 
   window.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
-    updateWishCount();
     updateCatSlide();
     startCatAuto();
     renderProdCategory('group1');
@@ -1948,11 +2115,6 @@ function orderNow(name, price, src) {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
       <span>Home</span>
     </div>
-    <div class="nav-item" onclick="navTap(this, navOpenWishlist)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-9.5-9C0.7 8.4 2 5 5.2 5c1.9 0 3.3 1 4.8 3 1.5-2 2.9-3 4.8-3C18 5 19.3 8.4 21.5 12 19 16.4 12 21 12 21z"/></svg>
-      <span id="navWishCount" class="nav-badge">0</span>
-      <span>Wishlist</span>
-    </div>
     <div class="nav-item" onclick="navTap(this, navOpenCart)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
       <span id="navCartCount" class="nav-badge">0</span>
@@ -1961,6 +2123,10 @@ function orderNow(name, price, src) {
     <div class="nav-item" onclick="navTap(this, openSearch)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <span>Search</span>
+    </div>
+    <div class="nav-item" onclick="navTap(this, navOpenTrack)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg>
+      <span>Track</span>
     </div>
     <div class="nav-item" onclick="navTap(this, goAccount)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
