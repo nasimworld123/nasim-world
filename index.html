@@ -602,11 +602,9 @@
   }
   .pd-qty-row .qty-buttons span { font-size: 1rem; min-width: 20px; text-align: center; }
   .pd-live-subtotal {
-    text-align: right;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: bold;
     color: #14213D;
-    margin: -10px 0 18px;
   }
   .pd-btn-row { display: flex; gap: 10px; }
   .pd-btn-row .place-order-btn { flex: 1; }
@@ -1197,6 +1195,7 @@
       <div class="pd-stock-row" id="pdStockRow">
         <span class="stock-dot" id="pdStockDot"></span>
         <span id="pdStockText"></span>
+        <span class="pd-live-subtotal" id="pdLiveSubtotal" style="margin-left:auto;">৳0</span>
       </div>
       <div class="pd-qty-row">
         <span>পরিমাণ</span>
@@ -1206,7 +1205,6 @@
           <button onclick="pdChangeQty(1)">+</button>
         </div>
       </div>
-      <div class="pd-live-subtotal" id="pdLiveSubtotal">৳0</div>
       <div class="pd-btn-row">
         <button class="pd-addcart-btn" id="pdAddCartBtn" onclick="pdAddToCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="btn-label">ADD TO CART</span></button>
         <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
