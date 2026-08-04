@@ -1566,7 +1566,7 @@ function bnToEn(str) {
     const subtotal = numPrice * pdCurrentQty;
     const area = document.getElementById('pdDeliveryArea').value;
     const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
-    document.getElementById('pdSubtotalDisplay').textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
+    document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
     const liveSubtotalEl = document.getElementById('pdLiveSubtotal');
     if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
     document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
