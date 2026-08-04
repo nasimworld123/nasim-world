@@ -763,6 +763,66 @@
     display: flex; align-items: center; justify-content: center;
   }
   .track-hero-icon svg { width: 100%; height: auto; }
+
+  /* ---- Track hero icon animation ---- */
+  .track-hero-icon .scooter-group {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: scooterBounce 0.6s ease-in-out infinite;
+  }
+  @keyframes scooterBounce {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-3px) translateX(1px); }
+  }
+  .track-hero-icon .wheel-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wheelSpin 0.45s linear infinite;
+  }
+  @keyframes wheelSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .track-hero-icon .route-line {
+    animation: routeMove 1s linear infinite;
+  }
+  @keyframes routeMove {
+    to { stroke-dashoffset: -32; }
+  }
+  .track-hero-icon .map-pin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pinBounce 1.4s ease-in-out infinite;
+  }
+  @keyframes pinBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .track-hero-icon .start-dot {
+    animation: dotBlink 1s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes dotBlink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.75); }
+  }
+  .track-hero-icon .info-dot {
+    animation: dotBlink 1.2s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .track-hero-icon .exhaust-puff {
+    animation: exhaustPuff 0.9s ease-in infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes exhaustPuff {
+    0% { opacity: 0; transform: translate(0,0) scale(0.4); }
+    30% { opacity: 0.55; }
+    100% { opacity: 0; transform: translate(-10px,4px) scale(1.3); }
+  }
+
   .track-hero-card h2 {
     font-size: 1.35rem; font-weight: 800; color: #1e2a38; margin-bottom: 10px;
   }
@@ -1047,44 +1107,56 @@
           <rect x="34" y="18" width="98" height="158" rx="18" fill="#fff" stroke="#1B2A4A" stroke-width="4.5"/>
           <rect x="46" y="34" width="74" height="112" rx="6" fill="#F4F7FB"/>
           <!-- route dotted line -->
-          <path d="M58 128 L68 112 L62 96 L86 80 L80 58" fill="none" stroke="#2C4870" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/>
-          <circle cx="58" cy="128" r="4.5" fill="#1B2A4A"/>
+          <path class="route-line" d="M58 128 L68 112 L62 96 L86 80 L80 58" fill="none" stroke="#2C4870" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/>
+          <circle class="start-dot" cx="58" cy="128" r="4.5" fill="#1B2A4A"/>
           <!-- pin -->
-          <path d="M80 58c0-8 6.5-14.5 14.5-14.5S109 50 109 58c0 10-14.5 24-14.5 24S80 68 80 58z" fill="#1B2A4A"/>
-          <circle cx="94.5" cy="57" r="5" fill="#fff"/>
+          <path class="map-pin" d="M80 58c0-8 6.5-14.5 14.5-14.5S109 50 109 58c0 10-14.5 24-14.5 24S80 68 80 58z" fill="#1B2A4A"/>
+          <circle class="map-pin" cx="94.5" cy="57" r="5" fill="#fff"/>
           <!-- info chip under screen -->
           <rect x="46" y="150" width="74" height="16" rx="5" fill="#DCE6F2"/>
-          <circle cx="56" cy="158" r="3.6" fill="#1B2A4A"/>
+          <circle class="info-dot" cx="56" cy="158" r="3.6" fill="#1B2A4A"/>
           <rect x="65" y="154.5" width="38" height="3.4" rx="1.7" fill="#2C4870"/>
           <rect x="65" y="160.5" width="24" height="2.6" rx="1.3" fill="#8FA6C7"/>
           <!-- phone top notch -->
           <rect x="72" y="24" width="22" height="4" rx="2" fill="#1B2A4A"/>
 
-          <!-- delivery scooter group -->
-          <g transform="translate(140,58)">
+          <!-- delivery scooter group (outer group only positions it; CSS animation goes on the inner group so the position never gets overridden) -->
+          <g transform="translate(100,58)">
+          <g class="scooter-group">
+            <!-- exhaust puff -->
+            <circle class="exhaust-puff" cx="40" cy="84" r="6" fill="#B9C8DE"/>
             <!-- delivery box on front -->
             <rect x="18" y="46" width="34" height="30" rx="4" fill="#1B2A4A"/>
             <rect x="18" y="46" width="34" height="8" fill="#2C4870"/>
             <rect x="32" y="46" width="4" height="30" fill="#2C4870"/>
-            <!-- handlebar + stem -->
-            <path d="M60 40 q-10 -2 -16 6" fill="none" stroke="#1B2A4A" stroke-width="4.5" stroke-linecap="round"/>
-            <rect x="58" y="20" width="5" height="24" rx="2.5" fill="#1B2A4A"/>
-            <circle cx="60.5" cy="17" r="4.5" fill="#2C4870"/>
+            <!-- handlebar + stem (mirrored so it points forward) -->
+            <g transform="translate(143,0) scale(-1,1)">
+              <path d="M60 40 q-10 -2 -16 6" fill="none" stroke="#1B2A4A" stroke-width="4.5" stroke-linecap="round"/>
+              <rect x="58" y="20" width="5" height="24" rx="2.5" fill="#1B2A4A"/>
+              <circle cx="60.5" cy="17" r="4.5" fill="#2C4870"/>
+            </g>
             <!-- scooter body -->
             <path d="M40 76c0-5 3-9 8-9h44c9 0 18 5 24 14l6 11H36c-3 0-4-3-3-6z" fill="#2C4870"/>
             <path d="M40 76c0-5 3-9 8-9h20v18H43c-3 0-4-3-3-6z" fill="#1B2A4A"/>
-            <!-- rider -->
-            <circle cx="80" cy="6" r="11" fill="#F4C89A"/>
-            <path d="M80 6c2-5 8-6 8 1v3" fill="none" stroke="#1e2a38" stroke-width="2" stroke-linecap="round"/>
-            <path d="M67 30c0-10 6-17 16-17s16 7 16 17v8H67v-8z" fill="#2C4870"/>
-            <path d="M65 46l10-18 10 5-8 15z" fill="#1B2A4A"/>
-            <path d="M78 46l6-18 9 3-6 17z" fill="#2C4870"/>
+            <!-- rider (mirrored so he faces forward, toward the handlebar) -->
+            <g transform="translate(143,0) scale(-1,1)">
+              <circle cx="80" cy="6" r="11" fill="#F4C89A"/>
+              <path d="M80 6c2-5 8-6 8 1v3" fill="none" stroke="#1e2a38" stroke-width="2" stroke-linecap="round"/>
+              <path d="M67 30c0-10 6-17 16-17s16 7 16 17v8H67v-8z" fill="#2C4870"/>
+              <path d="M65 46l10-18 10 5-8 15z" fill="#1B2A4A"/>
+              <path d="M78 46l6-18 9 3-6 17z" fill="#2C4870"/>
+            </g>
             <!-- wheels -->
-            <circle cx="48" cy="92" r="15" fill="#1e2a38"/>
+            <circle class="wheel-spin" cx="48" cy="92" r="15" fill="#1e2a38"/>
             <circle cx="48" cy="92" r="6.5" fill="#DCE6F2"/>
-            <circle cx="118" cy="92" r="15" fill="#1e2a38"/>
+            <line class="wheel-spin" x1="48" y1="80" x2="48" y2="104" stroke="#8FA6C7" stroke-width="2"/>
+            <line class="wheel-spin" x1="36" y1="92" x2="60" y2="92" stroke="#8FA6C7" stroke-width="2"/>
+            <circle class="wheel-spin" cx="118" cy="92" r="15" fill="#1e2a38"/>
             <circle cx="118" cy="92" r="6.5" fill="#DCE6F2"/>
+            <line class="wheel-spin" x1="118" y1="80" x2="118" y2="104" stroke="#8FA6C7" stroke-width="2"/>
+            <line class="wheel-spin" x1="106" y1="92" x2="130" y2="92" stroke="#8FA6C7" stroke-width="2"/>
             <rect x="60" y="86" width="52" height="5" rx="2.5" fill="#1B2A4A"/>
+          </g>
           </g>
         </svg>
       </div>
