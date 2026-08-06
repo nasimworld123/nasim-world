@@ -548,6 +548,19 @@
             <option value="group3">আমসত্ত্ব</option>
             <option value="group4">Category 4 (ছবি ৪)</option>
           </select>
+          <div class="delivery-field-item">
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <input type="checkbox" id="pSellByWeight" onchange="onSellByWeightChange()" style="width:auto;margin:0;">
+              ওজন অনুযায়ী বিক্রি (শুধু আমের জন্য — কেজিতে কাস্টম অর্ডার)
+            </label>
+            <div id="pWeightFieldsWrap" style="display:none;">
+              <div class="form-row">
+                <input type="text" id="pPricePerKg" placeholder="প্রতি কেজি দাম (৳)">
+                <input type="text" id="pMinWeight" placeholder="সর্বনিম্ন ওজন (কেজি) — যেমনঃ 10">
+              </div>
+              <input type="text" id="pWeightOptions" placeholder="ওজনের অপশন, কমা দিয়ে — যেমনঃ 10,12,15,18,20">
+            </div>
+          </div>
           <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
           <button class="cancel-edit-btn" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
           <div class="status-msg" id="addStatus"></div>
@@ -597,6 +610,10 @@
       const status = document.getElementById('pStockStatus').value;
       document.getElementById('pStockQty').style.display = (status === 'in') ? 'block' : 'none';
       if (status === 'out') document.getElementById('pStockQty').value = '';
+    }
+    function onSellByWeightChange() {
+      const checked = document.getElementById('pSellByWeight').checked;
+      document.getElementById('pWeightFieldsWrap').style.display = checked ? 'block' : 'none';
     }
     function stockLabelFor(stock) {
       if (stock === undefined || stock === null || stock === '') return { text: 'In Stock', cls: 'in' };
@@ -841,6 +858,19 @@
       } else if (editingId) {
         data.stock = firebase.firestore.FieldValue.delete();
       }
+      const sellByWeight = document.getElementById('pSellByWeight').checked;
+      if (sellByWeight) {
+        const pricePerKg = document.getElementById('pPricePerKg').value.trim();
+        const minWeight = document.getElementById('pMinWeight').value.trim();
+        const weightOptionsRaw = document.getElementById('pWeightOptions').value.trim();
+        data.sellByWeight = true;
+        if (pricePerKg) data.price = pricePerKg;
+        if (minWeight) data.minWeight = minWeight;
+        data.weightOptions = weightOptionsRaw ? weightOptionsRaw.split(',').map(w => w.trim()).filter(Boolean) : [];
+      } else if (editingId) {
+        data.sellByWeight = false;
+        data.weightOptions = [];
+      }
       productSubmitting = true;
       addBtn.disabled = true;
 
@@ -884,7 +914,7 @@
         .finally(() => { productSubmitting = false; addBtn.disabled = false; });
     }
 
-    function editProduct(id, name, price, oldPrice, src, category, stock) {
+    function editProduct(id, name, price, oldPrice, src, category, stock, sellByWeight, minWeight, weightOptions) {
       editingId = id;
       document.getElementById('pName').value = name;
       document.getElementById('pPrice').value = price;
@@ -893,6 +923,12 @@
       imgInput.value = src;
       imgInput.dispatchEvent(new Event('input'));
       document.getElementById('pCategory').value = category;
+
+      document.getElementById('pSellByWeight').checked = !!sellByWeight;
+      document.getElementById('pWeightFieldsWrap').style.display = sellByWeight ? 'block' : 'none';
+      document.getElementById('pPricePerKg').value = sellByWeight ? price : '';
+      document.getElementById('pMinWeight').value = minWeight || '';
+      document.getElementById('pWeightOptions').value = (weightOptions && weightOptions.length) ? weightOptions.join(',') : '';
 
       const isOut = (stock !== undefined && stock !== null && stock !== '' && parseInt(bnToEnAdmin(stock), 10) <= 0);
       document.getElementById('pStockStatus').value = isOut ? 'out' : 'in';
@@ -918,6 +954,11 @@
       document.getElementById('pStockStatus').value = 'in';
       document.getElementById('pStockQty').value = '';
       document.getElementById('pStockQty').style.display = 'block';
+      document.getElementById('pSellByWeight').checked = false;
+      document.getElementById('pWeightFieldsWrap').style.display = 'none';
+      document.getElementById('pPricePerKg').value = '';
+      document.getElementById('pMinWeight').value = '';
+      document.getElementById('pWeightOptions').value = '';
       document.getElementById('addBtn').textContent = 'Add Product';
       document.getElementById('cancelEditBtn').classList.remove('show');
       document.getElementById('addStatus').textContent = '';
@@ -1086,20 +1127,21 @@
           } else {
             items.forEach(item => {
               const stockInfo = stockLabelFor(item.stock);
+              const priceLabel = item.sellByWeight ? `৳${item.price}/কেজি` : `৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}`;
               rowsHTML += `
                 <div class="mini-item">
                   <div class="mini-item-header" onclick="toggleMiniItem(this)">
                     <img src="${item.src}" onerror="this.style.background='#FFFFFF'; this.alt='ছবি লোড হয়নি';">
                     <div class="info">
                       <div class="name">${item.name}</div>
-                      <div class="price">৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}</div>
+                      <div class="price">${priceLabel}</div>
                       <div class="stock-label ${stockInfo.cls}">${stockInfo.text}</div>
                     </div>
                     <div class="mini-chevron">▾</div>
                   </div>
                   <div class="mini-item-body">
                     <div class="mini-item-body-inner">
-                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}", ${JSON.stringify(item.stock !== undefined ? item.stock : "")})'>Edit</button>
+                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}", ${JSON.stringify(item.stock !== undefined ? item.stock : "")}, ${JSON.stringify(!!item.sellByWeight)}, ${JSON.stringify(item.minWeight || "")}, ${JSON.stringify(item.weightOptions || [])})'>Edit</button>
                       <button class="cross-btn" onclick="event.stopPropagation(); deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
                     </div>
                   </div>
