@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brand Website</title>
+<title>NASIM WORLD — সেরা মানের আম, আচার ও আমসত্ত্ব</title>
+<meta name="description" content="নওগাঁর সাপাহার থেকে সরাসরি সেরা মানের আম, আচার ও আমসত্ত্ব — নিরাপদ, স্বাস্থ্যসম্মত ও বাসায় পৌঁছে দেওয়ার নিশ্চয়তাসহ।">
+<meta property="og:title" content="NASIM WORLD — সেরা মানের আম, আচার ও আমসত্ত্ব">
+<meta property="og:description" content="নওগাঁর সাপাহার থেকে সরাসরি সেরা মানের আম, আচার ও আমসত্ত্ব — নিরাপদ, স্বাস্থ্যসম্মত ও বাসায় পৌঁছে দেওয়ার নিশ্চয়তাসহ।">
+<meta property="og:type" content="website">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
   html { scroll-behavior: smooth; }
@@ -162,6 +166,12 @@
     font-size: 0.85rem; color: #1e2a38; margin-bottom: 6px;
   }
   .delivery-row span:last-child { font-weight: bold; color: #14213D; }
+  .cod-note {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.3);
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 10px;
+    font-size: 0.78rem; color: #128C4A; font-weight: 600;
+  }
 
   .nav-links {
     position: fixed;
@@ -506,6 +516,22 @@
     font-size: 0.9rem;
     line-height: 1.6;
   }
+  .glass-card p { margin-bottom: 8px; }
+  .glass-card p:last-child { margin-bottom: 0; }
+  .location-card {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(27,42,74,0.25);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 18px 20px;
+    text-align: center;
+    color: #33475a;
+    font-size: 0.9rem;
+    margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .location-card svg { flex-shrink: 0; color: #1B2A4A; width: 22px; height: 22px; }
 
   /* ===== Modal / Lightbox Gallery ===== */
   .modal-overlay {
@@ -616,6 +642,56 @@
   }
   .pd-addcart-btn:active { transform: scale(0.97); background: rgba(27,42,74,0.08); }
   .pd-addcart-btn:disabled { color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25); cursor: not-allowed; }
+
+  /* ===== Weight selector (for mango-style, sold-by-weight products) ===== */
+  .weight-select-wrap { margin-bottom: 18px; }
+  .weight-select-label { font-size: 0.85rem; color: #1e2a38; font-weight: 700; margin-bottom: 10px; }
+  .weight-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .weight-chip {
+    padding: 9px 16px; border-radius: 20px;
+    border: 1.5px solid rgba(27,42,74,0.3);
+    background: #fff; color: #1e2a38;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  }
+  .weight-chip.active {
+    background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border-color: transparent;
+    box-shadow: 0 4px 12px rgba(27,42,74,0.35);
+  }
+  .weight-min-note { font-size: 0.75rem; color: rgba(30,42,56,0.5); margin-top: 8px; }
+
+  /* ===== Reviews ===== */
+  .review-section { margin-top: 22px; border-top: 1px solid rgba(27,42,74,0.15); padding-top: 16px; }
+  .review-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .review-section-header h3 { font-size: 0.95rem; color: #1e2a38; font-weight: 800; }
+  .review-write-btn {
+    background: rgba(27,42,74,0.08); border: 1px solid rgba(27,42,74,0.3); color: #1B2A4A;
+    padding: 7px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+  }
+  .review-summary { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .review-stars { color: #f5a623; font-size: 0.95rem; letter-spacing: 1px; }
+  .review-avg-text { font-size: 0.8rem; color: rgba(30,42,56,0.6); font-weight: 600; }
+  .review-item {
+    background: #fff; border: 1px solid rgba(27,42,74,0.15); border-radius: 14px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .review-item .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .review-item .reviewer-name { font-weight: 700; font-size: 0.85rem; color: #1e2a38; }
+  .review-item .review-stars { font-size: 0.8rem; }
+  .review-item .review-text { font-size: 0.82rem; color: #33475a; line-height: 1.5; }
+  .review-empty { text-align: center; color: rgba(30,42,56,0.45); font-size: 0.82rem; padding: 14px 0; }
+  .review-form { display: none; margin-top: 12px; background: #F4F7FB; border-radius: 14px; padding: 14px; }
+  .review-form.show { display: block; }
+  .review-form .star-picker { display: flex; gap: 6px; margin-bottom: 10px; font-size: 1.4rem; }
+  .review-form .star-picker span { cursor: pointer; color: rgba(30,42,56,0.25); }
+  .review-form .star-picker span.filled { color: #f5a623; }
+  .review-form input, .review-form textarea {
+    width: 100%; background: #fff; border: 1px solid rgba(27,42,74,0.25);
+    border-radius: 10px; padding: 10px 12px; font-size: 0.83rem; margin-bottom: 8px; color: #1e2a38;
+  }
+  .review-submit-btn {
+    width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border: none;
+    padding: 11px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  }
 
   /* ===== Success Modal (glass) ===== */
   .success-overlay {
@@ -1028,7 +1104,15 @@
   <div class="about-section" id="about">
     <h2 class="section-title">আমাদের সম্পর্কে</h2>
     <div class="glass-card">
-      এখানে আপনার ব্র্যান্ডের সংক্ষিপ্ত পরিচিতি লিখুন। ঠিকানা, ফোন নাম্বার বা হোয়াটসঅ্যাপ লিংক পরে যোগ করে দিতে পারবেন।
+      <p>আসসালামু আলাইকুম প্রিয় ভাই,</p>
+      <p>পছন্দ আপনার, পৌঁছে দেওয়ার দায়িত্ব আমাদের।</p>
+      <p>আমাদের পেজে বা ওয়েবসাইটে যে প্রোডাক্ট আপনি দেখবেন, সেটাই ইনশাআল্লাহ ১০০% আপনাকে প্রোভাইড করা হবে।</p>
+      <p>আমাদের পণ্য একদম নিরাপদ ও স্বাস্থ্যসম্মত। আমাদের ওয়েবসাইট থেকে অর্ডার করলে আপনার পণ্য আপনার বাসা পর্যন্ত পৌঁছে দেওয়ার দায়িত্ব আমাদের।</p>
+      <p>নিশ্চিন্তে অর্ডার করুন ☺️</p>
+    </div>
+    <div class="location-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>সাপাহার, নওগাঁ জেলা</span>
     </div>
   </div>
 
@@ -1059,6 +1143,7 @@
       <div class="cart-total-row"><span>মোট মূল্য</span><span id="cartTotal">৳0</span></div>
       <button class="place-order-btn" id="cartOrderNowBtn" onclick="showOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <div class="order-form" id="orderForm">
+        <div class="cod-note">💵 ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে টাকা দিন</div>
         <input type="text" id="custName" placeholder="আপনার নাম">
         <input type="tel" id="custPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
         <div class="field-error" id="custPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
@@ -1197,7 +1282,14 @@
         <span id="pdStockText"></span>
         <span class="pd-live-subtotal" id="pdLiveSubtotal" style="margin-left:auto;">৳0</span>
       </div>
-      <div class="pd-qty-row">
+
+      <div class="weight-select-wrap" id="pdWeightWrap" style="display:none;">
+        <div class="weight-select-label">ওজন সিলেক্ট করুন</div>
+        <div class="weight-chip-row" id="pdWeightChipRow"></div>
+        <div class="weight-min-note" id="pdWeightMinNote"></div>
+      </div>
+
+      <div class="pd-qty-row" id="pdQtyRow">
         <span>পরিমাণ</span>
         <div class="qty-buttons">
           <button onclick="pdChangeQty(-1)">-</button>
@@ -1210,6 +1302,7 @@
         <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
       <div class="order-form" id="pdOrderForm">
+        <div class="cod-note">💵 ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে টাকা দিন</div>
         <input type="text" id="pdCustName" placeholder="আপনার নাম">
         <input type="tel" id="pdCustPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
         <div class="field-error" id="pdCustPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
@@ -1222,6 +1315,28 @@
         <div class="delivery-row"><span>ডেলিভারি চার্জ</span><span id="pdDeliveryFeeDisplay">৳0</span></div>
         <div class="delivery-row" style="font-weight:bold;"><span>মোট</span><span id="pdTotalDisplay">৳0</span></div>
         <button class="place-order-btn" onclick="confirmPdOrder()">ORDER CONFIRM</button>
+      </div>
+
+      <!-- Reviews -->
+      <div class="review-section">
+        <div class="review-section-header">
+          <h3>⭐ কাস্টমার রিভিউ</h3>
+          <button class="review-write-btn" onclick="toggleReviewForm()">✍️ রিভিউ লিখুন</button>
+        </div>
+        <div class="review-summary" id="reviewSummary" style="display:none;">
+          <span class="review-stars" id="reviewAvgStars"></span>
+          <span class="review-avg-text" id="reviewAvgText"></span>
+        </div>
+        <div id="reviewList"></div>
+        <div class="review-form" id="reviewForm">
+          <div class="star-picker" id="reviewStarPicker">
+            <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+          </div>
+          <input type="text" id="reviewName" placeholder="আপনার নাম">
+          <input type="tel" id="reviewPhone" placeholder="মোবাইল নাম্বার (ঐচ্ছিক)">
+          <textarea id="reviewText" rows="3" placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..."></textarea>
+          <button class="review-submit-btn" onclick="submitReview()">Submit Review</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1245,11 +1360,11 @@
   <!-- Footer -->
   <div class="footer">
     <div class="brand">NASIM WORLD</div>
-    <div>ঠিকানা ও যোগাযোগের তথ্য এখানে বসবে</div>
     <div class="socials">
-      <a href="https://facebook.com/yourpage" target="_blank">f</a>
-      <a href="https://instagram.com/yourpage" target="_blank">@</a>
-      <a href="https://wa.me/8801340902365" target="_blank">W</a>
+      <a href="https://www.facebook.com/share/1GrGadxnUP/" target="_blank" aria-label="Facebook">f</a>
+      <a href="https://www.instagram.com/world_nasim?igsh=cGVzZ3VtanhxbHhh" target="_blank" aria-label="Instagram">@</a>
+      <a href="https://www.tiktok.com/@nasim.world?_r=1&_t=ZS-98dYgSdlO33" target="_blank" aria-label="TikTok">T</a>
+      <a href="https://wa.me/8801340902365" target="_blank" aria-label="WhatsApp">W</a>
     </div>
     <div>© 2026 সর্বস্বত্ব সংরক্ষিত</div>
   </div>
@@ -1502,19 +1617,40 @@ function bnToEn(str) {
   // ===== Single Product Detail (Order Now / Add to Cart) =====
   let pdCurrentItem = null;
   let pdCurrentQty = 1;
+  let pdSelectedWeight = null;
 
   function openProductDetail(item) {
     pdCurrentItem = item;
     pdCurrentQty = 1;
     document.getElementById('pdImage').src = item.src;
     document.getElementById('pdName').textContent = item.name;
-    document.getElementById('pdPrice').textContent = `৳${item.price}`;
-    const oldPriceEl = document.getElementById('pdOldPrice');
-    if (item.oldPrice) {
-      oldPriceEl.textContent = `৳${item.oldPrice}`;
-      oldPriceEl.style.display = 'inline';
+
+    const weightWrap = document.getElementById('pdWeightWrap');
+    const qtyRow = document.getElementById('pdQtyRow');
+    if (item.sellByWeight && item.weightOptions && item.weightOptions.length) {
+      weightWrap.style.display = 'block';
+      qtyRow.style.display = 'none';
+      const minW = parseFloat(bnToEn(item.minWeight || item.weightOptions[0]));
+      pdSelectedWeight = parseFloat(bnToEn(item.weightOptions[0]));
+      const chipRow = document.getElementById('pdWeightChipRow');
+      chipRow.innerHTML = item.weightOptions.map((w, i) =>
+        `<div class="weight-chip ${i === 0 ? 'active' : ''}" data-weight="${w}" onclick="pdSelectWeight(this, ${parseFloat(bnToEn(w))})">${w} কেজি</div>`
+      ).join('');
+      document.getElementById('pdWeightMinNote').textContent = `সর্বনিম্ন ${item.minWeight || item.weightOptions[0]} কেজি থেকে অর্ডার করা যাবে`;
+      document.getElementById('pdPrice').textContent = `৳${item.price}/কেজি`;
+      document.getElementById('pdOldPrice').style.display = 'none';
     } else {
-      oldPriceEl.style.display = 'none';
+      weightWrap.style.display = 'none';
+      qtyRow.style.display = 'flex';
+      pdSelectedWeight = null;
+      document.getElementById('pdPrice').textContent = `৳${item.price}`;
+      const oldPriceEl = document.getElementById('pdOldPrice');
+      if (item.oldPrice) {
+        oldPriceEl.textContent = `৳${item.oldPrice}`;
+        oldPriceEl.style.display = 'inline';
+      } else {
+        oldPriceEl.style.display = 'none';
+      }
     }
     document.getElementById('pdQty').textContent = pdCurrentQty;
 
@@ -1545,6 +1681,14 @@ function bnToEn(str) {
     orderNowBtn.style.display = 'flex';
     updatePdTotal();
     document.getElementById('productDetailOverlay').classList.add('active');
+    loadReviews(item.id);
+  }
+
+  function pdSelectWeight(el, weight) {
+    pdSelectedWeight = weight;
+    document.querySelectorAll('#pdWeightChipRow .weight-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    updatePdTotal();
   }
 
   function closeProductDetail() {
@@ -1561,12 +1705,17 @@ function bnToEn(str) {
   function updatePdTotal() {
     if (!pdCurrentItem) return;
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price)) || 0;
-    const subtotal = numPrice * pdCurrentQty;
+    const isWeightItem = pdCurrentItem.sellByWeight && pdSelectedWeight;
+    const subtotal = isWeightItem ? numPrice * pdSelectedWeight : numPrice * pdCurrentQty;
     const area = document.getElementById('pdDeliveryArea').value;
     const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
     const liveSubtotalEl = document.getElementById('pdLiveSubtotal');
-    if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
+    if (liveSubtotalEl) {
+      liveSubtotalEl.textContent = isWeightItem
+        ? `৳${numPrice} x ${pdSelectedWeight}কেজি = ৳${subtotal}`
+        : `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
+    }
     document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
     document.getElementById('pdTotalDisplay').textContent = `৳${subtotal + fee}`;
   }
@@ -1575,8 +1724,12 @@ function bnToEn(str) {
     if (!pdCurrentItem) return;
     const stock = getStockState(pdCurrentItem);
     if (!stock.inStock) return;
-    for (let i = 0; i < pdCurrentQty; i++) {
-      addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+    if (pdCurrentItem.sellByWeight && pdSelectedWeight) {
+      addWeightItemToCart(pdCurrentItem, pdSelectedWeight);
+    } else {
+      for (let i = 0; i < pdCurrentQty; i++) {
+        addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+      }
     }
     closeProductDetail();
     openCart();
@@ -1624,7 +1777,8 @@ function bnToEn(str) {
     phoneErrorEl.classList.remove('show');
 
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
-    const subtotal = numPrice * pdCurrentQty;
+    const isWeightItem = pdCurrentItem.sellByWeight && pdSelectedWeight;
+    const subtotal = isWeightItem ? numPrice * pdSelectedWeight : numPrice * pdCurrentQty;
     const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     const total = subtotal + deliveryFee;
 
@@ -1634,17 +1788,20 @@ function bnToEn(str) {
 
     try {
       const orderId = await getNextOrderId();
+      const itemEntry = isWeightItem
+        ? { id: pdCurrentItem.id || null, name: `${pdCurrentItem.name} (${pdSelectedWeight} কেজি)`, price: numPrice, qty: pdSelectedWeight }
+        : { id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty };
       await db.collection('orders').add({
         orderId, name, phone, address,
         deliveryArea: area === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে',
         deliveryFee: deliveryFee,
-        items: [{ id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
+        items: [itemEntry],
         total: total,
         status: 'Pending',
         source: 'Single Product',
         createdAt: Date.now()
       });
-      await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
+      if (!isWeightItem) await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
       closeProductDetail();
       showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
     } catch (e) {
@@ -1684,6 +1841,15 @@ function bnToEn(str) {
   else { cart.push({ id: id || null, name, price: numPrice, src, qty: 1 }); }
   updateCartCount();
   }
+
+  function addWeightItemToCart(item, weight) {
+    const numPrice = parseFloat(bnToEn(item.price));
+    const label = `${item.name} (${weight} কেজি)`;
+    const existing = cart.find(i => i.name === label);
+    if (existing) { existing.qty = weight; }
+    else { cart.push({ id: item.id || null, name: label, price: numPrice, src: item.src, qty: weight, isWeightItem: true }); }
+    updateCartCount();
+  }
  function updateCartCount() {
     localStorage.setItem('nasimCart', JSON.stringify(cart));
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
@@ -1695,6 +1861,7 @@ function bnToEn(str) {
  }
 
   function changeQty(index, delta) {
+    if (cart[index].isWeightItem) return; // weight-based items are edited via product detail, not +/-
     cart[index].qty += delta;
     if (cart[index].qty <= 0) cart.splice(index, 1);
     updateCartCount();
@@ -1737,18 +1904,21 @@ function bnToEn(str) {
     cart.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'cart-item';
-    el.innerHTML = `
-        <img src="${item.src}" onerror="this.onerror=null; this.removeAttribute('src');">
-        <div class="cart-item-info">
-          <div class="name">${item.name}</div>
-          <div class="qty-control">
+      const qtyControlHTML = item.isWeightItem
+        ? `<span class="line-total">${item.qty} কেজি x ৳${item.price} = ৳${item.price * item.qty}</span>`
+        : `<div class="qty-control">
             <div class="qty-buttons">
               <button onclick="changeQty(${i}, -1)">-</button>
               <span>${item.qty}</span>
               <button onclick="changeQty(${i}, 1)">+</button>
             </div>
             <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
-          </div>
+          </div>`;
+    el.innerHTML = `
+        <img src="${item.src}" onerror="this.onerror=null; this.removeAttribute('src');">
+        <div class="cart-item-info">
+          <div class="name">${item.name}</div>
+          ${qtyControlHTML}
         </div>
         <button class="remove-item" onclick="removeItem(${i})">✕</button>`;
       wrap.appendChild(el);
@@ -1858,6 +2028,107 @@ function bnToEn(str) {
     }
   }
 
+  // ===== Reviews =====
+  let reviewSelectedStars = 0;
+  let reviewCurrentProductId = null;
+
+  document.getElementById('reviewStarPicker').querySelectorAll('span').forEach(star => {
+    star.addEventListener('click', () => {
+      reviewSelectedStars = parseInt(star.dataset.val, 10);
+      document.getElementById('reviewStarPicker').querySelectorAll('span').forEach(s => {
+        s.classList.toggle('filled', parseInt(s.dataset.val, 10) <= reviewSelectedStars);
+      });
+    });
+  });
+
+  function toggleReviewForm() {
+    document.getElementById('reviewForm').classList.toggle('show');
+  }
+
+  function starsHTML(avg) {
+    const rounded = Math.round(avg);
+    let html = '';
+    for (let i = 1; i <= 5; i++) html += i <= rounded ? '★' : '☆';
+    return html;
+  }
+
+  async function loadReviews(productId) {
+    reviewCurrentProductId = productId;
+    const listEl = document.getElementById('reviewList');
+    const summaryEl = document.getElementById('reviewSummary');
+    if (!productId) {
+      listEl.innerHTML = '';
+      summaryEl.style.display = 'none';
+      return;
+    }
+    listEl.innerHTML = '<p class="review-empty">লোড হচ্ছে...</p>';
+    try {
+      const snap = await db.collection('reviews').where('productId', '==', productId).orderBy('createdAt', 'desc').get();
+      const reviews = snap.docs.map(d => d.data());
+      if (reviews.length === 0) {
+        listEl.innerHTML = '<p class="review-empty">এখনো কোনো রিভিউ নেই। প্রথম রিভিউটি আপনিই দিন!</p>';
+        summaryEl.style.display = 'none';
+        return;
+      }
+      const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length;
+      document.getElementById('reviewAvgStars').textContent = starsHTML(avg);
+      document.getElementById('reviewAvgText').textContent = `${avg.toFixed(1)} (${reviews.length}টি রিভিউ)`;
+      summaryEl.style.display = 'flex';
+      listEl.innerHTML = '';
+      reviews.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
+          <div class="top-row">
+            <span class="reviewer-name">${r.name}</span>
+            <span class="review-stars">${starsHTML(r.rating)}</span>
+          </div>
+          <div class="review-text">${r.text}</div>`;
+        listEl.appendChild(div);
+      });
+    } catch (e) {
+      listEl.innerHTML = '<p class="review-empty">লোড করতে সমস্যা হয়েছে</p>';
+    }
+  }
+
+  async function submitReview() {
+    const name = document.getElementById('reviewName').value.trim();
+    const phone = document.getElementById('reviewPhone').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+
+    if (!reviewCurrentProductId) return;
+    if (!name || !text || reviewSelectedStars === 0) {
+      alert('দয়া করে রেটিং, নাম ও রিভিউ লিখুন');
+      return;
+    }
+
+    const btn = document.querySelector('.review-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      await db.collection('reviews').add({
+        productId: reviewCurrentProductId,
+        name, phone: phone ? bnToEn(phone) : '',
+        rating: reviewSelectedStars,
+        text,
+        createdAt: Date.now()
+      });
+      document.getElementById('reviewName').value = '';
+      document.getElementById('reviewPhone').value = '';
+      document.getElementById('reviewText').value = '';
+      reviewSelectedStars = 0;
+      document.getElementById('reviewStarPicker').querySelectorAll('span').forEach(s => s.classList.remove('filled'));
+      document.getElementById('reviewForm').classList.remove('show');
+      loadReviews(reviewCurrentProductId);
+    } catch (e) {
+      alert('দুঃখিত, রিভিউ জমা দেওয়া যায়নি। আবার চেষ্টা করুন।');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Review';
+    }
+  }
+
   // ===== Search =====
   let allProductsCache = null;
 
@@ -1961,7 +2232,8 @@ function bnToEn(str) {
         source: 'Cart',
         createdAt: Date.now()
       });
-      await decrementStockForItems(itemsArr);
+      const nonWeightItems = cart.filter(i => !i.isWeightItem).map(i => ({ id: i.id, qty: i.qty }));
+      await decrementStockForItems(nonWeightItems);
       cart = [];
       updateCartCount();
       closeCart();
@@ -2175,44 +2447,4 @@ function bnToEn(str) {
     });
 
     btn.addEventListener('pointerup', () => {
-      if (!dragging) return;
-      dragging = false;
-      if (moved) {
-        const rect = btn.getBoundingClientRect();
-        localStorage.setItem('nasimWaBtnPos', JSON.stringify({ left: rect.left, top: rect.top }));
-      }
-    });
-
-    btn.addEventListener('click', (e) => {
-      if (moved) { e.preventDefault(); }
-    });
-  })();
-</script>
-
-  <!-- Bottom Navigation Bar -->
-  <div class="bottom-nav">
-    <div class="nav-item nav-selected" onclick="navTap(this, goHome)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="navTap(this, navOpenCart)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-      <span id="navCartCount" class="nav-badge">0</span>
-      <span>Cart</span>
-    </div>
-    <div class="nav-item" onclick="navTap(this, openSearch)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <span>Search</span>
-    </div>
-    <div class="nav-item" onclick="navTap(this, navOpenTrack)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg>
-      <span>Track</span>
-    </div>
-    <div class="nav-item" onclick="navTap(this, goAccount)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span>Account</span>
-    </div>
-  </div>
-
-</body>
-</html>
+    
