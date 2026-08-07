@@ -79,6 +79,26 @@
   /* ===== Dashboard ===== */
   .dashboard { display: none; padding: 18px; max-width: 720px; margin: 0 auto; }
 
+  /* ---- Diagnostics banner (shown only when Firestore reports an error) ---- */
+  .diag-banner {
+    display: none;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #b91c1c;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  .diag-banner.show { display: block; }
+  .diag-banner b { display: block; margin-bottom: 4px; font-size: 0.85rem; }
+  .diag-banner code {
+    display: block; margin-top: 6px; padding: 6px 8px;
+    background: rgba(0,0,0,0.06); border-radius: 8px; font-size: 0.72rem;
+    word-break: break-all;
+  }
+
   /* ---- Accordion section card ---- */
   .section-card {
     background: rgba(255,255,255,0.55);
@@ -364,6 +384,13 @@
   <!-- Dashboard -->
   <div class="dashboard" id="dashboard">
 
+    <!-- ===== Diagnostics banner: only shows if Firestore returns an error ===== -->
+    <div class="diag-banner" id="diagBanner">
+      <b>⚠️ ডাটা লোড করতে সমস্যা হচ্ছে</b>
+      <span id="diagText"></span>
+      <code id="diagCode"></code>
+    </div>
+
     <!-- ===== All Orders (accordion) ===== -->
     <div class="section-card" id="sectionCard-orders">
       <div class="section-card-header" onclick="toggleSection('orders')">
@@ -601,6 +628,27 @@
 
     const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "আমসত্ত্ব", group4: "Category 4" };
 
+    // ===== Diagnostics: surface Firestore read/write errors instead of failing silently =====
+    function showDiag(context, error) {
+      const banner = document.getElementById('diagBanner');
+      const text = document.getElementById('diagText');
+      const code = document.getElementById('diagCode');
+      let hint = '';
+      if (error && error.code === 'permission-denied') {
+        hint = 'Firestore Security Rules-এ পাবলিক read/write অনুমতি নেই বলে মনে হচ্ছে। কাস্টমাররা লগইন ছাড়াই অর্ডার করে, তাই "orders" কালেকশনে write এবং "products"/"settings" কালেকশনে read/write পাবলিকভাবে খোলা থাকতে হবে।';
+      } else if (error && (error.code === 'unavailable' || error.code === 'network-request-failed')) {
+        hint = 'ইন্টারনেট সংযোগ বা Firebase সার্ভারে পৌঁছাতে সমস্যা হচ্ছে।';
+      } else {
+        hint = 'নিচের এরর কোড অনুযায়ী সমস্যাটি যাচাই করুন।';
+      }
+      text.textContent = `(${context}) ${hint}`;
+      code.textContent = error ? `${error.code || ''} ${error.message || error}` : '';
+      banner.classList.add('show');
+    }
+    function clearDiag() {
+      document.getElementById('diagBanner').classList.remove('show');
+    }
+
     // ===== Stock helpers =====
     function bnToEnAdmin(str) {
       const bnDigits = '০১২৩৪৫৬৭৮৯';
@@ -667,6 +715,7 @@
         document.getElementById('loginWrap').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         document.getElementById('logoutBtn').style.display = 'inline-block';
+        clearDiag();
         listenProducts();
         listenOrders();
         loadSiteSettingsForm();
@@ -750,7 +799,9 @@
         });
         if (data.deliveryInside !== undefined) document.getElementById('deliveryInsideInput').value = data.deliveryInside;
         if (data.deliveryOutside !== undefined) document.getElementById('deliveryOutsideInput').value = data.deliveryOutside;
-      } catch (e) {}
+      } catch (e) {
+        showDiag('Site Settings লোড', e);
+      }
     }
 
     function saveSiteSettings() {
@@ -782,9 +833,10 @@
           statusEl.textContent = '✅ Site images updated';
           statusEl.style.color = '#128C4A';
         })
-        .catch(() => {
+        .catch((e) => {
           statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
+          showDiag('Site Settings সেভ', e);
         })
         .finally(() => { btn.disabled = false; });
     }
@@ -821,9 +873,10 @@
           statusEl.textContent = '✅ ডেলিভারি চার্জ সেভ হয়েছে';
           statusEl.style.color = '#128C4A';
         })
-        .catch(() => {
+        .catch((e) => {
           statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
+          showDiag('ডেলিভারি চার্জ সেভ', e);
         })
         .finally(() => { btn.disabled = false; });
     }
@@ -883,9 +936,10 @@
             statusEl.style.color = '#128C4A';
             cancelEdit();
           })
-          .catch(() => {
+          .catch((e) => {
             statusEl.textContent = 'Something went wrong, please try again';
             statusEl.style.color = '#ef4444';
+            showDiag('Product আপডেট', e);
           })
           .finally(() => { productSubmitting = false; addBtn.disabled = false; });
         return;
@@ -907,9 +961,10 @@
           document.getElementById('pStockQty').value = '';
           document.getElementById('pStockQty').style.display = 'block';
         })
-        .catch(() => {
+        .catch((e) => {
           statusEl.textContent = 'Something went wrong, please try again';
           statusEl.style.color = '#ef4444';
+          showDiag('Product যোগ', e);
         })
         .finally(() => { productSubmitting = false; addBtn.disabled = false; });
     }
@@ -966,7 +1021,7 @@
 
     function deleteProduct(id) {
       if (!confirm('Delete this product?')) return;
-      db.collection('products').doc(id).delete();
+      db.collection('products').doc(id).delete().catch(e => showDiag('Product ডিলিট', e));
     }
 
     // ===== Orders =====
@@ -990,6 +1045,7 @@
 
     function listenOrders() {
       db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        clearDiag();
         allOrders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         if (!ordersFirstLoad) {
@@ -1023,12 +1079,17 @@
         }
 
         renderOrders();
+      }, (error) => {
+        // This fires when Firestore cannot even connect/read — e.g. Security
+        // Rules blocking access. Previously this failed silently and just
+        // looked like "No orders".
+        showDiag('Orders লোড', error);
       });
     }
 
     function deleteOrder(id) {
       if (!confirm('Delete this order?')) return;
-      db.collection('orders').doc(id).delete();
+      db.collection('orders').doc(id).delete().catch(e => showDiag('Order ডিলিট', e));
     }
 
     function filterOrders(status, el) {
@@ -1103,7 +1164,7 @@
     }
 
     function updateOrderStatus(id, status) {
-      db.collection('orders').doc(id).update({ status });
+      db.collection('orders').doc(id).update({ status }).catch(e => showDiag('Order স্ট্যাটাস আপডেট', e));
     }
 
     function listenProducts() {
@@ -1151,6 +1212,8 @@
           group.innerHTML = `<h4>${categoryLabels[key]}</h4>${rowsHTML}`;
           listEl.appendChild(group);
         });
+      }, (error) => {
+        showDiag('Products লোড', error);
       });
     }
   </script>
