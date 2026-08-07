@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brand Website</title>
+<title>NASIM WORLD — সেরা মানের আম, আচার ও আমসত্ত্ব</title>
+<meta name="description" content="নওগাঁর সাপাহার থেকে সরাসরি সেরা মানের আম, আচার ও আমসত্ত্ব — নিরাপদ, স্বাস্থ্যসম্মত ও বাসায় পৌঁছে দেওয়ার নিশ্চয়তাসহ।">
+<meta property="og:title" content="NASIM WORLD — সেরা মানের আম, আচার ও আমসত্ত্ব">
+<meta property="og:description" content="নওগাঁর সাপাহার থেকে সরাসরি সেরা মানের আম, আচার ও আমসত্ত্ব — নিরাপদ, স্বাস্থ্যসম্মত ও বাসায় পৌঁছে দেওয়ার নিশ্চয়তাসহ।">
+<meta property="og:type" content="website">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
   html { scroll-behavior: smooth; }
@@ -162,6 +166,12 @@
     font-size: 0.85rem; color: #1e2a38; margin-bottom: 6px;
   }
   .delivery-row span:last-child { font-weight: bold; color: #14213D; }
+  .cod-note {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.3);
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 10px;
+    font-size: 0.78rem; color: #128C4A; font-weight: 600;
+  }
 
   .nav-links {
     position: fixed;
@@ -506,6 +516,27 @@
     font-size: 0.9rem;
     line-height: 1.6;
   }
+  .glass-card p { margin-bottom: 8px; }
+  .glass-card p:last-child { margin-bottom: 0; }
+  .location-card {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(27,42,74,0.25);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 18px 20px;
+    text-align: center;
+    color: #33475a;
+    font-size: 0.9rem;
+    margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .location-card:active { transform: scale(0.98); }
+  .location-card:hover { box-shadow: 0 6px 18px rgba(27,42,74,0.15); }
+  .location-card svg { flex-shrink: 0; color: #1B2A4A; width: 22px; height: 22px; }
+  .location-card .loc-hint { font-size: 0.7rem; color: rgba(30,42,56,0.45); display: block; margin-top: 2px; }
 
   /* ===== Modal / Lightbox Gallery ===== */
   .modal-overlay {
@@ -882,13 +913,21 @@
     font-size: 0.8rem;
   }
   .footer .brand { color: #1B2A4A; font-weight: bold; margin-bottom: 6px; font-size: 0.95rem; }
-  .footer .socials { margin: 12px 0; display:flex; justify-content:center; gap:10px; }
+  .footer .socials { margin: 14px 0; display:flex; justify-content:center; gap:12px; flex-wrap: wrap; }
   .footer .socials a {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.3);
-    display:flex; align-items:center; justify-content:center; font-size:0.85rem;
-    color: #1B2A4A;
+    width: 40px; height: 40px; border-radius: 12px;
+    display:flex; align-items:center; justify-content:center;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(27,42,74,0.2);
+    transition: transform 0.18s ease, box-shadow 0.2s ease;
   }
+  .footer .socials a svg { width: 19px; height: 19px; display: block; }
+  .footer .socials a:active { transform: scale(0.9); }
+  .footer .socials a.ico-fb { background: #1877F2; }
+  .footer .socials a.ico-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+  .footer .socials a.ico-tt { background: #010101; }
+  .footer .socials a.ico-wa { background: #25D366; }
+  .footer .socials a.ico-loc { background: linear-gradient(135deg,#EA4335,#C5221F); cursor: pointer; }
 
   /* ===== Desktop responsiveness: keep the mobile-style shell centered ===== */
   @media (min-width: 640px) {
@@ -903,11 +942,12 @@
   }
 </style>
 </head>
+
 <body>
 
   <!-- Navbar -->
   <div class="navbar">
-    <div class="logo" onclick="secretAdminTap()"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='NASIM WORLD';"></div>
+    <div class="logo" id="logoTapZone"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='NASIM WORLD';"></div>
     <div style="display:flex; align-items:center; gap:10px;">
       <div class="cart-icon" onclick="openCart()">
         🛒<span class="cart-count" id="cartCount">0</span>
@@ -1028,7 +1068,11 @@
   <div class="about-section" id="about">
     <h2 class="section-title">আমাদের সম্পর্কে</h2>
     <div class="glass-card">
-      এখানে আপনার ব্র্যান্ডের সংক্ষিপ্ত পরিচিতি লিখুন। ঠিকানা, ফোন নাম্বার বা হোয়াটসঅ্যাপ লিংক পরে যোগ করে দিতে পারবেন।
+      <p>আসসালামু আলাইকুম প্রিয় ভাই,</p>
+      <p>পছন্দ আপনার, পৌঁছে দেওয়ার দায়িত্ব আমাদের।</p>
+      <p>আমাদের পেজে বা ওয়েবসাইটে যে প্রোডাক্ট আপনি দেখবেন, সেটাই ইনশাআল্লাহ ১০০% আপনাকে প্রোভাইড করা হবে।</p>
+      <p>আমাদের পণ্য একদম নিরাপদ ও স্বাস্থ্যসম্মত। আমাদের ওয়েবসাইট থেকে অর্ডার করলে আপনার পণ্য আপনার বাসা পর্যন্ত পৌঁছে দেওয়ার দায়িত্ব আমাদের।</p>
+      <p>নিশ্চিন্তে অর্ডার করুন ☺️</p>
     </div>
   </div>
 
@@ -1059,6 +1103,7 @@
       <div class="cart-total-row"><span>মোট মূল্য</span><span id="cartTotal">৳0</span></div>
       <button class="place-order-btn" id="cartOrderNowBtn" onclick="showOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <div class="order-form" id="orderForm">
+        <div class="cod-note">💵 ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে টাকা দিন</div>
         <input type="text" id="custName" placeholder="আপনার নাম">
         <input type="tel" id="custPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
         <div class="field-error" id="custPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
@@ -1092,7 +1137,6 @@
     <div class="track-hero-card">
       <div class="track-hero-icon">
         <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
-          <!-- faint background accents -->
           <circle cx="255" cy="35" r="22" fill="none" stroke="#DCE6F2" stroke-width="2"/>
           <path d="M240 35c0-8 7-15 15-15s15 7 15 15c0 10-15 24-15 24s-15-14-15-24z" fill="none" stroke="#DCE6F2" stroke-width="2"/>
           <g opacity="0.55" stroke="#DCE6F2" stroke-width="2" fill="none">
@@ -1101,49 +1145,33 @@
             <circle cx="213" cy="38" r="3.5"/>
             <circle cx="228" cy="38" r="3.5"/>
           </g>
-          <!-- ground shadow -->
           <ellipse cx="150" cy="176" rx="140" ry="6" fill="#EDF1F8"/>
-
-          <!-- stacked boxes behind phone -->
           <rect x="14" y="112" width="30" height="30" rx="3" fill="#EDF1F8" stroke="#B9C8DE" stroke-width="1.5"/>
           <rect x="24" y="96" width="30" height="30" rx="3" fill="#DCE6F2" stroke="#B9C8DE" stroke-width="1.5"/>
-
-          <!-- phone -->
           <rect x="34" y="18" width="98" height="158" rx="18" fill="#fff" stroke="#1B2A4A" stroke-width="4.5"/>
           <rect x="46" y="34" width="74" height="112" rx="6" fill="#F4F7FB"/>
-          <!-- route dotted line -->
           <path class="route-line" d="M58 128 L68 112 L62 96 L86 80 L80 58" fill="none" stroke="#2C4870" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/>
           <circle class="start-dot" cx="58" cy="128" r="4.5" fill="#1B2A4A"/>
-          <!-- pin -->
           <path class="map-pin" d="M80 58c0-8 6.5-14.5 14.5-14.5S109 50 109 58c0 10-14.5 24-14.5 24S80 68 80 58z" fill="#1B2A4A"/>
           <circle class="map-pin" cx="94.5" cy="57" r="5" fill="#fff"/>
-          <!-- info chip under screen -->
           <rect x="46" y="150" width="74" height="16" rx="5" fill="#DCE6F2"/>
           <circle class="info-dot" cx="56" cy="158" r="3.6" fill="#1B2A4A"/>
           <rect x="65" y="154.5" width="38" height="3.4" rx="1.7" fill="#2C4870"/>
           <rect x="65" y="160.5" width="24" height="2.6" rx="1.3" fill="#8FA6C7"/>
-          <!-- phone top notch -->
           <rect x="72" y="24" width="22" height="4" rx="2" fill="#1B2A4A"/>
-
-          <!-- delivery scooter group (outer group only positions it; CSS animation goes on the inner group so the position never gets overridden) -->
           <g transform="translate(100,58)">
           <g class="scooter-group">
-            <!-- exhaust puff -->
             <circle class="exhaust-puff" cx="40" cy="84" r="6" fill="#B9C8DE"/>
-            <!-- delivery box on front -->
             <rect x="18" y="46" width="34" height="30" rx="4" fill="#1B2A4A"/>
             <rect x="18" y="46" width="34" height="8" fill="#2C4870"/>
             <rect x="32" y="46" width="4" height="30" fill="#2C4870"/>
-            <!-- handlebar + stem (mirrored so it points forward) -->
             <g transform="translate(143,0) scale(-1,1)">
               <path d="M60 40 q-10 -2 -16 6" fill="none" stroke="#1B2A4A" stroke-width="4.5" stroke-linecap="round"/>
               <rect x="58" y="20" width="5" height="24" rx="2.5" fill="#1B2A4A"/>
               <circle cx="60.5" cy="17" r="4.5" fill="#2C4870"/>
             </g>
-            <!-- scooter body -->
             <path d="M40 76c0-5 3-9 8-9h44c9 0 18 5 24 14l6 11H36c-3 0-4-3-3-6z" fill="#2C4870"/>
             <path d="M40 76c0-5 3-9 8-9h20v18H43c-3 0-4-3-3-6z" fill="#1B2A4A"/>
-            <!-- rider (mirrored so he faces forward, toward the handlebar) -->
             <g transform="translate(143,0) scale(-1,1)">
               <circle cx="80" cy="6" r="11" fill="#F4C89A"/>
               <path d="M80 6c2-5 8-6 8 1v3" fill="none" stroke="#1e2a38" stroke-width="2" stroke-linecap="round"/>
@@ -1151,7 +1179,6 @@
               <path d="M65 46l10-18 10 5-8 15z" fill="#1B2A4A"/>
               <path d="M78 46l6-18 9 3-6 17z" fill="#2C4870"/>
             </g>
-            <!-- wheels -->
             <circle class="wheel-spin" cx="48" cy="92" r="15" fill="#1e2a38"/>
             <circle cx="48" cy="92" r="6.5" fill="#DCE6F2"/>
             <line class="wheel-spin" x1="48" y1="80" x2="48" y2="104" stroke="#8FA6C7" stroke-width="2"/>
@@ -1210,6 +1237,7 @@
         <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
       <div class="order-form" id="pdOrderForm">
+        <div class="cod-note">💵 ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে টাকা দিন</div>
         <input type="text" id="pdCustName" placeholder="আপনার নাম">
         <input type="tel" id="pdCustPhone" placeholder="মোবাইল নাম্বার (০১XXXXXXXXX)">
         <div class="field-error" id="pdCustPhoneError">সঠিক ১১ ডিজিটের মোবাইল নাম্বার লিখুন (যেমনঃ ০১৭XXXXXXXX)</div>
@@ -1245,11 +1273,22 @@
   <!-- Footer -->
   <div class="footer">
     <div class="brand">NASIM WORLD</div>
-    <div>ঠিকানা ও যোগাযোগের তথ্য এখানে বসবে</div>
     <div class="socials">
-      <a href="https://facebook.com/yourpage" target="_blank">f</a>
-      <a href="https://instagram.com/yourpage" target="_blank">@</a>
-      <a href="https://wa.me/8801340902365" target="_blank">W</a>
+      <a class="ico-fb" href="https://www.facebook.com/share/1GrGadxnUP/" target="_blank" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+      </a>
+      <a class="ico-ig" href="https://www.instagram.com/world_nasim?igsh=cGVzZ3VtanhxbHhh" target="_blank" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a class="ico-tt" href="https://www.tiktok.com/@nasim.world?_r=1&_t=ZS-98dYgSdlO33" target="_blank" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82c-.9-.79-1.5-1.9-1.63-3.13h-3.02v13.44c0 1.56-1.27 2.83-2.83 2.83a2.83 2.83 0 0 1-2.83-2.83 2.83 2.83 0 0 1 2.83-2.83c.28 0 .55.04.8.12V10.3a5.9 5.9 0 0 0-.8-.06 5.9 5.9 0 0 0-5.9 5.9A5.9 5.9 0 0 0 9.12 22a5.9 5.9 0 0 0 5.9-5.9V9.02c1.22.87 2.71 1.38 4.32 1.38V7.38c-1-.03-1.98-.34-2.74-1z"/></svg>
+      </a>
+      <a class="ico-wa" href="https://wa.me/8801340902365" target="_blank" aria-label="WhatsApp">
+        <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.29.638 4.43 1.744 6.253L4 29l7.94-1.687A11.93 11.93 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.7c-1.94 0-3.75-.55-5.29-1.5l-.38-.23-4.71 1 1.03-4.59-.25-.4A9.65 9.65 0 0 1 5.3 15c0-5.9 4.8-10.7 10.7-10.7S26.7 9.1 26.7 15 21.9 24.7 16.004 24.7zm5.9-8.03c-.32-.16-1.9-.94-2.2-1.05-.3-.11-.51-.16-.73.16-.21.32-.84 1.05-1.03 1.27-.19.21-.38.24-.7.08-.32-.16-1.35-.5-2.57-1.6-.95-.85-1.6-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.38.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.73-1.76-1-2.41-.26-.63-.53-.55-.73-.56h-.62c-.21 0-.56.08-.85.4-.29.32-1.12 1.09-1.12 2.66s1.14 3.09 1.3 3.3c.16.21 2.24 3.42 5.43 4.79.76.33 1.35.53 1.81.67.76.24 1.45.21 2 .13.61-.09 1.9-.78 2.17-1.53.27-.75.27-1.4.19-1.53-.08-.13-.29-.21-.61-.37z"/></svg>
+      </a>
+      <a class="ico-loc" href="javascript:void(0)" onclick="openLocationMap()" aria-label="Location">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.6 11.19 7.09 11.62.26.23.65.23.91 0C12.4 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 10.5A2.5 2.5 0 1 1 12 7.5a2.5 2.5 0 0 1 0 5z"/></svg>
+      </a>
     </div>
     <div>© 2026 সর্বস্বত্ব সংরক্ষিত</div>
   </div>
@@ -1282,6 +1321,11 @@ function bnToEn(str) {
   function isValidBDPhone(phone) {
     const cleaned = bnToEn(phone).replace(/[\s-]/g, '');
     return /^01[3-9]\d{8}$/.test(cleaned);
+  }
+
+  // ===== Location card / footer icon: open Google Maps for Sapahar, Naogaon =====
+  function openLocationMap() {
+    window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Sapahar, Naogaon, Bangladesh'), '_blank');
   }
 
   // ===== Delivery charge settings (fetched from admin) =====
@@ -1779,18 +1823,29 @@ function bnToEn(str) {
     document.getElementById('trackOrderOverlay').classList.remove('active');
   }
 
-  // ===== Hidden admin access: tap logo 5 times within 2 seconds =====
-  let logoTapCount = 0;
-  let logoTapTimer = null;
+  // ===== Hidden admin access: tap logo 5 times within 3 seconds =====
+  // Timestamp-window approach (more forgiving than a plain reset-timer)
+  // and bound with addEventListener so it can't be silently lost even if
+  // the logo image swaps out on error.
+  let logoTapTimes = [];
   function secretAdminTap() {
-    logoTapCount++;
-    if (logoTapTimer) clearTimeout(logoTapTimer);
-    logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 2000);
-    if (logoTapCount >= 5) {
-      logoTapCount = 0;
+    const now = Date.now();
+    logoTapTimes.push(now);
+    logoTapTimes = logoTapTimes.filter(t => now - t <= 3000);
+    if (logoTapTimes.length >= 5) {
+      logoTapTimes = [];
       window.location.href = 'admin.html';
     }
   }
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoZone = document.getElementById('logoTapZone');
+    if (logoZone) {
+      logoZone.style.cursor = 'pointer';
+      logoZone.addEventListener('click', secretAdminTap);
+      const img = logoZone.querySelector('img');
+      if (img) img.addEventListener('click', secretAdminTap);
+    }
+  });
 
   function goHome() {
     closeAllOverlays();
@@ -1827,7 +1882,6 @@ function bnToEn(str) {
       resultsEl.innerHTML = '<p style="text-align:center;color:#ef4444;padding:20px 0;font-size:0.85rem;">অর্ডার আইডি লিখুন</p>';
       return;
     }
-    // Accept with or without the "NW-" prefix, case-insensitive
     let orderId = bnToEn(rawId).toUpperCase().replace(/\s+/g, '');
     if (!orderId.startsWith('NW-')) orderId = 'NW-' + orderId.replace(/^NW-?/, '');
     resultsEl.innerHTML = '<p style="text-align:center;color:#1B2A4A;padding:20px 0;">খোঁজা হচ্ছে...</p>';
@@ -2216,3 +2270,4 @@ function bnToEn(str) {
 
 </body>
 </html>
+
