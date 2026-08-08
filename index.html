@@ -270,6 +270,44 @@
   }
   .pd-addcart-btn:active { transform: scale(0.97); background: rgba(27,42,74,0.08); }
   .pd-addcart-btn:disabled { color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25); cursor: not-allowed; }
+
+  /* ===== Reviews ===== */
+  .review-summary-row { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 4px; }
+  .review-stars { color: #f5a623; font-size: 0.95rem; letter-spacing: 1px; }
+  .review-avg-text { font-size: 0.82rem; color: #2C4870; font-weight: 700; text-decoration: underline; }
+  .review-chevron { font-size: 0.7rem; color: rgba(30,42,56,0.5); transition: transform 0.25s ease; }
+  .review-chevron.open { transform: rotate(180deg); }
+  .review-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; margin-bottom: 8px; }
+  .review-panel.open { max-height: 2000px; }
+  .review-panel-inner { background: #F4F7FB; border: 1px solid rgba(27,42,74,0.15); border-radius: 14px; padding: 14px; margin-top: 8px; }
+  .review-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .review-panel-header h4 { font-size: 0.88rem; color: #1e2a38; font-weight: 800; }
+  .review-item { background: #fff; border: 1px solid rgba(27,42,74,0.15); border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
+  .review-item .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .review-item .reviewer-name { font-weight: 700; font-size: 0.83rem; color: #1e2a38; }
+  .review-item .review-stars { font-size: 0.78rem; }
+  .review-item .review-text { font-size: 0.81rem; color: #33475a; line-height: 1.5; }
+  .review-empty { text-align: center; color: rgba(30,42,56,0.45); font-size: 0.82rem; padding: 12px 0; }
+  .review-write-btn {
+    width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border: none;
+    padding: 11px; border-radius: 20px; font-size: 0.83rem; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px;
+  }
+  .review-form { display: none; margin-top: 12px; background: #fff; border: 1px solid rgba(27,42,74,0.15); border-radius: 14px; padding: 14px; }
+  .review-form.show { display: block; }
+  .review-form label { display: block; font-size: 0.78rem; font-weight: 700; color: #1e2a38; margin-bottom: 6px; }
+  .review-form .star-picker { display: flex; gap: 6px; margin-bottom: 12px; font-size: 1.5rem; }
+  .review-form .star-picker span { cursor: pointer; color: rgba(30,42,56,0.25); transition: color 0.15s; }
+  .review-form .star-picker span.filled { color: #f5a623; }
+  .review-form input, .review-form textarea {
+    width: 100%; background: #F4F7FB; border: 1px solid rgba(27,42,74,0.25);
+    border-radius: 10px; padding: 10px 12px; font-size: 0.83rem; margin-bottom: 10px; color: #1e2a38;
+  }
+  .review-submit-btn {
+    width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border: none;
+    padding: 11px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  }
+  .review-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .success-overlay {
     display: none; position: fixed; inset: 0; z-index: 1200; background: rgba(30,20,10,0.35);
     backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;
@@ -563,6 +601,33 @@
       <img id="pdImage" class="pd-image" src="" alt="">
       <h2 id="pdName" class="pd-name"></h2>
       <div class="pd-price-row"><span id="pdPrice" class="pd-price"></span><span id="pdOldPrice" class="pd-old-price"></span></div>
+      <div class="review-summary-row" onclick="toggleReviewPanel()">
+        <span class="review-stars" id="reviewAvgStars">☆☆☆☆☆</span>
+        <span class="review-avg-text" id="reviewAvgText">0 reviews</span>
+        <span class="review-chevron" id="reviewChevron">▾</span>
+      </div>
+      <div class="review-panel" id="reviewPanel">
+        <div class="review-panel-inner">
+          <div class="review-panel-header"><h4>Customer Reviews</h4></div>
+          <div id="reviewList"></div>
+          <button class="review-write-btn" onclick="toggleReviewForm()">✍️ Write a Review</button>
+          <div class="review-form" id="reviewForm">
+            <label>Your Rating *</label>
+            <div class="star-picker" id="reviewStarPicker">
+              <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+            </div>
+            <label>Your Name *</label>
+            <input type="text" id="reviewName" placeholder="আপনার নাম লিখুন">
+            <label>Email *</label>
+            <input type="email" id="reviewEmail" placeholder="আপনার ইমেইল লিখুন">
+            <label>Phone Number</label>
+            <input type="tel" id="reviewPhone" placeholder="আপনার ফোন নম্বর লিখুন">
+            <label>Your Review *</label>
+            <textarea id="reviewText" rows="3" placeholder="Share your experience with this product..."></textarea>
+            <button class="review-submit-btn" id="reviewSubmitBtn" onclick="submitReview()">Submit Review</button>
+          </div>
+        </div>
+      </div>
       <div class="pd-stock-row" id="pdStockRow"><span class="stock-dot" id="pdStockDot"></span><span id="pdStockText"></span><span class="pd-live-subtotal" id="pdLiveSubtotal" style="margin-left:auto;">৳0</span></div>
       <div class="pd-qty-row"><span>পরিমাণ</span><div class="qty-buttons"><button onclick="pdChangeQty(-1)">-</button><span id="pdQty">1</span><button onclick="pdChangeQty(1)">+</button></div></div>
       <div class="pd-btn-row">
@@ -818,10 +883,117 @@
     document.getElementById('pdOrderForm').classList.remove('show');
     orderNowBtn.style.display = 'flex';
     updatePdTotal();
+    document.getElementById('reviewPanel').classList.remove('open');
+    document.getElementById('reviewChevron').classList.remove('open');
+    document.getElementById('reviewForm').classList.remove('show');
+    loadReviews(item.id || item.name);
     document.getElementById('productDetailOverlay').classList.add('active');
   }
 
   function closeProductDetail() { document.getElementById('productDetailOverlay').classList.remove('active'); }
+
+  // ===== Reviews =====
+  let reviewSelectedStars = 0;
+  let reviewCurrentProductId = null;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const picker = document.getElementById('reviewStarPicker');
+    if (!picker) return;
+    picker.querySelectorAll('span').forEach(star => {
+      star.addEventListener('click', () => {
+        reviewSelectedStars = parseInt(star.dataset.val, 10);
+        picker.querySelectorAll('span').forEach(s => s.classList.toggle('filled', parseInt(s.dataset.val, 10) <= reviewSelectedStars));
+      });
+    });
+  });
+
+  function toggleReviewPanel() {
+    document.getElementById('reviewPanel').classList.toggle('open');
+    document.getElementById('reviewChevron').classList.toggle('open');
+  }
+
+  function toggleReviewForm() {
+    if (!document.getElementById('reviewPanel').classList.contains('open')) toggleReviewPanel();
+    document.getElementById('reviewForm').classList.toggle('show');
+  }
+
+  function starsHTML(avg) {
+    const rounded = Math.round(avg);
+    let html = '';
+    for (let i = 1; i <= 5; i++) html += i <= rounded ? '★' : '☆';
+    return html;
+  }
+
+  async function loadReviews(productId) {
+    reviewCurrentProductId = productId;
+    const listEl = document.getElementById('reviewList');
+    if (!productId) { listEl.innerHTML = ''; return; }
+    listEl.innerHTML = '<p class="review-empty">লোড হচ্ছে...</p>';
+    try {
+      const snap = await db.collection('reviews').where('productId', '==', String(productId)).get();
+      const reviews = snap.docs.map(d => d.data()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      if (reviews.length === 0) {
+        document.getElementById('reviewAvgStars').textContent = '☆☆☆☆☆';
+        document.getElementById('reviewAvgText').textContent = '0 reviews';
+        listEl.innerHTML = '<p class="review-empty">No reviews yet. Be the first!</p>';
+        return;
+      }
+      const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length;
+      document.getElementById('reviewAvgStars').textContent = starsHTML(avg);
+      document.getElementById('reviewAvgText').textContent = `${avg.toFixed(1)} (${reviews.length} reviews)`;
+      listEl.innerHTML = '';
+      reviews.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
+          <div class="top-row"><span class="reviewer-name">${r.name}</span><span class="review-stars">${starsHTML(r.rating)}</span></div>
+          <div class="review-text">${r.text}</div>`;
+        listEl.appendChild(div);
+      });
+    } catch (e) {
+      listEl.innerHTML = '<p class="review-empty">লোড করতে সমস্যা হয়েছে</p>';
+    }
+  }
+
+  async function submitReview() {
+    const name = document.getElementById('reviewName').value.trim();
+    const email = document.getElementById('reviewEmail').value.trim();
+    const phone = document.getElementById('reviewPhone').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+
+    if (!reviewCurrentProductId) return;
+    if (!name || !email || !text || reviewSelectedStars === 0) {
+      alert('দয়া করে রেটিং, নাম, ইমেইল ও রিভিউ লিখুন');
+      return;
+    }
+
+    const btn = document.getElementById('reviewSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      await db.collection('reviews').add({
+        productId: String(reviewCurrentProductId),
+        name, email, phone: phone ? bnToEn(phone) : '',
+        rating: reviewSelectedStars,
+        text,
+        createdAt: Date.now()
+      });
+      document.getElementById('reviewName').value = '';
+      document.getElementById('reviewEmail').value = '';
+      document.getElementById('reviewPhone').value = '';
+      document.getElementById('reviewText').value = '';
+      reviewSelectedStars = 0;
+      document.getElementById('reviewStarPicker').querySelectorAll('span').forEach(s => s.classList.remove('filled'));
+      document.getElementById('reviewForm').classList.remove('show');
+      loadReviews(reviewCurrentProductId);
+    } catch (e) {
+      alert('দুঃখিত, রিভিউ জমা দেওয়া যায়নি। আবার চেষ্টা করুন।');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Review';
+    }
+  }
 
   function pdChangeQty(delta) {
     pdCurrentQty += delta;
