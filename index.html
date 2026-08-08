@@ -271,6 +271,26 @@
   .pd-addcart-btn:active { transform: scale(0.97); background: rgba(27,42,74,0.08); }
   .pd-addcart-btn:disabled { color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25); cursor: not-allowed; }
 
+  /* ===== Weight-based order (mango sold by kg) ===== */
+  .pd-weight-row { margin-bottom: 18px; }
+  .pd-weight-label { font-size: 0.9rem; font-weight: 700; color: #1e2a38; margin-bottom: 10px; display: block; }
+  .weight-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .weight-chip {
+    background: rgba(27,42,74,0.08); border: 1.5px solid rgba(27,42,74,0.3); color: #1B2A4A;
+    padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  }
+  .weight-chip.active { background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border-color: transparent; }
+  .weight-custom-wrap { display: flex; gap: 8px; margin-bottom: 6px; }
+  .weight-custom-wrap input {
+    flex: 1; background: #F4F7FB; border: 1px solid rgba(27,42,74,0.25); border-radius: 10px;
+    padding: 10px 12px; font-size: 0.85rem; color: #1e2a38;
+  }
+  .weight-custom-btn {
+    background: #1B2A4A; color: #fff; border: none; padding: 0 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  }
+  .weight-min-note { font-size: 0.75rem; color: rgba(30,42,56,0.55); margin-bottom: 4px; }
+  .weight-min-note.err { color: #ef4444; font-weight: 700; }
+
   /* ===== Reviews ===== */
   .review-summary-row { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 4px; }
   .review-stars { color: #f5a623; font-size: 0.95rem; letter-spacing: 1px; }
@@ -629,7 +649,16 @@
         </div>
       </div>
       <div class="pd-stock-row" id="pdStockRow"><span class="stock-dot" id="pdStockDot"></span><span id="pdStockText"></span><span class="pd-live-subtotal" id="pdLiveSubtotal" style="margin-left:auto;">৳0</span></div>
-      <div class="pd-qty-row"><span>পরিমাণ</span><div class="qty-buttons"><button onclick="pdChangeQty(-1)">-</button><span id="pdQty">1</span><button onclick="pdChangeQty(1)">+</button></div></div>
+      <div class="pd-weight-row" id="pdWeightRow" style="display:none;">
+        <span class="pd-weight-label">ওজন নির্বাচন করুন (কেজি)</span>
+        <div class="weight-chips" id="pdWeightChips"></div>
+        <div class="weight-custom-wrap">
+          <input type="text" id="pdCustomWeight" placeholder="কাস্টম ওজন (কেজি)">
+          <button class="weight-custom-btn" onclick="applyCustomWeight()">ঠিক আছে</button>
+        </div>
+        <div class="weight-min-note" id="pdWeightMinNote"></div>
+      </div>
+      <div class="pd-qty-row" id="pdQtyRow"><span>পরিমাণ</span><div class="qty-buttons"><button onclick="pdChangeQty(-1)">-</button><span id="pdQty">1</span><button onclick="pdChangeQty(1)">+</button></div></div>
       <div class="pd-btn-row">
         <button class="pd-addcart-btn" id="pdAddCartBtn" onclick="pdAddToCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="btn-label">ADD TO CART</span></button>
         <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
@@ -720,11 +749,23 @@
     return `<div class="stock-row"><span class="stock-dot ${stock.inStock ? 'in' : 'out'}"></span><span class="stock-text ${stock.inStock ? 'in' : 'out'}">${stock.label}</span></div>`;
   }
 
-  function cardActionRowHTML(item, stock) {
-    if (stock.inStock) {
-      return `<div class="card-action-row"><button class="btn-outline-cart" onclick='event.stopPropagation(); addToCart(${JSON.stringify(item.id || "")}, ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>${cartIconSVG}ADD TO CART</button></div>`;
+  function priceRowHTML(item, priceClass, oldPriceClass, saveClass) {
+    let html = `<span class="${priceClass}">৳${item.price}${item.sellByWeight ? '/কেজি' : ''}</span>`;
+    if (item.oldPrice) {
+      const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
+      html += `<span class="${oldPriceClass}">৳${item.oldPrice}</span><span class="${saveClass}">Save ৳${save}</span>`;
     }
-    return `<div class="card-action-row"><button class="btn-outline-cart" disabled>${cartIconSVG}UNAVAILABLE</button></div>`;
+    return html;
+  }
+
+  function cardActionRowHTML(item, stock) {
+    if (!stock.inStock) {
+      return `<div class="card-action-row"><button class="btn-outline-cart" disabled>${cartIconSVG}UNAVAILABLE</button></div>`;
+    }
+    if (item.sellByWeight) {
+      return `<div class="card-action-row"><button class="btn-outline-cart" onclick='event.stopPropagation(); openProductDetail(${JSON.stringify(item)})'>${cartIconSVG}ওজন বেছে নিন</button></div>`;
+    }
+    return `<div class="card-action-row"><button class="btn-outline-cart" onclick='event.stopPropagation(); addToCart(${JSON.stringify(item.id || "")}, ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.src)})'>${cartIconSVG}ADD TO CART</button></div>`;
   }
 
   function initHorizontalSwipe(el, callbacks) {
@@ -766,11 +807,7 @@
     items.forEach((item, i) => {
       const card = document.createElement('div');
       card.className = 'modal-card';
-      let priceHTML = `<span class="product-price">৳${item.price}</span>`;
-      if (item.oldPrice) {
-        const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
-        priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
-      }
+      const priceHTML = priceRowHTML(item, 'product-price', 'product-old-price', 'product-save');
       const stock = getStockState(item);
       card.innerHTML = `
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
@@ -798,11 +835,7 @@
     track.innerHTML = ''; dotsWrap.innerHTML = '';
     if (items.length === 0) { track.innerHTML = '<p class="prod-cat-empty">কোনো পণ্য নেই</p>'; return; }
     items.forEach((item) => {
-      let priceHTML = `<span class="prod-cat-price">৳${item.price}</span>`;
-      if (item.oldPrice) {
-        const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
-        priceHTML += `<span class="prod-cat-oldprice">৳${item.oldPrice}</span><span class="prod-cat-save">Save ৳${save}</span>`;
-      }
+      const priceHTML = priceRowHTML(item, 'prod-cat-price', 'prod-cat-oldprice', 'prod-cat-save');
       const stock = getStockState(item);
       const card = document.createElement('div');
       card.className = 'prod-cat-card';
@@ -857,22 +890,53 @@
 
   let pdCurrentItem = null;
   let pdCurrentQty = 1;
+  let pdCurrentWeight = 10;
 
   function openProductDetail(item) {
     pdCurrentItem = item;
     pdCurrentQty = 1;
     document.getElementById('pdImage').src = item.src;
     document.getElementById('pdName').textContent = item.name;
-    document.getElementById('pdPrice').textContent = `৳${item.price}`;
     const oldPriceEl = document.getElementById('pdOldPrice');
     if (item.oldPrice) { oldPriceEl.textContent = `৳${item.oldPrice}`; oldPriceEl.style.display = 'inline'; }
     else { oldPriceEl.style.display = 'none'; }
-    document.getElementById('pdQty').textContent = pdCurrentQty;
     const stock = getStockState(item);
     document.getElementById('pdStockDot').className = `stock-dot ${stock.inStock ? 'in' : 'out'}`;
     const pdStockTextEl = document.getElementById('pdStockText');
     pdStockTextEl.textContent = stock.label;
     pdStockTextEl.className = `stock-text ${stock.inStock ? 'in' : 'out'}`;
+
+    if (item.sellByWeight) {
+      document.getElementById('pdPrice').textContent = `৳${item.price}/কেজি`;
+      document.getElementById('pdWeightRow').style.display = 'block';
+      document.getElementById('pdQtyRow').style.display = 'none';
+      const minW = parseFloat(bnToEn(item.minWeight)) || 10;
+      let options = (item.weightOptions && item.weightOptions.length)
+        ? item.weightOptions.map(w => parseFloat(bnToEn(w))).filter(w => !isNaN(w))
+        : [10, 12, 15, 18, 20];
+      options = options.filter(w => w >= minW);
+      if (options.length === 0) options = [minW];
+      pdCurrentWeight = options[0];
+      const chipsWrap = document.getElementById('pdWeightChips');
+      chipsWrap.innerHTML = '';
+      options.forEach(w => {
+        const chip = document.createElement('div');
+        chip.className = 'weight-chip' + (w === pdCurrentWeight ? ' active' : '');
+        chip.textContent = `${w} কেজি`;
+        chip.onclick = () => selectWeightChip(w, chip);
+        chipsWrap.appendChild(chip);
+      });
+      document.getElementById('pdCustomWeight').value = '';
+      const noteEl = document.getElementById('pdWeightMinNote');
+      noteEl.textContent = `সর্বনিম্ন ওজন: ${minW} কেজি (এর কম নেওয়া যাবে না)`;
+      noteEl.classList.remove('err');
+    } else {
+      document.getElementById('pdPrice').textContent = `৳${item.price}`;
+      document.getElementById('pdWeightRow').style.display = 'none';
+      document.getElementById('pdQtyRow').style.display = 'flex';
+      document.getElementById('pdQty').textContent = pdCurrentQty;
+    }
+
     const addCartBtn = document.getElementById('pdAddCartBtn');
     const addCartLabel = addCartBtn.querySelector('.btn-label');
     const orderNowBtn = document.getElementById('pdOrderNowBtn');
@@ -891,6 +955,36 @@
   }
 
   function closeProductDetail() { document.getElementById('productDetailOverlay').classList.remove('active'); }
+
+  function selectWeightChip(w, chipEl) {
+    pdCurrentWeight = w;
+    document.querySelectorAll('#pdWeightChips .weight-chip').forEach(c => c.classList.remove('active'));
+    chipEl.classList.add('active');
+    document.getElementById('pdCustomWeight').value = '';
+    const minW = parseFloat(bnToEn(pdCurrentItem.minWeight)) || 10;
+    const noteEl = document.getElementById('pdWeightMinNote');
+    noteEl.textContent = `সর্বনিম্ন ওজন: ${minW} কেজি (এর কম নেওয়া যাবে না)`;
+    noteEl.classList.remove('err');
+    updatePdTotal();
+  }
+
+  function applyCustomWeight() {
+    if (!pdCurrentItem) return;
+    const raw = document.getElementById('pdCustomWeight').value.trim();
+    const minW = parseFloat(bnToEn(pdCurrentItem.minWeight)) || 10;
+    const val = parseFloat(bnToEn(raw));
+    const noteEl = document.getElementById('pdWeightMinNote');
+    if (!raw || isNaN(val) || val < minW) {
+      noteEl.textContent = `সঠিক ওজন লিখুন — সর্বনিম্ন ${minW} কেজি নিতে হবে`;
+      noteEl.classList.add('err');
+      return;
+    }
+    pdCurrentWeight = val;
+    document.querySelectorAll('#pdWeightChips .weight-chip').forEach(c => c.classList.remove('active'));
+    noteEl.textContent = `নির্বাচিত ওজন: ${val} কেজি`;
+    noteEl.classList.remove('err');
+    updatePdTotal();
+  }
 
   // ===== Reviews =====
   let reviewSelectedStars = 0;
@@ -1005,12 +1099,14 @@
   function updatePdTotal() {
     if (!pdCurrentItem) return;
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price)) || 0;
-    const subtotal = numPrice * pdCurrentQty;
+    const isWeight = !!pdCurrentItem.sellByWeight;
+    const qtyOrWeight = isWeight ? pdCurrentWeight : pdCurrentQty;
+    const subtotal = numPrice * qtyOrWeight;
     const area = document.getElementById('pdDeliveryArea').value;
     const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
     const liveSubtotalEl = document.getElementById('pdLiveSubtotal');
-    if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
+    if (liveSubtotalEl) liveSubtotalEl.textContent = isWeight ? `৳${numPrice}/কেজি x ${qtyOrWeight}কেজি = ৳${subtotal}` : `৳${numPrice} x ${qtyOrWeight} = ৳${subtotal}`;
     document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
     document.getElementById('pdTotalDisplay').textContent = `৳${subtotal + fee}`;
   }
@@ -1019,7 +1115,11 @@
     if (!pdCurrentItem) return;
     const stock = getStockState(pdCurrentItem);
     if (!stock.inStock) return;
-    for (let i = 0; i < pdCurrentQty; i++) addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+    if (pdCurrentItem.sellByWeight) {
+      addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src, true, pdCurrentWeight, pdCurrentItem.minWeight);
+    } else {
+      for (let i = 0; i < pdCurrentQty; i++) addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
+    }
     closeProductDetail();
     openCart();
   }
@@ -1032,11 +1132,6 @@
   }
 
   // ===== Sequential human-readable Order IDs (NW-1, NW-2, ...) =====
-  // IMPORTANT: this needs a Firestore WRITE to settings/orderCounter, which
-  // may be blocked by Security Rules for unauthenticated (customer) users.
-  // If that write fails for ANY reason, we must NOT let it block the order
-  // itself — we fall back to a short unique ID instead, so the order is
-  // always saved and the admin panel always sees it.
   async function getNextOrderId() {
     try {
       const counterRef = db.collection('settings').doc('orderCounter');
@@ -1049,8 +1144,6 @@
       });
       return `NW-${next}`;
     } catch (e) {
-      // Fallback: short unique ID derived from the current time, so an
-      // order is never lost just because the counter couldn't be updated.
       return `NW-${Date.now().toString(36).toUpperCase().slice(-6)}`;
     }
   }
@@ -1065,26 +1158,28 @@
     if (!name || !phone || !address) { alert('দয়া করে নাম, নাম্বার ও ঠিকানা লিখুন'); return; }
     if (!isValidBDPhone(phone)) { phoneErrorEl.classList.add('show'); return; }
     phoneErrorEl.classList.remove('show');
+    const isWeight = !!pdCurrentItem.sellByWeight;
+    const qtyOrWeight = isWeight ? pdCurrentWeight : pdCurrentQty;
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
-    const subtotal = numPrice * pdCurrentQty;
+    const subtotal = numPrice * qtyOrWeight;
     const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     const total = subtotal + deliveryFee;
     const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
-    const orderId = await getNextOrderId(); // never throws — always resolves to some ID
+    const orderId = await getNextOrderId();
     try {
       await db.collection('orders').add({
         orderId, name, phone, address,
         deliveryArea: area === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে',
         deliveryFee: deliveryFee,
-        items: [{ id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
+        items: [{ id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: qtyOrWeight, unit: isWeight ? 'kg' : 'pcs' }],
         total: total,
         status: 'Pending',
         source: 'Single Product',
         createdAt: Date.now()
       });
-      await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
+      if (!isWeight) await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: qtyOrWeight }]);
       closeProductDetail();
       showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
     } catch (e) {
@@ -1116,15 +1211,21 @@
 
   let cart = JSON.parse(localStorage.getItem('nasimCart') || '[]');
 
-  function addToCart(id, name, price, src) {
+  function addToCart(id, name, price, src, isWeight, weight, minWeight) {
     const numPrice = parseFloat(bnToEn(price));
-    const existing = cart.find(i => i.name === name);
-    if (existing) { existing.qty++; } else { cart.push({ id: id || null, name, price: numPrice, src, qty: 1 }); }
+    if (isWeight) {
+      const existing = cart.find(i => i.name === name && i.sellByWeight);
+      if (existing) { existing.qty = weight; }
+      else { cart.push({ id: id || null, name, price: numPrice, src, qty: weight, sellByWeight: true, minWeight: parseFloat(bnToEn(minWeight)) || 10 }); }
+    } else {
+      const existing = cart.find(i => i.name === name && !i.sellByWeight);
+      if (existing) { existing.qty++; } else { cart.push({ id: id || null, name, price: numPrice, src, qty: 1 }); }
+    }
     updateCartCount();
   }
   function updateCartCount() {
     localStorage.setItem('nasimCart', JSON.stringify(cart));
-    const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+    const totalQty = cart.reduce((sum, i) => sum + (i.sellByWeight ? 1 : i.qty), 0);
     document.getElementById('cartCount').textContent = totalQty;
     const modalCartCount = document.getElementById('cartCountModal');
     if (modalCartCount) modalCartCount.textContent = totalQty;
@@ -1133,6 +1234,7 @@
   }
 
   function changeQty(index, delta) {
+    if (cart[index].sellByWeight) return; // weight items are changed by re-opening the product page
     cart[index].qty += delta;
     if (cart[index].qty <= 0) cart.splice(index, 1);
     updateCartCount();
@@ -1162,14 +1264,15 @@
     cart.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'cart-item';
+      const lineTotal = item.price * item.qty;
+      const controlsHTML = item.sellByWeight
+        ? `<span class="line-total">৳${item.price}/কেজি x ${item.qty}কেজি = ৳${lineTotal}</span>`
+        : `<div class="qty-buttons"><button onclick="changeQty(${i}, -1)">-</button><span>${item.qty}</span><button onclick="changeQty(${i}, 1)">+</button></div><span class="line-total">৳${item.price} x ${item.qty} = ৳${lineTotal}</span>`;
       el.innerHTML = `
         <img src="${item.src}" onerror="this.onerror=null; this.removeAttribute('src');">
         <div class="cart-item-info">
           <div class="name">${item.name}</div>
-          <div class="qty-control">
-            <div class="qty-buttons"><button onclick="changeQty(${i}, -1)">-</button><span>${item.qty}</span><button onclick="changeQty(${i}, 1)">+</button></div>
-            <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
-          </div>
+          <div class="qty-control">${controlsHTML}</div>
         </div>
         <button class="remove-item" onclick="removeItem(${i})">✕</button>`;
       wrap.appendChild(el);
@@ -1237,7 +1340,7 @@
       const order = snap.docs[0].data();
       const date = new Date(order.createdAt).toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       let itemsHTML = '';
-      (order.items || []).forEach(it => { itemsHTML += `<div>${it.name} x${it.qty}</div>`; });
+      (order.items || []).forEach(it => { const u = it.unit === 'kg' ? 'কেজি' : ''; itemsHTML += `<div>${it.name} x${it.qty}${u}</div>`; });
       resultsEl.innerHTML = '';
       const card = document.createElement('div');
       card.className = 'track-order-card';
@@ -1278,11 +1381,7 @@
     results.forEach((item, i) => {
       const card = document.createElement('div');
       card.className = 'modal-card';
-      let priceHTML = `<span class="product-price">৳${item.price}</span>`;
-      if (item.oldPrice) {
-        const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
-        priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
-      }
+      const priceHTML = priceRowHTML(item, 'product-price', 'product-old-price', 'product-save');
       const stock = getStockState(item);
       card.innerHTML = `
         <img src="${item.src}" alt="photo ${i+1}" onclick='openProductDetail(${JSON.stringify(item)})' onerror="this.onerror=null; this.removeAttribute('src');">
@@ -1308,14 +1407,18 @@
     if (!isValidBDPhone(phone)) { phoneErrorEl.classList.add('show'); return; }
     phoneErrorEl.classList.remove('show');
     let itemsArr = [];
-    cart.forEach(item => { itemsArr.push({ id: item.id || null, name: item.name, price: item.price, qty: item.qty }); });
+    let stockDecrementList = [];
+    cart.forEach(item => {
+      itemsArr.push({ id: item.id || null, name: item.name, price: item.price, qty: item.qty, unit: item.sellByWeight ? 'kg' : 'pcs' });
+      if (!item.sellByWeight) stockDecrementList.push({ id: item.id || null, qty: item.qty });
+    });
     const subtotal = cartSubtotal();
     const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     const total = subtotal + deliveryFee;
     const confirmBtn = document.querySelector('#orderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
-    const orderId = await getNextOrderId(); // never throws — always resolves to some ID
+    const orderId = await getNextOrderId();
     try {
       await db.collection('orders').add({
         orderId, name, phone: bnToEn(phone), address,
@@ -1327,7 +1430,7 @@
         source: 'Cart',
         createdAt: Date.now()
       });
-      await decrementStockForItems(itemsArr);
+      await decrementStockForItems(stockDecrementList);
       cart = [];
       updateCartCount();
       closeCart();
@@ -1487,10 +1590,4 @@
   <div class="bottom-nav">
     <div class="nav-item nav-selected" onclick="navTap(this, goHome)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg><span>Home</span></div>
     <div class="nav-item" onclick="navTap(this, navOpenCart)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span id="navCartCount" class="nav-badge">0</span><span>Cart</span></div>
-    <div class="nav-item" onclick="navTap(this, openSearch)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Search</span></div>
-    <div class="nav-item" onclick="navTap(this, navOpenTrack)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg><span>Track</span></div>
-    <div class="nav-item" onclick="navTap(this, goAccount)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account</span></div>
-  </div>
-
-</body>
-</html>
+    <div class="nav-item" onclick="navTap(this, openSearch)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Search</span><
