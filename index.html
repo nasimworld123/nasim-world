@@ -543,6 +543,7 @@
       <div class="delivery-row"><span>পণ্যের মূল্য</span><span id="cartSubtotal">৳0</span></div>
       <div class="delivery-row"><span>ডেলিভারি চার্জ</span><span id="cartDeliveryFee">৳0</span></div>
       <div class="cart-total-row"><span>মোট মূল্য</span><span id="cartTotal">৳0</span></div>
+      <div class="field-error show" id="cartMinOrderNote" style="display:none;color:#ef4444;font-size:0.78rem;font-weight:600;margin:-4px 0 10px;"></div>
       <button class="place-order-btn" id="cartOrderNowBtn" onclick="showOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <div class="order-form" id="orderForm">
         <div class="cod-note">💵 ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে টাকা দিন</div>
@@ -734,6 +735,7 @@
   }
 
   let deliveryCharges = { inside: 0, outside: 0 };
+  let minOrderValue = 0;
 
   const cartIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>';
   const arrowIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -1162,6 +1164,10 @@
     const qtyOrWeight = isWeight ? pdCurrentWeight : pdCurrentQty;
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
     const subtotal = numPrice * qtyOrWeight;
+    if (minOrderValue > 0 && subtotal < minOrderValue) {
+      alert(`দুঃখিত, সর্বনিম্ন অর্ডার মূল্য ৳${minOrderValue} টাকা। পরিমাণ/ওজন বাড়ান।`);
+      return;
+    }
     const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     const total = subtotal + deliveryFee;
     const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
@@ -1251,6 +1257,13 @@
     document.getElementById('cartSubtotal').textContent = `৳${subtotal}`;
     document.getElementById('cartDeliveryFee').textContent = `৳${fee}`;
     document.getElementById('cartTotal').textContent = `৳${subtotal + fee}`;
+    const noteEl = document.getElementById('cartMinOrderNote');
+    if (minOrderValue > 0 && subtotal < minOrderValue) {
+      noteEl.textContent = `সর্বনিম্ন অর্ডার মূল্য ৳${minOrderValue} টাকা — আরও ৳${minOrderValue - subtotal} টাকার পণ্য যোগ করুন`;
+      noteEl.style.display = 'block';
+    } else {
+      noteEl.style.display = 'none';
+    }
   }
 
   function renderCart() {
@@ -1406,6 +1419,10 @@
     if (!name || !phone || !address) { alert('দয়া করে নাম, নাম্বার ও ঠিকানা লিখুন'); return; }
     if (!isValidBDPhone(phone)) { phoneErrorEl.classList.add('show'); return; }
     phoneErrorEl.classList.remove('show');
+    if (minOrderValue > 0 && cartSubtotal() < minOrderValue) {
+      alert(`দুঃখিত, সর্বনিম্ন অর্ডার মূল্য ৳${minOrderValue} টাকা। আরও পণ্য যোগ করুন।`);
+      return;
+    }
     let itemsArr = [];
     let stockDecrementList = [];
     cart.forEach(item => {
@@ -1538,6 +1555,7 @@
       });
       if (data.deliveryInside !== undefined) deliveryCharges.inside = parseFloat(bnToEn(data.deliveryInside)) || 0;
       if (data.deliveryOutside !== undefined) deliveryCharges.outside = parseFloat(bnToEn(data.deliveryOutside)) || 0;
+      if (data.minOrderValue !== undefined) minOrderValue = parseFloat(bnToEn(data.minOrderValue)) || 0;
     } catch (e) {}
   }
 
@@ -1582,12 +1600,3 @@
       if (!dragging) return;
       dragging = false;
       if (moved) { const rect = btn.getBoundingClientRect(); localStorage.setItem('nasimWaBtnPos', JSON.stringify({ left: rect.left, top: rect.top })); }
-    });
-    btn.addEventListener('click', (e) => { if (moved) e.preventDefault(); });
-  })();
-</script>
-
-  <div class="bottom-nav">
-    <div class="nav-item nav-selected" onclick="navTap(this, goHome)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg><span>Home</span></div>
-    <div class="nav-item" onclick="navTap(this, navOpenCart)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span id="navCartCount" class="nav-badge">0</span><span>Cart</span></div>
-    <div class="nav-item" onclick="navTap(this, openSearch)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Search</span><
