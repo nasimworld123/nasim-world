@@ -271,34 +271,6 @@
   .pd-addcart-btn:active { transform: scale(0.97); background: rgba(27,42,74,0.08); }
   .pd-addcart-btn:disabled { color: rgba(30,42,56,0.35); border-color: rgba(30,42,56,0.25); cursor: not-allowed; }
 
-  /* ===== Weight selector (for mango-style, sold-by-weight products) ===== */
-  .weight-select-wrap { margin-bottom: 18px; }
-  .weight-select-label { font-size: 0.85rem; color: #1e2a38; font-weight: 700; margin-bottom: 10px; }
-  .weight-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-  .weight-chip {
-    padding: 9px 16px; border-radius: 20px;
-    border: 1.5px solid rgba(27,42,74,0.3);
-    background: #fff; color: #1e2a38;
-    font-size: 0.85rem; font-weight: 700; cursor: pointer;
-  }
-  .weight-chip.active {
-    background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border-color: transparent;
-    box-shadow: 0 4px 12px rgba(27,42,74,0.35);
-  }
-  .weight-custom-row { display: flex; gap: 8px; margin-bottom: 6px; }
-  .weight-custom-row input {
-    flex: 1; background: #F4F7FB; border: 1.5px solid rgba(27,42,74,0.25); border-radius: 14px;
-    padding: 10px 12px; font-size: 0.85rem; color: #1e2a38; outline: none;
-  }
-  .weight-custom-row input:focus { border-color: #1B2A4A; }
-  .weight-custom-btn {
-    background: rgba(27,42,74,0.08); border: 1.5px solid rgba(27,42,74,0.3); color: #1B2A4A;
-    padding: 0 16px; border-radius: 14px; font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap;
-  }
-  .weight-custom-btn:active { transform: scale(0.96); }
-  .weight-min-note { font-size: 0.75rem; color: rgba(30,42,56,0.5); margin-top: 2px; }
-  .weight-min-note.err { color: #ef4444; font-weight: 700; }
-
   /* ===== Reviews ===== */
   .review-summary-row { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 4px; }
   .review-stars { color: #f5a623; font-size: 0.95rem; letter-spacing: 1px; }
@@ -350,8 +322,6 @@
     width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%; background: linear-gradient(135deg,#2C4870,#1B2A4A);
     color: #fff; font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px rgba(27,42,74,0.4);
   }
-  .success-icon.error { background: linear-gradient(135deg,#ef4444,#b91c1c); box-shadow: 0 0 18px rgba(239,68,68,0.4); }
-  .success-msg .err-code { display: block; margin-top: 10px; font-size: 0.72rem; color: #b91c1c; background: rgba(239,68,68,0.08); border-radius: 8px; padding: 6px 8px; word-break: break-all; }
   .success-msg { color: #33475a; font-size: 0.92rem; line-height: 1.5; margin-bottom: 20px; }
   .success-ok-btn {
     width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border: none; padding: 12px;
@@ -658,20 +628,8 @@
           </div>
         </div>
       </div>
-
-      <!-- Weight selector: shown only for sellByWeight items (mango, sold per kg) -->
-      <div class="weight-select-wrap" id="pdWeightWrap" style="display:none;">
-        <div class="weight-select-label">ওজন সিলেক্ট করুন (কেজি)</div>
-        <div class="weight-chip-row" id="pdWeightChipRow"></div>
-        <div class="weight-custom-row">
-          <input type="number" id="pdCustomWeightInput" placeholder="নিজের মতো কাস্টম ওজন লিখুন" min="0" step="0.5">
-          <button class="weight-custom-btn" onclick="pdApplyCustomWeight()">ঠিক আছে</button>
-        </div>
-        <div class="weight-min-note" id="pdWeightMinNote"></div>
-      </div>
-
       <div class="pd-stock-row" id="pdStockRow"><span class="stock-dot" id="pdStockDot"></span><span id="pdStockText"></span><span class="pd-live-subtotal" id="pdLiveSubtotal" style="margin-left:auto;">৳0</span></div>
-      <div class="pd-qty-row" id="pdQtyRow"><span>পরিমাণ</span><div class="qty-buttons"><button onclick="pdChangeQty(-1)">-</button><span id="pdQty">1</span><button onclick="pdChangeQty(1)">+</button></div></div>
+      <div class="pd-qty-row"><span>পরিমাণ</span><div class="qty-buttons"><button onclick="pdChangeQty(-1)">-</button><span id="pdQty">1</span><button onclick="pdChangeQty(1)">+</button></div></div>
       <div class="pd-btn-row">
         <button class="pd-addcart-btn" id="pdAddCartBtn" onclick="pdAddToCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="btn-label">ADD TO CART</span></button>
         <button class="place-order-btn" id="pdOrderNowBtn" onclick="showPdOrderForm()"><span class="btn-label">ORDER NOW</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
@@ -695,7 +653,7 @@
   </div>
 
   <div class="success-overlay" id="successOverlay">
-    <div class="success-card"><div class="success-icon" id="successIcon">✓</div><p class="success-msg" id="successMessage"></p><button class="success-ok-btn" onclick="closeSuccessModal()">OK</button></div>
+    <div class="success-card"><div class="success-icon">✓</div><p class="success-msg" id="successMessage"></p><button class="success-ok-btn" onclick="closeSuccessModal()">OK</button></div>
   </div>
 
   <a class="float-btn" id="floatBtn" href="https://wa.me/8801340902365" target="_blank" aria-label="WhatsApp">
@@ -808,8 +766,8 @@
     items.forEach((item, i) => {
       const card = document.createElement('div');
       card.className = 'modal-card';
-      let priceHTML = item.sellByWeight ? `<span class="product-price">৳${item.price}/কেজি</span>` : `<span class="product-price">৳${item.price}</span>`;
-      if (!item.sellByWeight && item.oldPrice) {
+      let priceHTML = `<span class="product-price">৳${item.price}</span>`;
+      if (item.oldPrice) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
@@ -832,21 +790,16 @@
     const track = document.getElementById(`prodTrack-${key}`);
     const dotsWrap = document.getElementById(`prodDots-${key}`);
     if (!track) return;
-    track.innerHTML = '<p class="prod-cat-empty">লোড হচ্ছে...</p>';
     let items = [];
     try {
       const snap = await db.collection('products').where('category', '==', key).get();
       items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) {
-      const code = (e && (e.code || e.message)) ? `${e.code || ''} ${e.message || ''}`.trim() : String(e);
-      track.innerHTML = `<p class="prod-cat-empty">লোড করতে সমস্যা হয়েছে<br><span style="font-size:0.7rem;opacity:0.7;">${code}</span></p>`;
-      return;
-    }
+    } catch (e) { track.innerHTML = '<p class="prod-cat-empty">লোড করতে সমস্যা হয়েছে</p>'; return; }
     track.innerHTML = ''; dotsWrap.innerHTML = '';
     if (items.length === 0) { track.innerHTML = '<p class="prod-cat-empty">কোনো পণ্য নেই</p>'; return; }
     items.forEach((item) => {
-      let priceHTML = item.sellByWeight ? `<span class="prod-cat-price">৳${item.price}/কেজি</span>` : `<span class="prod-cat-price">৳${item.price}</span>`;
-      if (!item.sellByWeight && item.oldPrice) {
+      let priceHTML = `<span class="prod-cat-price">৳${item.price}</span>`;
+      if (item.oldPrice) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="prod-cat-oldprice">৳${item.oldPrice}</span><span class="prod-cat-save">Save ৳${save}</span>`;
       }
@@ -904,61 +857,17 @@
 
   let pdCurrentItem = null;
   let pdCurrentQty = 1;
-  let pdSelectedWeight = null;
-
-  function pdMinWeight() {
-    if (!pdCurrentItem || !pdCurrentItem.minWeight) return 0;
-    return parseFloat(bnToEn(pdCurrentItem.minWeight)) || 0;
-  }
 
   function openProductDetail(item) {
     pdCurrentItem = item;
     pdCurrentQty = 1;
-    pdSelectedWeight = null;
     document.getElementById('pdImage').src = item.src;
     document.getElementById('pdName').textContent = item.name;
-
-    const weightWrap = document.getElementById('pdWeightWrap');
-    const qtyRow = document.getElementById('pdQtyRow');
+    document.getElementById('pdPrice').textContent = `৳${item.price}`;
     const oldPriceEl = document.getElementById('pdOldPrice');
-    const customInput = document.getElementById('pdCustomWeightInput');
-    customInput.value = '';
-
-    if (item.sellByWeight) {
-      weightWrap.style.display = 'block';
-      qtyRow.style.display = 'none';
-      oldPriceEl.style.display = 'none';
-      document.getElementById('pdPrice').textContent = `৳${item.price}/কেজি`;
-
-      const minW = pdMinWeight();
-      customInput.min = minW || 0;
-      const options = (item.weightOptions && item.weightOptions.length)
-        ? item.weightOptions.map(w => parseFloat(bnToEn(w))).filter(w => !isNaN(w))
-        : [];
-      const chipRow = document.getElementById('pdWeightChipRow');
-      if (options.length) {
-        chipRow.innerHTML = options.map((w, i) =>
-          `<div class="weight-chip ${i === 0 ? 'active' : ''}" data-weight="${w}" onclick="pdSelectWeight(this, ${w})">${w} কেজি</div>`
-        ).join('');
-        pdSelectedWeight = Math.max(options[0], minW || 0);
-      } else {
-        chipRow.innerHTML = '';
-        pdSelectedWeight = minW || 1;
-      }
-      document.getElementById('pdWeightMinNote').textContent = minW
-        ? `সর্বনিম্ন ${minW} কেজি থেকে অর্ডার করা যাবে`
-        : '';
-      document.getElementById('pdWeightMinNote').classList.remove('err');
-    } else {
-      weightWrap.style.display = 'none';
-      qtyRow.style.display = 'flex';
-      pdSelectedWeight = null;
-      document.getElementById('pdPrice').textContent = `৳${item.price}`;
-      if (item.oldPrice) { oldPriceEl.textContent = `৳${item.oldPrice}`; oldPriceEl.style.display = 'inline'; }
-      else { oldPriceEl.style.display = 'none'; }
-    }
+    if (item.oldPrice) { oldPriceEl.textContent = `৳${item.oldPrice}`; oldPriceEl.style.display = 'inline'; }
+    else { oldPriceEl.style.display = 'none'; }
     document.getElementById('pdQty').textContent = pdCurrentQty;
-
     const stock = getStockState(item);
     document.getElementById('pdStockDot').className = `stock-dot ${stock.inStock ? 'in' : 'out'}`;
     const pdStockTextEl = document.getElementById('pdStockText');
@@ -981,39 +890,9 @@
     document.getElementById('productDetailOverlay').classList.add('active');
   }
 
-  function pdSelectWeight(el, weight) {
-    pdSelectedWeight = weight;
-    document.getElementById('pdCustomWeightInput').value = '';
-    document.querySelectorAll('#pdWeightChipRow .weight-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('pdWeightMinNote').classList.remove('err');
-    updatePdTotal();
-  }
-
-  function pdApplyCustomWeight() {
-    const input = document.getElementById('pdCustomWeightInput');
-    const val = parseFloat(input.value);
-    const minW = pdMinWeight();
-    const noteEl = document.getElementById('pdWeightMinNote');
-    if (isNaN(val) || val <= 0) {
-      noteEl.textContent = 'সঠিক ওজন লিখুন';
-      noteEl.classList.add('err');
-      return;
-    }
-    if (minW && val < minW) {
-      noteEl.textContent = `সর্বনিম্ন ${minW} কেজি থেকে অর্ডার করা যাবে`;
-      noteEl.classList.add('err');
-      return;
-    }
-    pdSelectedWeight = val;
-    document.querySelectorAll('#pdWeightChipRow .weight-chip').forEach(c => c.classList.remove('active'));
-    noteEl.textContent = minW ? `সর্বনিম্ন ${minW} কেজি থেকে অর্ডার করা যাবে` : '';
-    noteEl.classList.remove('err');
-    updatePdTotal();
-  }
-
   function closeProductDetail() { document.getElementById('productDetailOverlay').classList.remove('active'); }
 
+  // ===== Reviews =====
   let reviewSelectedStars = 0;
   let reviewCurrentProductId = null;
 
@@ -1126,17 +1005,12 @@
   function updatePdTotal() {
     if (!pdCurrentItem) return;
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price)) || 0;
-    const isWeightItem = !!pdCurrentItem.sellByWeight;
-    const subtotal = isWeightItem ? numPrice * (pdSelectedWeight || 0) : numPrice * pdCurrentQty;
+    const subtotal = numPrice * pdCurrentQty;
     const area = document.getElementById('pdDeliveryArea').value;
     const fee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     document.getElementById('pdSubtotalDisplay').textContent = `৳${subtotal}`;
     const liveSubtotalEl = document.getElementById('pdLiveSubtotal');
-    if (liveSubtotalEl) {
-      liveSubtotalEl.textContent = isWeightItem
-        ? `৳${numPrice} x ${pdSelectedWeight || 0}কেজি = ৳${subtotal}`
-        : `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
-    }
+    if (liveSubtotalEl) liveSubtotalEl.textContent = `৳${numPrice} x ${pdCurrentQty} = ৳${subtotal}`;
     document.getElementById('pdDeliveryFeeDisplay').textContent = `৳${fee}`;
     document.getElementById('pdTotalDisplay').textContent = `৳${subtotal + fee}`;
   }
@@ -1145,38 +1019,24 @@
     if (!pdCurrentItem) return;
     const stock = getStockState(pdCurrentItem);
     if (!stock.inStock) return;
-    if (pdCurrentItem.sellByWeight) {
-      const minW = pdMinWeight();
-      if (!pdSelectedWeight || (minW && pdSelectedWeight < minW)) {
-        const noteEl = document.getElementById('pdWeightMinNote');
-        noteEl.textContent = minW ? `সর্বনিম্ন ${minW} কেজি সিলেক্ট করুন` : 'ওজন সিলেক্ট করুন';
-        noteEl.classList.add('err');
-        return;
-      }
-      addWeightItemToCart(pdCurrentItem, pdSelectedWeight);
-    } else {
-      for (let i = 0; i < pdCurrentQty; i++) addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
-    }
+    for (let i = 0; i < pdCurrentQty; i++) addToCart(pdCurrentItem.id, pdCurrentItem.name, pdCurrentItem.price, pdCurrentItem.src);
     closeProductDetail();
     openCart();
   }
 
   function showPdOrderForm() {
     if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) return;
-    if (pdCurrentItem.sellByWeight) {
-      const minW = pdMinWeight();
-      if (!pdSelectedWeight || (minW && pdSelectedWeight < minW)) {
-        const noteEl = document.getElementById('pdWeightMinNote');
-        noteEl.textContent = minW ? `সর্বনিম্ন ${minW} কেজি সিলেক্ট করুন` : 'ওজন সিলেক্ট করুন';
-        noteEl.classList.add('err');
-        return;
-      }
-    }
     document.getElementById('pdOrderForm').classList.add('show');
     document.getElementById('pdOrderNowBtn').style.display = 'none';
     updatePdTotal();
   }
 
+  // ===== Sequential human-readable Order IDs (NW-1, NW-2, ...) =====
+  // IMPORTANT: this needs a Firestore WRITE to settings/orderCounter, which
+  // may be blocked by Security Rules for unauthenticated (customer) users.
+  // If that write fails for ANY reason, we must NOT let it block the order
+  // itself — we fall back to a short unique ID instead, so the order is
+  // always saved and the admin panel always sees it.
   async function getNextOrderId() {
     try {
       const counterRef = db.collection('settings').doc('orderCounter');
@@ -1189,20 +1049,14 @@
       });
       return `NW-${next}`;
     } catch (e) {
+      // Fallback: short unique ID derived from the current time, so an
+      // order is never lost just because the counter couldn't be updated.
       return `NW-${Date.now().toString(36).toUpperCase().slice(-6)}`;
     }
   }
 
   async function confirmPdOrder() {
     if (!pdCurrentItem || !getStockState(pdCurrentItem).inStock) { showSuccessModal('দুঃখিত, এই পণ্যটি বর্তমানে স্টকে নেই।'); return; }
-    const isWeightItem = !!pdCurrentItem.sellByWeight;
-    if (isWeightItem) {
-      const minW = pdMinWeight();
-      if (!pdSelectedWeight || (minW && pdSelectedWeight < minW)) {
-        showSuccessModal(minW ? `সর্বনিম্ন ${minW} কেজি সিলেক্ট করুন` : 'ওজন সিলেক্ট করুন', true);
-        return;
-      }
-    }
     const name = document.getElementById('pdCustName').value.trim();
     const phone = document.getElementById('pdCustPhone').value.trim();
     const address = document.getElementById('pdCustAddress').value.trim();
@@ -1212,32 +1066,29 @@
     if (!isValidBDPhone(phone)) { phoneErrorEl.classList.add('show'); return; }
     phoneErrorEl.classList.remove('show');
     const numPrice = parseFloat(bnToEn(pdCurrentItem.price));
-    const subtotal = isWeightItem ? numPrice * pdSelectedWeight : numPrice * pdCurrentQty;
+    const subtotal = numPrice * pdCurrentQty;
     const deliveryFee = area === 'outside' ? deliveryCharges.outside : deliveryCharges.inside;
     const total = subtotal + deliveryFee;
     const confirmBtn = document.querySelector('#pdOrderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
-    const orderId = await getNextOrderId();
+    const orderId = await getNextOrderId(); // never throws — always resolves to some ID
     try {
-      const itemEntry = isWeightItem
-        ? { id: pdCurrentItem.id || null, name: `${pdCurrentItem.name} (${pdSelectedWeight} কেজি)`, price: numPrice, qty: pdSelectedWeight }
-        : { id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty };
       await db.collection('orders').add({
         orderId, name, phone, address,
         deliveryArea: area === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে',
         deliveryFee: deliveryFee,
-        items: [itemEntry],
+        items: [{ id: pdCurrentItem.id || null, name: pdCurrentItem.name, price: numPrice, qty: pdCurrentQty }],
         total: total,
         status: 'Pending',
         source: 'Single Product',
         createdAt: Date.now()
       });
-      if (!isWeightItem) await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
+      await decrementStockForItems([{ id: pdCurrentItem.id || null, qty: pdCurrentQty }]);
       closeProductDetail();
       showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
     } catch (e) {
-      showSuccessModal('দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।', true, (e && (e.code || e.message)) ? `${e.code || ''} ${e.message || ''}`.trim() : String(e));
+      showSuccessModal('দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।');
     } finally {
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'ORDER CONFIRM';
@@ -1267,20 +1118,10 @@
 
   function addToCart(id, name, price, src) {
     const numPrice = parseFloat(bnToEn(price));
-    const existing = cart.find(i => i.name === name && !i.isWeightItem);
+    const existing = cart.find(i => i.name === name);
     if (existing) { existing.qty++; } else { cart.push({ id: id || null, name, price: numPrice, src, qty: 1 }); }
     updateCartCount();
   }
-
-  function addWeightItemToCart(item, weight) {
-    const numPrice = parseFloat(bnToEn(item.price));
-    const label = `${item.name} (${weight} কেজি)`;
-    const existing = cart.find(i => i.name === label);
-    if (existing) { existing.qty = weight; }
-    else { cart.push({ id: item.id || null, name: label, price: numPrice, src: item.src, qty: weight, isWeightItem: true }); }
-    updateCartCount();
-  }
-
   function updateCartCount() {
     localStorage.setItem('nasimCart', JSON.stringify(cart));
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
@@ -1292,7 +1133,6 @@
   }
 
   function changeQty(index, delta) {
-    if (cart[index].isWeightItem) return; // weight-based items are edited via product detail, not +/-
     cart[index].qty += delta;
     if (cart[index].qty <= 0) cart.splice(index, 1);
     updateCartCount();
@@ -1322,17 +1162,14 @@
     cart.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'cart-item';
-      const qtyControlHTML = item.isWeightItem
-        ? `<span class="line-total">${item.qty} কেজি x ৳${item.price} = ৳${item.price * item.qty}</span>`
-        : `<div class="qty-control">
-            <div class="qty-buttons"><button onclick="changeQty(${i}, -1)">-</button><span>${item.qty}</span><button onclick="changeQty(${i}, 1)">+</button></div>
-            <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
-          </div>`;
       el.innerHTML = `
         <img src="${item.src}" onerror="this.onerror=null; this.removeAttribute('src');">
         <div class="cart-item-info">
           <div class="name">${item.name}</div>
-          ${qtyControlHTML}
+          <div class="qty-control">
+            <div class="qty-buttons"><button onclick="changeQty(${i}, -1)">-</button><span>${item.qty}</span><button onclick="changeQty(${i}, 1)">+</button></div>
+            <span class="line-total">৳${item.price} x ${item.qty} = ৳${item.price * item.qty}</span>
+          </div>
         </div>
         <button class="remove-item" onclick="removeItem(${i})">✕</button>`;
       wrap.appendChild(el);
@@ -1441,8 +1278,8 @@
     results.forEach((item, i) => {
       const card = document.createElement('div');
       card.className = 'modal-card';
-      let priceHTML = item.sellByWeight ? `<span class="product-price">৳${item.price}/কেজি</span>` : `<span class="product-price">৳${item.price}</span>`;
-      if (!item.sellByWeight && item.oldPrice) {
+      let priceHTML = `<span class="product-price">৳${item.price}</span>`;
+      if (item.oldPrice) {
         const save = parseFloat(bnToEn(item.oldPrice)) - parseFloat(bnToEn(item.price));
         priceHTML += `<span class="product-old-price">৳${item.oldPrice}</span><span class="product-save">Save ৳${save}</span>`;
       }
@@ -1458,21 +1295,7 @@
   }
 
   function showOrderForm() { document.getElementById('orderForm').classList.add('show'); document.getElementById('cartOrderNowBtn').style.display = 'none'; updateCartSummary(); }
-
-  function showSuccessModal(message, isError, errCode) {
-    const icon = document.getElementById('successIcon');
-    const msgEl = document.getElementById('successMessage');
-    if (isError) {
-      icon.textContent = '✕';
-      icon.classList.add('error');
-      msgEl.innerHTML = message + (errCode ? `<span class="err-code">${errCode}</span>` : '');
-    } else {
-      icon.textContent = '✓';
-      icon.classList.remove('error');
-      msgEl.textContent = message;
-    }
-    document.getElementById('successOverlay').classList.add('active');
-  }
+  function showSuccessModal(message) { document.getElementById('successMessage').textContent = message; document.getElementById('successOverlay').classList.add('active'); }
   function closeSuccessModal() { document.getElementById('successOverlay').classList.remove('active'); }
 
   async function submitOrder() {
@@ -1492,7 +1315,7 @@
     const confirmBtn = document.querySelector('#orderForm .place-order-btn');
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Please wait...';
-    const orderId = await getNextOrderId();
+    const orderId = await getNextOrderId(); // never throws — always resolves to some ID
     try {
       await db.collection('orders').add({
         orderId, name, phone: bnToEn(phone), address,
@@ -1504,14 +1327,13 @@
         source: 'Cart',
         createdAt: Date.now()
       });
-      const nonWeightItems = cart.filter(i => !i.isWeightItem).map(i => ({ id: i.id, qty: i.qty }));
-      await decrementStockForItems(nonWeightItems);
+      await decrementStockForItems(itemsArr);
       cart = [];
       updateCartCount();
       closeCart();
       showSuccessModal(`অর্ডার সফলভাবে সম্পন্ন হয়েছে! আপনার অর্ডার আইডি: ${orderId}। এই আইডি দিয়ে অর্ডার ট্র্যাক করতে পারবেন।`);
     } catch (e) {
-      showSuccessModal('দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।', true, (e && (e.code || e.message)) ? `${e.code || ''} ${e.message || ''}`.trim() : String(e));
+      showSuccessModal('দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন অথবা WhatsApp-এ যোগাযোগ করুন।');
     } finally {
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'Order Confirm';
@@ -1612,4 +1434,63 @@
         if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textContent = catLabels[key]; titles[key] = catLabels[key]; }
       });
       if (data.deliveryInside !== undefined) deliveryCharges.inside = parseFloat(bnToEn(data.deliveryInside)) || 0;
-      if (data.deliveryOutside !== undefined) deliveryCharges.outside = 
+      if (data.deliveryOutside !== undefined) deliveryCharges.outside = parseFloat(bnToEn(data.deliveryOutside)) || 0;
+    } catch (e) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    updateCartCount();
+    updateCatSlide();
+    startCatAuto();
+    renderProdCategory('group1');
+    renderProdCategory('group2');
+    renderProdCategory('group3');
+    renderProdCategory('group4');
+    loadSiteSettings();
+  });
+
+  (function() {
+    const btn = document.getElementById('floatBtn');
+    let dragging = false;
+    let moved = false;
+    let startPointX = 0, startPointY = 0;
+    let btnStartLeft = 0, btnStartTop = 0;
+    function applyPosition(left, top) {
+      const maxLeft = window.innerWidth - btn.offsetWidth - 4;
+      const maxTop = window.innerHeight - btn.offsetHeight - 4;
+      left = Math.max(4, Math.min(left, maxLeft));
+      top = Math.max(4, Math.min(top, maxTop));
+      btn.style.left = left + 'px'; btn.style.top = top + 'px'; btn.style.right = 'auto'; btn.style.bottom = 'auto';
+    }
+    const savedPos = JSON.parse(localStorage.getItem('nasimWaBtnPos') || 'null');
+    if (savedPos) { applyPosition(savedPos.left, savedPos.top); }
+    btn.addEventListener('pointerdown', (e) => {
+      dragging = true; moved = false; startPointX = e.clientX; startPointY = e.clientY;
+      const rect = btn.getBoundingClientRect(); btnStartLeft = rect.left; btnStartTop = rect.top;
+      btn.setPointerCapture(e.pointerId);
+    });
+    btn.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startPointX; const dy = e.clientY - startPointY;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+      if (moved) { applyPosition(btnStartLeft + dx, btnStartTop + dy); }
+    });
+    btn.addEventListener('pointerup', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (moved) { const rect = btn.getBoundingClientRect(); localStorage.setItem('nasimWaBtnPos', JSON.stringify({ left: rect.left, top: rect.top })); }
+    });
+    btn.addEventListener('click', (e) => { if (moved) e.preventDefault(); });
+  })();
+</script>
+
+  <div class="bottom-nav">
+    <div class="nav-item nav-selected" onclick="navTap(this, goHome)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg><span>Home</span></div>
+    <div class="nav-item" onclick="navTap(this, navOpenCart)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span id="navCartCount" class="nav-badge">0</span><span>Cart</span></div>
+    <div class="nav-item" onclick="navTap(this, openSearch)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Search</span></div>
+    <div class="nav-item" onclick="navTap(this, navOpenTrack)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg><span>Track</span></div>
+    <div class="nav-item" onclick="navTap(this, goAccount)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account</span></div>
+  </div>
+
+</body>
+</html>
