@@ -832,11 +832,16 @@
     const track = document.getElementById(`prodTrack-${key}`);
     const dotsWrap = document.getElementById(`prodDots-${key}`);
     if (!track) return;
+    track.innerHTML = '<p class="prod-cat-empty">লোড হচ্ছে...</p>';
     let items = [];
     try {
       const snap = await db.collection('products').where('category', '==', key).get();
       items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) { track.innerHTML = '<p class="prod-cat-empty">লোড করতে সমস্যা হয়েছে</p>'; return; }
+    } catch (e) {
+      const code = (e && (e.code || e.message)) ? `${e.code || ''} ${e.message || ''}`.trim() : String(e);
+      track.innerHTML = `<p class="prod-cat-empty">লোড করতে সমস্যা হয়েছে<br><span style="font-size:0.7rem;opacity:0.7;">${code}</span></p>`;
+      return;
+    }
     track.innerHTML = ''; dotsWrap.innerHTML = '';
     if (items.length === 0) { track.innerHTML = '<p class="prod-cat-empty">কোনো পণ্য নেই</p>'; return; }
     items.forEach((item) => {
@@ -1607,13 +1612,4 @@
         if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textContent = catLabels[key]; titles[key] = catLabels[key]; }
       });
       if (data.deliveryInside !== undefined) deliveryCharges.inside = parseFloat(bnToEn(data.deliveryInside)) || 0;
-      if (data.deliveryOutside !== undefined) deliveryCharges.outside = parseFloat(bnToEn(data.deliveryOutside)) || 0;
-    } catch (e) {}
-  }
-
-  window.addEventListener('DOMContentLoaded', function() {
-    updateCartCount();
-    updateCatSlide();
-    startCatAuto();
-    renderProdCategory('group1');
-    renderProdCategory('
+      if (data.deliveryOutside !== undefined) deliveryCharges.outside = 
