@@ -443,6 +443,23 @@
       <div class="section-card-body">
         <div class="section-card-body-inner">
 
+          <div class="img-field-item" id="imgField-logo">
+            <div class="img-field-header" onclick="toggleImgField('logo')">
+              <img class="thumb" id="thumb-logo" src="" alt="">
+              <span class="label">Logo (Navbar)</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="logoImageInput" placeholder="Logo Image URL">
+                <div class="img-preview-wrap" id="preview-logo">
+                  <img id="previewImg-logo" src="" alt="">
+                  <span class="status-text" id="previewStatus-logo">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="img-field-item" id="imgField-hero">
             <div class="img-field-header" onclick="toggleImgField('hero')">
               <img class="thumb" id="thumb-hero" src="" alt="">
@@ -535,6 +552,57 @@
                 <div class="img-preview-wrap" id="preview-group4">
                   <img id="previewImg-group4" src="" alt="">
                   <span class="status-text" id="previewStatus-group4">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer1">
+            <div class="img-field-header" onclick="toggleImgField('offer1')">
+              <img class="thumb" id="thumb-offer1" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 1</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage1Input" placeholder="Offer Slide 1 Image URL">
+                <div class="img-preview-wrap" id="preview-offer1">
+                  <img id="previewImg-offer1" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer1">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer2">
+            <div class="img-field-header" onclick="toggleImgField('offer2')">
+              <img class="thumb" id="thumb-offer2" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 2</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage2Input" placeholder="Offer Slide 2 Image URL">
+                <div class="img-preview-wrap" id="preview-offer2">
+                  <img id="previewImg-offer2" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer2">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-owner">
+            <div class="img-field-header" onclick="toggleImgField('owner')">
+              <img class="thumb" id="thumb-owner" src="" alt="">
+              <span class="label">মালিকের ছবি (Owner Photo)</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="ownerPhotoInput" placeholder="Owner Photo URL">
+                <div class="img-preview-wrap" id="preview-owner">
+                  <img id="previewImg-owner" src="" alt="">
+                  <span class="status-text" id="previewStatus-owner">যাচাই হচ্ছে...</span>
                 </div>
               </div>
             </div>
@@ -766,22 +834,42 @@
       });
     }
 
+    wireImagePreview('logoImageInput', 'logo');
     wireImagePreview('heroImageInput', 'hero');
     wireImagePreview('catImage-group1', 'group1');
     wireImagePreview('catImage-group2', 'group2');
     wireImagePreview('catImage-group3', 'group3');
     wireImagePreview('catImage-group4', 'group4');
+    wireImagePreview('offerImage1Input', 'offer1');
+    wireImagePreview('offerImage2Input', 'offer2');
+    wireImagePreview('ownerPhotoInput', 'owner');
     wireImagePreview('pImage', 'product');
 
-    // ===== Site Settings (hero image, category thumbnails/labels, delivery charges) =====
+    // ===== Site Settings (logo, hero image, category thumbnails/labels, offer slides, owner photo, delivery charges) =====
     async function loadSiteSettingsForm() {
       try {
         const doc = await db.collection('settings').doc('site').get();
         if (!doc.exists) return;
         const data = doc.data();
+        if (data.logoImage) {
+          document.getElementById('logoImageInput').value = data.logoImage;
+          document.getElementById('logoImageInput').dispatchEvent(new Event('input'));
+        }
         if (data.heroImage) {
           document.getElementById('heroImageInput').value = data.heroImage;
           document.getElementById('heroImageInput').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage1) {
+          document.getElementById('offerImage1Input').value = data.offerImage1;
+          document.getElementById('offerImage1Input').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage2) {
+          document.getElementById('offerImage2Input').value = data.offerImage2;
+          document.getElementById('offerImage2Input').dispatchEvent(new Event('input'));
+        }
+        if (data.ownerPhoto) {
+          document.getElementById('ownerPhotoInput').value = data.ownerPhoto;
+          document.getElementById('ownerPhotoInput').dispatchEvent(new Event('input'));
         }
         const catImages = data.categoryImages || {};
         const catLabels = data.categoryLabels || {};
@@ -807,7 +895,11 @@
     function saveSiteSettings() {
       const statusEl = document.getElementById('settingsStatus');
       const btn = document.getElementById('saveSiteImagesBtn');
+      const logoImage = document.getElementById('logoImageInput').value.trim();
       const heroImage = document.getElementById('heroImageInput').value.trim();
+      const offerImage1 = document.getElementById('offerImage1Input').value.trim();
+      const offerImage2 = document.getElementById('offerImage2Input').value.trim();
+      const ownerPhoto = document.getElementById('ownerPhotoInput').value.trim();
       const categoryImages = {};
       const categoryLabelsData = {};
       ['group1', 'group2', 'group3', 'group4'].forEach(key => {
@@ -826,7 +918,11 @@
       statusEl.style.color = '#1B2A4A';
 
       const payload = { categoryImages, categoryLabels: categoryLabelsData };
+      if (logoImage) payload.logoImage = logoImage;
       if (heroImage) payload.heroImage = heroImage;
+      if (offerImage1) payload.offerImage1 = offerImage1;
+      if (offerImage2) payload.offerImage2 = offerImage2;
+      if (ownerPhoto) payload.ownerPhoto = ownerPhoto;
 
       db.collection('settings').doc('site').set(payload, { merge: true })
         .then(() => {
