@@ -515,11 +515,11 @@
       <div class="category-viewport">
         <div class="category-track" id="categoryTrack">
           <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
-            <img id="catImg-group1" src="" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
+            <img id="catImg-group1" src="" alt="আম" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group1">আম</span>
           </div>
           <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
-            <img id="catImg-group2" src="" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
+            <img id="catImg-group2" src="" alt="আচার" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group2">আচার </span>
           </div>
           <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
@@ -1573,4 +1573,4 @@
       const catLabels = data.categoryLabels || {};
       ['group1', 'group2', 'group3', 'group4'].forEach(key => {
         if (catImages[key]) { const img = document.getElementById(`catImg-${key}`); if (img) img.src = catImages[key]; }
-        if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textCo
+        if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textConten
