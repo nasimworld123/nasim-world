@@ -220,6 +220,82 @@
   }
   .glass-card p { margin-bottom: 8px; }
   .glass-card p:last-child { margin-bottom: 0; }
+
+  /* ===== Owner Profile file/card trigger ===== */
+  .owner-file-card {
+    margin: 14px 0 0; background: rgba(255,255,255,0.75); border: 1px solid rgba(27,42,74,0.25);
+    border-radius: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(27,42,74,0.1); transition: transform 0.18s ease, box-shadow 0.2s ease;
+  }
+  .owner-file-card:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(27,42,74,0.12); }
+  .owner-file-icon {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(135deg,#2C4870,#1B2A4A); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(27,42,74,0.3);
+  }
+  .owner-file-icon svg { width: 21px; height: 21px; stroke: #fff; }
+  .owner-file-text { flex: 1; text-align: left; }
+  .owner-file-text .t1 { font-size: 0.88rem; font-weight: 800; color: #1e2a38; }
+  .owner-file-text .t2 { font-size: 0.74rem; color: rgba(30,42,56,0.55); margin-top: 2px; }
+  .owner-file-arrow { flex-shrink: 0; color: #1B2A4A; }
+  .owner-file-arrow svg { width: 18px; height: 18px; }
+
+  /* ===== Owner Profile modal ===== */
+  .owner-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1100; background: rgba(14,20,34,0.55);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px;
+  }
+  .owner-overlay.active { display: flex; }
+  .owner-card {
+    width: 100%; max-width: 340px; max-height: 88vh; overflow-y: auto; background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(27,42,74,0.25); border-radius: 24px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(14,20,34,0.4); padding: 26px 20px 22px; text-align: center; position: relative;
+  }
+  .owner-close {
+    position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.25); color: #1B2A4A; font-size: 1rem;
+    font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5;
+  }
+  .owner-photo-wrap { position: relative; width: 168px; height: 168px; margin: 6px auto 0; }
+  .owner-photo-frame {
+    width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 3px solid #fff;
+    box-shadow: 0 10px 28px rgba(27,42,74,0.35); opacity: 0; transform: translateY(18px) scale(0.85);
+    background: linear-gradient(135deg, #DCE6F2, #B9C8DE);
+  }
+  .owner-overlay.active .owner-photo-frame { animation: ownerPhotoIn 0.7s cubic-bezier(.22,1,.36,1) forwards; }
+  .owner-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @keyframes ownerPhotoIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .owner-banner-wrap {
+    position: absolute; top: -34px; left: 50%; width: 190px; height: 74px; margin-left: -95px;
+    opacity: 0; transform: translateY(14px) scale(0.7); transform-origin: 50% 100%;
+  }
+  .owner-overlay.active .owner-banner-wrap { animation: ownerBannerIn 0.6s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 0.65s; }
+  @keyframes ownerBannerIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+  .owner-banner-wrap svg { width: 100%; height: 100%; overflow: visible; }
+  .owner-banner-name {
+    font-size: 15px; font-weight: 800; fill: #1e2a38; font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  .owner-name-block { margin-top: 16px; }
+  .owner-name-block h3 { font-size: 1.15rem; color: #1B2A4A; font-weight: 800; opacity: 0; transform: translateY(8px); }
+  .owner-name-block .role { font-size: 0.82rem; color: #2C4870; font-weight: 700; margin-top: 3px; opacity: 0; transform: translateY(8px); }
+  .owner-overlay.active .owner-name-block h3 { animation: ownerFadeUp 0.5s ease forwards; animation-delay: 1.15s; }
+  .owner-overlay.active .owner-name-block .role { animation: ownerFadeUp 0.5s ease forwards; animation-delay: 1.28s; }
+  @keyframes ownerFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .owner-details-panel {
+    margin-top: 18px; text-align: left; background: #F4F7FB; border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 16px; padding: 16px; opacity: 0; transform: translateX(24px);
+  }
+  .owner-overlay.active .owner-details-panel { animation: ownerSlideIn 0.55s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.5s; }
+  @keyframes ownerSlideIn { to { opacity: 1; transform: translateX(0); } }
+  .owner-details-panel .d-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(27,42,74,0.1); }
+  .owner-details-panel .d-row:last-child { border-bottom: none; }
+  .owner-details-panel .d-label { flex-shrink: 0; width: 78px; font-size: 0.75rem; color: rgba(30,42,56,0.55); font-weight: 700; }
+  .owner-details-panel .d-value { font-size: 0.82rem; color: #1e2a38; font-weight: 600; }
+
   .modal-overlay { display: none; position: fixed; inset: 0; background: #F4F7FB; z-index: 999; padding: 20px 16px; overflow-y: auto; }
   .modal-overlay.active { display: block; }
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
@@ -410,7 +486,7 @@
 <body>
 
   <div class="navbar">
-    <div class="logo" id="logoTapZone"><img src="PicsArt/Picsart_26-07-27_17-02-32-132.png" alt="NASIM WORLD" style="height:34px; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='NASIM WORLD';"></div>
+    <div class="logo" id="logoTapZone"><img id="logoImg" src="" alt="NASIM WORLD" style="height:34px; display:none;" onerror="this.style.display='none'; document.getElementById('logoFallbackText').style.display='inline';" onload="this.style.display='block'; document.getElementById('logoFallbackText').style.display='none';"><span id="logoFallbackText">NASIM WORLD</span></div>
     <div style="display:flex; align-items:center; gap:10px;">
       <div class="cart-icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
       <div class="menu-btn" onclick="document.getElementById('navLinks').classList.add('open'); document.getElementById('navOverlay').classList.add('show');"><div class="menu-icon"></div></div>
@@ -426,7 +502,7 @@
     <a href="#about">Contact</a>
   </div>
 
-  <div class="hero" id="hero"><img id="heroImg" src="Pictures/file_0000000072ec81fa90368de9c45c9528.png" width="300" onerror="this.style.opacity='0';"></div>
+  <div class="hero" id="hero"><img id="heroImg" src="" width="300" style="opacity:0;" onerror="this.style.opacity='0';"></div>
   <div class="hero-glass">
     <div class="tagline">সেরা পণ্য, সেরা দামে — এখনই দেখুন</div>
     <div class="cta-btn" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Shop Now</div>
@@ -439,11 +515,11 @@
       <div class="category-viewport">
         <div class="category-track" id="categoryTrack">
           <div class="category-item" onclick="openGallery('group1', this.querySelector('img'))">
-            <img id="catImg-group1" src="Download/images (2).jpeg" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
+            <img id="catImg-group1" src="" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group1">আম</span>
           </div>
           <div class="category-item" onclick="openGallery('group2', this.querySelector('img'))">
-            <img id="catImg-group2" src="Pictures/file_00000000074c71faa78aac0a3e234f5c.png" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
+            <img id="catImg-group2" src="" width="100" onerror="this.onerror=null; this.removeAttribute('src');">
             <span id="catLabel-group2">আচার </span>
           </div>
           <div class="category-item" onclick="openGallery('group3', this.querySelector('img'))">
@@ -491,8 +567,8 @@
   <div class="offer-section" id="offers">
     <h2 class="section-title">বিশেষ অফার</h2>
     <div class="offer-carousel" id="offerCarousel" style="touch-action: pan-y;">
-      <div class="offer-slide active"><img src="Pictures/file_0000000009e88207b2451ee4b803bd55.png" onerror="this.style.opacity='0';"></div>
-      <div class="offer-slide "><img src="Pictures/file_0000000005788207a3cce61549223a8b.png" onerror="this.style.opacity='0';"></div>
+      <div class="offer-slide active"><img id="offerImg1" src="" onerror="this.style.opacity='0';"></div>
+      <div class="offer-slide "><img id="offerImg2" src="" onerror="this.style.opacity='0';"></div>
       <div class="offer-dots" id="offerDots"></div>
     </div>
   </div>
@@ -505,6 +581,51 @@
       <p>আমাদের পেজে বা ওয়েবসাইটে যে প্রোডাক্ট আপনি দেখবেন, সেটাই ইনশাআল্লাহ ১০০% আপনাকে প্রোভাইড করা হবে।</p>
       <p>আমাদের পণ্য একদম নিরাপদ ও স্বাস্থ্যসম্মত। আমাদের ওয়েবসাইট থেকে অর্ডার করলে আপনার পণ্য আপনার বাসা পর্যন্ত পৌঁছে দেওয়ার দায়িত্ব আমাদের।</p>
       <p>নিশ্চিন্তে অর্ডার করুন ☺️</p>
+    </div>
+    <div class="owner-file-card" onclick="openOwnerProfile()">
+      <div class="owner-file-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      </div>
+      <div class="owner-file-text">
+        <div class="t1">মালিকের পরিচিতি</div>
+        <div class="t2">দেখতে ট্যাপ করুন</div>
+      </div>
+      <div class="owner-file-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="owner-overlay" id="ownerOverlay">
+    <div class="owner-card">
+      <button class="owner-close" onclick="closeOwnerProfile()">✕</button>
+      <div class="owner-photo-wrap">
+        <div class="owner-banner-wrap">
+          <svg viewBox="0 0 190 74">
+            <path d="M14 34 L28 20 L176 8 L182 16 L64 30 L58 60 L20 66 Z" fill="url(#bannerGrad)" stroke="#1B2A4A" stroke-width="2.5" stroke-linejoin="round"/>
+            <line x1="28" y1="20" x2="14" y2="34" stroke="#1B2A4A" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="bannerGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffffff"/>
+                <stop offset="1" stop-color="#DCE6F2"/>
+              </linearGradient>
+            </defs>
+            <text x="105" y="24" text-anchor="middle" class="owner-banner-name" id="ownerBannerName">নাসিম</text>
+          </svg>
+        </div>
+        <div class="owner-photo-frame">
+          <img id="ownerPhotoImg" src="" alt="Owner" onerror="this.style.opacity='0';">
+        </div>
+      </div>
+      <div class="owner-name-block">
+        <h3 id="ownerNameText">নাসিম</h3>
+        <div class="role" id="ownerRoleText">Founder &amp; Owner, NASIM WORLD</div>
+      </div>
+      <div class="owner-details-panel">
+        <div class="d-row"><div class="d-label">নাম</div><div class="d-value" id="ownerDetailName">নাসিম</div></div>
+        <div class="d-row"><div class="d-label">পদবি</div><div class="d-value" id="ownerDetailRole">Founder &amp; Owner</div></div>
+        <div class="d-row"><div class="d-label">এলাকা</div><div class="d-value">সাপাহার, নওগাঁ</div></div>
+      </div>
     </div>
   </div>
 
@@ -703,6 +824,22 @@
   function openLocationMap() {
     window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Sapahar, Naogaon, Bangladesh'), '_blank');
   }
+
+  // ===== Owner Profile modal =====
+  function openOwnerProfile() {
+    document.getElementById('ownerOverlay').classList.add('active');
+  }
+  function closeOwnerProfile() {
+    document.getElementById('ownerOverlay').classList.remove('active');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const ownerOverlay = document.getElementById('ownerOverlay');
+    if (ownerOverlay) {
+      ownerOverlay.addEventListener('click', function(e) {
+        if (e.target === ownerOverlay) closeOwnerProfile();
+      });
+    }
+  });
 
   let deliveryCharges = { inside: 0, outside: 0 };
 
@@ -1193,6 +1330,7 @@
     document.getElementById('searchOverlay').classList.remove('active');
     document.getElementById('productDetailOverlay').classList.remove('active');
     document.getElementById('trackOrderOverlay').classList.remove('active');
+    document.getElementById('ownerOverlay').classList.remove('active');
   }
 
   let logoTapTimes = [];
@@ -1427,70 +1565,12 @@
       if (!doc.exists) return;
       const data = doc.data();
       if (data.heroImage) { const heroImg = document.getElementById('heroImg'); if (heroImg) { heroImg.style.opacity = '1'; heroImg.src = data.heroImage; } }
+      if (data.logoImage) { const logoImg = document.getElementById('logoImg'); if (logoImg) { logoImg.src = data.logoImage; } }
+      if (data.offerImage1) { const o1 = document.getElementById('offerImg1'); if (o1) { o1.src = data.offerImage1; } }
+      if (data.offerImage2) { const o2 = document.getElementById('offerImg2'); if (o2) { o2.src = data.offerImage2; } }
+      if (data.ownerPhoto) { const opImg = document.getElementById('ownerPhotoImg'); if (opImg) { opImg.src = data.ownerPhoto; } }
       const catImages = data.categoryImages || {};
       const catLabels = data.categoryLabels || {};
       ['group1', 'group2', 'group3', 'group4'].forEach(key => {
         if (catImages[key]) { const img = document.getElementById(`catImg-${key}`); if (img) img.src = catImages[key]; }
-        if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textContent = catLabels[key]; titles[key] = catLabels[key]; }
-      });
-      if (data.deliveryInside !== undefined) deliveryCharges.inside = parseFloat(bnToEn(data.deliveryInside)) || 0;
-      if (data.deliveryOutside !== undefined) deliveryCharges.outside = parseFloat(bnToEn(data.deliveryOutside)) || 0;
-    } catch (e) {}
-  }
-
-  window.addEventListener('DOMContentLoaded', function() {
-    updateCartCount();
-    updateCatSlide();
-    startCatAuto();
-    renderProdCategory('group1');
-    renderProdCategory('group2');
-    renderProdCategory('group3');
-    renderProdCategory('group4');
-    loadSiteSettings();
-  });
-
-  (function() {
-    const btn = document.getElementById('floatBtn');
-    let dragging = false;
-    let moved = false;
-    let startPointX = 0, startPointY = 0;
-    let btnStartLeft = 0, btnStartTop = 0;
-    function applyPosition(left, top) {
-      const maxLeft = window.innerWidth - btn.offsetWidth - 4;
-      const maxTop = window.innerHeight - btn.offsetHeight - 4;
-      left = Math.max(4, Math.min(left, maxLeft));
-      top = Math.max(4, Math.min(top, maxTop));
-      btn.style.left = left + 'px'; btn.style.top = top + 'px'; btn.style.right = 'auto'; btn.style.bottom = 'auto';
-    }
-    const savedPos = JSON.parse(localStorage.getItem('nasimWaBtnPos') || 'null');
-    if (savedPos) { applyPosition(savedPos.left, savedPos.top); }
-    btn.addEventListener('pointerdown', (e) => {
-      dragging = true; moved = false; startPointX = e.clientX; startPointY = e.clientY;
-      const rect = btn.getBoundingClientRect(); btnStartLeft = rect.left; btnStartTop = rect.top;
-      btn.setPointerCapture(e.pointerId);
-    });
-    btn.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const dx = e.clientX - startPointX; const dy = e.clientY - startPointY;
-      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
-      if (moved) { applyPosition(btnStartLeft + dx, btnStartTop + dy); }
-    });
-    btn.addEventListener('pointerup', () => {
-      if (!dragging) return;
-      dragging = false;
-      if (moved) { const rect = btn.getBoundingClientRect(); localStorage.setItem('nasimWaBtnPos', JSON.stringify({ left: rect.left, top: rect.top })); }
-    });
-    btn.addEventListener('click', (e) => { if (moved) e.preventDefault(); });
-  })();
-</script>
-
-  <div class="bottom-nav">
-    <div class="nav-item nav-selected" onclick="navTap(this, goHome)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg><span>Home</span></div>
-    <div class="nav-item" onclick="navTap(this, navOpenCart)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span id="navCartCount" class="nav-badge">0</span><span>Cart</span></div>
-    <div class="nav-item" onclick="navTap(this, openSearch)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Search</span></div>
-    <div class="nav-item" onclick="navTap(this, navOpenTrack)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg><span>Track</span></div>
-    <div class="nav-item" onclick="navTap(this, goAccount)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account</span></div>
-  </div>
-
-</body>
-</html>
+        if (catLabels[key]) { const label = document.getElementById(`catLabel-${key}`); if (label) label.textCo
