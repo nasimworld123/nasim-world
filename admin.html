@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASIM WORLD — Admin Panel</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body {
+    background: linear-gradient(160deg, #FFFFFF 0%, #F5F5F5 100%);
+    color: #1e2a38;
+    padding-bottom: 50px;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(27,42,74,0.25);
+    box-shadow: 0 4px 20px rgba(27,42,74,0.08);
+  }
+  .topbar h1 {
+    font-size: 1.05rem; color: #1B2A4A; letter-spacing: 0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .topbar h1::before {
+    content: "🥭"; font-size: 1.1rem;
+  }
+  .logout-btn {
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(27,42,74,0.35);
+    color: #1B2A4A; padding: 8px 16px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: bold; cursor: pointer;
+    backdrop-filter: blur(6px);
+  }
+  .logout-btn:active { transform: scale(0.95); }
+
+  /* ===== Login ===== */
+  .login-wrap {
+    max-width: 380px; margin: 70px auto 0; padding: 0 20px;
+  }
+  .login-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 22px; padding: 34px 26px;
+    box-shadow: 0 20px 50px rgba(27,42,74,0.2), inset 0 1px 0 rgba(255,255,255,0.7);
+    text-align: center;
+  }
+  .login-card .lock-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg,#2C4870,#1B2A4A);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 20px rgba(27,42,74,0.35);
+    font-size: 1.5rem;
+  }
+  .login-card h2 { color: #1B2A4A; margin-bottom: 22px; font-size: 1.25rem; font-weight: 700; }
+  .login-card input {
+    width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(27,42,74,0.3);
+    border-radius: 12px; padding: 13px 16px; margin-bottom: 12px; font-size: 0.9rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .login-card input:focus { border-color: #1B2A4A; }
+  .login-card button {
+    width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A);
+    color: #fff; border: none; padding: 14px; border-radius: 26px;
+    font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 8px;
+    box-shadow: 0 8px 20px rgba(27,42,74,0.35);
+    letter-spacing: 0.3px;
+  }
+  .login-card button:active { transform: scale(0.97); }
+  .login-error { color: #ef4444; font-size: 0.8rem; margin-top: 12px; min-height: 16px; font-weight: 600; }
+
+  /* ===== Dashboard ===== */
+  .dashboard { display: none; padding: 18px; max-width: 720px; margin: 0 auto; }
+
+  /* ---- Diagnostics banner (shown only when Firestore reports an error) ---- */
+  .diag-banner {
+    display: none;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #b91c1c;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  .diag-banner.show { display: block; }
+  .diag-banner b { display: block; margin-bottom: 4px; font-size: 0.85rem; }
+  .diag-banner code {
+    display: block; margin-top: 6px; padding: 6px 8px;
+    background: rgba(0,0,0,0.06); border-radius: 8px; font-size: 0.72rem;
+    word-break: break-all;
+  }
+
+  /* ---- Accordion section card ---- */
+  .section-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 20px;
+    box-shadow: 0 10px 34px rgba(27,42,74,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-card-header h3 {
+    color: #1B2A4A; font-size: 1.02rem;
+    display: flex; align-items: center; gap: 8px; font-weight: 700;
+  }
+  .section-card-header .chevron {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(27,42,74,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: #1B2A4A;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+  .section-card.open .section-card-header .chevron { transform: rotate(180deg); }
+  .section-card-header .badge-count {
+    background: #f97316; color: #fff; font-size: 0.68rem; font-weight: bold;
+    padding: 2px 9px; border-radius: 10px; margin-left: 8px;
+  }
+  .section-card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .section-card.open .section-card-body {
+    max-height: 4000px;
+  }
+  .section-card-body-inner {
+    padding: 0 20px 20px;
+  }
+
+  .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .form-row > * { flex: 1; }
+  .section-card input, .section-card select {
+    width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(27,42,74,0.3);
+    border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 10px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .section-card input:focus, .section-card select:focus { border-color: #1B2A4A; }
+  .add-btn {
+    width: 100%; background: linear-gradient(90deg,#2C4870,#1B2A4A);
+    color: #fff; border: none; padding: 13px; border-radius: 24px;
+    font-size: 0.9rem; font-weight: bold; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(27,42,74,0.3);
+  }
+  .add-btn:active { transform: scale(0.98); }
+  .add-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .cancel-edit-btn {
+    display: none;
+    width: 100%; background: rgba(27,42,74,0.08); border: 1px solid rgba(27,42,74,0.3);
+    color: #1B2A4A; padding: 11px; border-radius: 24px;
+    font-size: 0.85rem; font-weight: bold; cursor: pointer;
+    margin-top: 8px;
+  }
+  .cancel-edit-btn.show { display: block; }
+
+  /* ---- Per-product mini accordion (inside "All Products") ---- */
+  .mini-item {
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.5);
+  }
+  .mini-item-header {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px; cursor: pointer;
+  }
+  .mini-item-header img { width: 46px; height: 46px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #FFFFFF; }
+  .mini-item-header .info { flex: 1; min-width: 0; }
+  .mini-item-header .info .name { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-item-header .info .price { font-size: 0.8rem; color: #f97316; font-weight: 600; }
+  .mini-item-header .info .stock-label { font-size: 0.72rem; font-weight: 700; margin-top: 2px; }
+  .mini-item-header .info .stock-label.in { color: #16a34a; }
+  .mini-item-header .info .stock-label.out { color: #ef4444; }
+  .mini-item-header .mini-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(27,42,74,0.1); display:flex; align-items:center; justify-content:center;
+    font-size: 0.75rem; color: #1B2A4A; flex-shrink:0;
+    transition: transform 0.3s ease;
+  }
+  .mini-item.open .mini-item-header .mini-chevron { transform: rotate(180deg); }
+  .mini-item-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .mini-item.open .mini-item-body { max-height: 500px; }
+  .mini-item-body-inner { padding: 0 10px 12px; display: flex; gap: 8px; }
+  .mini-item-body-inner .edit-btn { flex: 1; }
+  .mini-item-body-inner .cross-btn { flex-shrink: 0; }
+
+  .category-group { margin-bottom: 20px; }
+  .category-group h4 {
+    color: #33475a; font-size: 0.88rem; margin-bottom: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75;
+  }
+  .edit-btn {
+    background: rgba(27,42,74,0.1); border: 1px solid rgba(27,42,74,0.35); color: #1B2A4A;
+    padding: 9px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+  }
+  .cross-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #ef4444; color: #fff; border: none;
+    font-size: 0.95rem; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(239,68,68,0.4);
+  }
+  .cross-btn:active { transform: scale(0.9); }
+  .empty-msg { text-align: center; color: rgba(30,42,56,0.4); font-size: 0.85rem; padding: 14px 0; }
+  .status-msg { text-align: center; font-size: 0.85rem; padding: 10px 0; min-height: 20px; font-weight: 600; }
+
+  /* ---- Live image preview boxes ---- */
+  .img-preview-wrap {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.6);
+    border: 1px dashed rgba(27,42,74,0.35);
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin: -2px 0 10px;
+    font-size: 0.72rem;
+    color: rgba(30,42,56,0.6);
+  }
+  .img-preview-wrap.show { display: flex; }
+  .img-preview-wrap img {
+    width: 46px; height: 46px; border-radius: 8px; object-fit: cover;
+    background: #FFFFFF; border: 1px solid rgba(27,42,74,0.2); flex-shrink: 0;
+  }
+  .img-preview-wrap.ok { border-color: rgba(18,140,74,0.5); }
+  .img-preview-wrap.ok .status-text { color: #128C4A; font-weight: 700; }
+  .img-preview-wrap.bad { border-color: rgba(239,68,68,0.5); }
+  .img-preview-wrap.bad .status-text { color: #ef4444; font-weight: 700; }
+
+  /* ---- Site Images: one card per image, collapsed by default ---- */
+  .img-field-item {
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.5);
+  }
+  .img-field-header {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px 12px; cursor: pointer;
+  }
+  .img-field-header .thumb {
+    width: 42px; height: 42px; border-radius: 8px; object-fit: cover;
+    background: #FFFFFF; border: 1px solid rgba(27,42,74,0.2); flex-shrink: 0;
+  }
+  .img-field-header .label { flex: 1; font-size: 0.85rem; font-weight: bold; color: #1e2a38; }
+  .img-field-header .mini-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(27,42,74,0.1); display:flex; align-items:center; justify-content:center;
+    font-size: 0.75rem; color: #1B2A4A; flex-shrink:0;
+    transition: transform 0.3s ease;
+  }
+  .img-field-item.open .img-field-header .mini-chevron { transform: rotate(180deg); }
+  .img-field-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .img-field-item.open .img-field-body { max-height: 500px; }
+  .img-field-body-inner { padding: 0 12px 14px; }
+
+  /* ---- Delivery charge fields ---- */
+  .delivery-field-item {
+    border: 1px solid rgba(27,42,74,0.15);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.5);
+  }
+  .delivery-field-item label {
+    display: block; font-size: 0.8rem; font-weight: 700; color: #1e2a38; margin-bottom: 6px;
+  }
+
+  /* ===== New Orders Alert Banner ===== */
+  .order-alert {
+    display: none;
+    max-width: 720px; margin: 16px auto 0; padding: 0 18px;
+  }
+  .order-alert.show { display: block; }
+  .order-alert .box {
+    background: linear-gradient(90deg,#f97316,#ea580c);
+    color: #fff; border-radius: 16px; padding: 15px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 8px 26px rgba(249,115,22,0.4);
+    animation: alertPulse 1.6s infinite;
+  }
+  .order-alert .box .txt { font-weight: bold; font-size: 0.92rem; letter-spacing: 0.2px; }
+  .order-alert .box .count {
+    font-size: 1.5rem; font-weight: 800; background: rgba(255,255,255,0.25);
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  @keyframes alertPulse {
+    0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.5); }
+    70% { box-shadow: 0 0 0 14px rgba(249,115,22,0); }
+    100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+  }
+
+  /* ===== Orders ===== */
+  .order-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .history-toggle {
+    background: rgba(30,42,56,0.06); border: 1px solid rgba(30,42,56,0.2); color: rgba(30,42,56,0.65);
+    padding: 7px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+    margin-bottom: 16px; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .history-toggle.active { background: #1e2a38; color: #fff; border-color: #1e2a38; }
+  .order-tab {
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(27,42,74,0.3); color: #1B2A4A;
+    padding: 7px 14px; border-radius: 16px; font-size: 0.76rem; font-weight: bold; cursor: pointer;
+  }
+  .order-tab.active { background: linear-gradient(90deg,#2C4870,#1B2A4A); color: #fff; border-color: transparent; }
+  .order-card {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(27,42,74,0.18); border-radius: 16px;
+    padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(27,42,74,0.1);
+  }
+  .order-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .order-card .cust-name { font-weight: bold; font-size: 0.95rem; color: #1e2a38; }
+  .order-badge {
+    font-size: 0.68rem; font-weight: bold; padding: 4px 11px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .order-badge.Pending { background: #fff4e5; color: #f97316; }
+  .order-badge.Accepted { background: #e5f6ff; color: #1B2A4A; }
+  .order-badge.Delivered { background: #e8f9ee; color: #128C4A; }
+  .order-badge.Cancelled { background: #fdeaea; color: #ef4444; }
+  .order-card .meta { font-size: 0.78rem; color: rgba(30,42,56,0.6); margin-bottom: 8px; line-height: 1.6; }
+  .order-card .items-list { font-size: 0.8rem; color: #1e2a38; margin-bottom: 8px; background: rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 10px; }
+  .order-card .items-list div { padding: 2px 0; }
+  .order-card .total-row { font-weight: bold; color: #f97316; font-size: 0.9rem; margin-bottom: 12px; }
+  .order-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .order-actions button, .order-actions a.act-btn {
+    flex: 1; min-width: 80px; border: none; padding: 9px; border-radius: 16px;
+    font-size: 0.75rem; font-weight: bold; cursor: pointer; color: #fff;
+    text-decoration: none; text-align: center;
+  }
+  .btn-accept { background: linear-gradient(90deg,#2C4870,#1B2A4A); }
+  .btn-deliver { background: #128C4A; }
+  .btn-cancel { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.35) !important; }
+  .btn-call { background: #25D366; }
+  @media (min-width: 900px) {
+    .dashboard { max-width: 1000px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>NASIM WORLD — Admin</h1>
+    <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div class="order-alert" id="orderAlert">
+    <div class="box">
+      <span class="txt">🔔 New Orders Waiting</span>
+      <span class="count" id="pendingOrderCount">0</span>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <div class="lock-icon">🔒</div>
+      <h2>Admin Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button onclick="doLogin()">Login</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- ===== Diagnostics banner: only shows if Firestore returns an error ===== -->
+    <div class="diag-banner" id="diagBanner">
+      <b>⚠️ ডাটা লোড করতে সমস্যা হচ্ছে</b>
+      <span id="diagText"></span>
+      <code id="diagCode"></code>
+    </div>
+
+    <!-- ===== All Orders (accordion) ===== -->
+    <div class="section-card" id="sectionCard-orders">
+      <div class="section-card-header" onclick="toggleSection('orders')">
+        <h3>📦 All Orders <span class="badge-count" id="sectionOrderCount" style="display:none;">0</span></h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div class="order-tabs" id="orderTabs">
+            <div class="order-tab active" data-filter="all" onclick="filterOrders('all', this)">All</div>
+            <div class="order-tab" data-filter="Pending" onclick="filterOrders('Pending', this)">Pending</div>
+            <div class="order-tab" data-filter="Accepted" onclick="filterOrders('Accepted', this)">Accepted</div>
+            <div class="order-tab" data-filter="Delivered" onclick="filterOrders('Delivered', this)">Delivered</div>
+            <div class="order-tab" data-filter="Cancelled" onclick="filterOrders('Cancelled', this)">Cancelled</div>
+          </div>
+          <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">🕓 View Order History</div>
+          <div id="ordersList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Delivery Charge (accordion) ===== -->
+    <div class="section-card" id="sectionCard-delivery">
+      <div class="section-card-header" onclick="toggleSection('delivery')">
+        <h3>🚚 ডেলিভারি চার্জ</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div class="delivery-field-item">
+            <label>সাপাহার/নওগাঁর ভিতরে ডেলিভারি চার্জ (৳)</label>
+            <input type="text" id="deliveryInsideInput" placeholder="যেমনঃ 60">
+          </div>
+          <div class="delivery-field-item">
+            <label>সাপাহার/নওগাঁর বাইরে ডেলিভারি চার্জ (৳)</label>
+            <input type="text" id="deliveryOutsideInput" placeholder="যেমনঃ 120">
+          </div>
+          <button class="add-btn" id="saveDeliveryBtn" onclick="saveDeliveryCharges()">Save Delivery Charges</button>
+          <div class="status-msg" id="deliveryStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Site Images (accordion, each image field collapsed) ===== -->
+    <div class="section-card" id="sectionCard-images">
+      <div class="section-card-header" onclick="toggleSection('images')">
+        <h3>🖼️ Site Images</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+
+          <div class="img-field-item" id="imgField-logo">
+            <div class="img-field-header" onclick="toggleImgField('logo')">
+              <img class="thumb" id="thumb-logo" src="" alt="">
+              <span class="label">Logo (Navbar)</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="logoImageInput" placeholder="Logo Image URL">
+                <div class="img-preview-wrap" id="preview-logo">
+                  <img id="previewImg-logo" src="" alt="">
+                  <span class="status-text" id="previewStatus-logo">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-hero">
+            <div class="img-field-header" onclick="toggleImgField('hero')">
+              <img class="thumb" id="thumb-hero" src="" alt="">
+              <span class="label">Hero / Cover Image</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="heroImageInput" placeholder="Hero / Cover Image URL">
+                <div class="img-preview-wrap" id="preview-hero">
+                  <img id="previewImg-hero" src="" alt="">
+                  <span class="status-text" id="previewStatus-hero">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-group1">
+            <div class="img-field-header" onclick="toggleImgField('group1')">
+              <img class="thumb" id="thumb-group1" src="" alt="">
+              <span class="label" id="fieldLabel-group1">আম</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group1" placeholder="Category name" value="আম">
+                  <input type="text" id="catImage-group1" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group1">
+                  <img id="previewImg-group1" src="" alt="">
+                  <span class="status-text" id="previewStatus-group1">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-group2">
+            <div class="img-field-header" onclick="toggleImgField('group2')">
+              <img class="thumb" id="thumb-group2" src="" alt="">
+              <span class="label" id="fieldLabel-group2">আচার</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group2" placeholder="Category name" value="আচার">
+                  <input type="text" id="catImage-group2" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group2">
+                  <img id="previewImg-group2" src="" alt="">
+                  <span class="status-text" id="previewStatus-group2">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-group3">
+            <div class="img-field-header" onclick="toggleImgField('group3')">
+              <img class="thumb" id="thumb-group3" src="" alt="">
+              <span class="label" id="fieldLabel-group3">আমসত্ত্ব</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group3" placeholder="Category name" value="আমসত্ত্ব">
+                  <input type="text" id="catImage-group3" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group3">
+                  <img id="previewImg-group3" src="" alt="">
+                  <span class="status-text" id="previewStatus-group3">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-group4">
+            <div class="img-field-header" onclick="toggleImgField('group4')">
+              <img class="thumb" id="thumb-group4" src="" alt="">
+              <span class="label" id="fieldLabel-group4">ছবি ৪</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <div class="form-row">
+                  <input type="text" id="catLabel-group4" placeholder="Category name" value="ছবি ৪">
+                  <input type="text" id="catImage-group4" placeholder="Thumbnail Image URL">
+                </div>
+                <div class="img-preview-wrap" id="preview-group4">
+                  <img id="previewImg-group4" src="" alt="">
+                  <span class="status-text" id="previewStatus-group4">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer1">
+            <div class="img-field-header" onclick="toggleImgField('offer1')">
+              <img class="thumb" id="thumb-offer1" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 1</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage1Input" placeholder="Offer Slide 1 Image URL">
+                <div class="img-preview-wrap" id="preview-offer1">
+                  <img id="previewImg-offer1" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer1">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer2">
+            <div class="img-field-header" onclick="toggleImgField('offer2')">
+              <img class="thumb" id="thumb-offer2" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 2</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage2Input" placeholder="Offer Slide 2 Image URL">
+                <div class="img-preview-wrap" id="preview-offer2">
+                  <img id="previewImg-offer2" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer2">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer3">
+            <div class="img-field-header" onclick="toggleImgField('offer3')">
+              <img class="thumb" id="thumb-offer3" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 3</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage3Input" placeholder="Offer Slide 3 Image URL">
+                <div class="img-preview-wrap" id="preview-offer3">
+                  <img id="previewImg-offer3" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer3">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-offer4">
+            <div class="img-field-header" onclick="toggleImgField('offer4')">
+              <img class="thumb" id="thumb-offer4" src="" alt="">
+              <span class="label">বিশেষ অফার — Slide 4</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="offerImage4Input" placeholder="Offer Slide 4 Image URL">
+                <div class="img-preview-wrap" id="preview-offer4">
+                  <img id="previewImg-offer4" src="" alt="">
+                  <span class="status-text" id="previewStatus-offer4">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="img-field-item" id="imgField-owner">
+            <div class="img-field-header" onclick="toggleImgField('owner')">
+              <img class="thumb" id="thumb-owner" src="" alt="">
+              <span class="label">মালিকের ছবি (Owner Photo)</span>
+              <div class="mini-chevron">▾</div>
+            </div>
+            <div class="img-field-body">
+              <div class="img-field-body-inner">
+                <input type="text" id="ownerPhotoInput" placeholder="Owner Photo URL">
+                <div class="img-preview-wrap" id="preview-owner">
+                  <img id="previewImg-owner" src="" alt="">
+                  <span class="status-text" id="previewStatus-owner">যাচাই হচ্ছে...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-btn" id="saveSiteImagesBtn" onclick="saveSiteSettings()">Save Site Images</button>
+          <div class="status-msg" id="settingsStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Add New Product (accordion) ===== -->
+    <div class="section-card" id="sectionCard-add">
+      <div class="section-card-header" onclick="toggleSection('add')">
+        <h3>➕ Add New Product</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <input type="text" id="pName" placeholder="Product Name">
+          <div class="form-row">
+            <input type="text" id="pPrice" placeholder="Price (৳)" oninput="syncWeightPrice('pPrice')">
+            <input type="text" id="pOldPrice" placeholder="Old Price (optional)" oninput="syncPriceFromPercent()">
+          </div>
+          <input type="text" id="pDiscountPercent" placeholder="ডিসকাউন্ট % (দিলে Price ঘরে ছাড়ের দাম বসবে, আগের দামটা Old Price ঘরে চলে যাবে)" oninput="syncPriceFromPercent()">
+          <label style="display:block;font-size:0.8rem;color:#33475a;margin:4px 0 4px;">অফার শেষ হওয়ার সময় (ঐচ্ছিক — সেট করলে সময় শেষে ছাড় ও পার্সেন্টেজ ব্যাজ নিজে থেকেই মুছে যাবে)</label>
+          <input type="datetime-local" id="pOfferEndsAt">
+          <input type="text" id="pImage" placeholder="Image URL">
+          <div class="img-preview-wrap" id="preview-product">
+            <img id="previewImg-product" src="" alt="">
+            <span class="status-text" id="previewStatus-product">যাচাই হচ্ছে...</span>
+          </div>
+          <select id="pStockStatus" onchange="onStockStatusChange()">
+            <option value="in">In Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+          <input type="text" id="pStockQty" placeholder="স্টক সংখ্যা (ঐচ্ছিক — খালি রাখলে সংখ্যা দেখাবে না)">
+          <select id="pCategory">
+            <option value="group1">Mango (আম)</option>
+            <option value="group2">Pickle (আচার)</option>
+            <option value="group3">আমসত্ত্ব</option>
+            <option value="group4">Category 4 (ছবি ৪)</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:8px;margin:4px 0 8px;">
+            <input type="checkbox" id="pFreeDelivery" style="width:auto;margin:0;">
+            ফ্রি ডেলিভারি ব্যাজ দেখাবে
+          </label>
+          <div class="delivery-field-item">
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <input type="checkbox" id="pSellByWeight" onchange="onSellByWeightChange()" style="width:auto;margin:0;">
+              ওজন অনুযায়ী বিক্রি (শুধু আমের জন্য — কেজিতে কাস্টম অর্ডার)
+            </label>
+            <div id="pWeightFieldsWrap" style="display:none;">
+              <div class="form-row">
+                <input type="text" id="pPricePerKg" placeholder="প্রতি কেজি দাম (৳)" oninput="syncWeightPrice('pPricePerKg')">
+                <input type="text" id="pMinWeight" placeholder="সর্বনিম্ন ওজন (কেজি) — যেমনঃ 5">
+              </div>
+              <input type="text" id="pWeightOptions" placeholder="ওজনের অপশন, কমা দিয়ে — যেমনঃ 5,6,7,8,10,12,15,18,20,22">
+            </div>
+          </div>
+          <button class="add-btn" id="addBtn" onclick="addProduct()">Add Product</button>
+          <button class="cancel-edit-btn" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
+          <div class="status-msg" id="addStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== All Products (accordion, each product collapsed) ===== -->
+    <div class="section-card" id="sectionCard-products">
+      <div class="section-card-header" onclick="toggleSection('products')">
+        <h3>🛍️ All Products</h3>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="section-card-body">
+        <div class="section-card-body-inner">
+          <div id="productList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdN_pY2ONFkYch-8dRwpR5JG8enxfJbEQ",
+      authDomain: "nasim-world.firebaseapp.com",
+      projectId: "nasim-world",
+      storageBucket: "nasim-world.firebasestorage.app",
+      messagingSenderId: "270942884516",
+      appId: "1:270942884516:web:b7c3876d30a6bf1fc10c31"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const categoryLabels = { group1: "Mango (আম)", group2: "Pickle (আচার)", group3: "আমসত্ত্ব", group4: "Category 4" };
+
+    // ===== Diagnostics: surface Firestore read/write errors instead of failing silently =====
+    function showDiag(context, error) {
+      const banner = document.getElementById('diagBanner');
+      const text = document.getElementById('diagText');
+      const code = document.getElementById('diagCode');
+      let hint = '';
+      if (error && error.code === 'permission-denied') {
+        hint = 'Firestore Security Rules-এ পাবলিক read/write অনুমতি নেই বলে মনে হচ্ছে। কাস্টমাররা লগইন ছাড়াই অর্ডার করে, তাই "orders" কালেকশনে write এবং "products"/"settings" কালেকশনে read/write পাবলিকভাবে খোলা থাকতে হবে।';
+      } else if (error && (error.code === 'unavailable' || error.code === 'network-request-failed')) {
+        hint = 'ইন্টারনেট সংযোগ বা Firebase সার্ভারে পৌঁছাতে সমস্যা হচ্ছে।';
+      } else {
+        hint = 'নিচের এরর কোড অনুযায়ী সমস্যাটি যাচাই করুন।';
+      }
+      text.textContent = `(${context}) ${hint}`;
+      code.textContent = error ? `${error.code || ''} ${error.message || error}` : '';
+      banner.classList.add('show');
+    }
+    function clearDiag() {
+      document.getElementById('diagBanner').classList.remove('show');
+    }
+
+    // ===== Stock helpers =====
+    function bnToEnAdmin(str) {
+      const bnDigits = '০১২৩৪৫৬৭৮৯';
+      return str.toString().replace(/[০-৯]/g, d => bnDigits.indexOf(d)).trim();
+    }
+    function onStockStatusChange() {
+      const status = document.getElementById('pStockStatus').value;
+      document.getElementById('pStockQty').style.display = (status === 'in') ? 'block' : 'none';
+      if (status === 'out') document.getElementById('pStockQty').value = '';
+    }
+    function onSellByWeightChange() {
+      const checked = document.getElementById('pSellByWeight').checked;
+      document.getElementById('pWeightFieldsWrap').style.display = checked ? 'block' : 'none';
+      if (checked) {
+        // starting point: mirror whatever is already in Price into per-KG
+        document.getElementById('pPricePerKg').value = document.getElementById('pPrice').value.trim();
+      } else {
+        document.getElementById('pPrice').readOnly = false;
+        document.getElementById('pPrice').style.background = '';
+      }
+      syncPriceFromPercent();
+    }
+
+    // Two-way live sync between the top "Price" field and the per-KG field
+    // while "sell by weight" is on: typing in either one instantly updates
+    // the other, so the top Price field is always filled and the
+    // Add/Update Product button never blocks on it being empty.
+    function syncWeightPrice(sourceId) {
+      if (!document.getElementById('pSellByWeight').checked) return;
+      const price = document.getElementById('pPrice');
+      const perKg = document.getElementById('pPricePerKg');
+      if (price.readOnly) return; // a discount % is actively driving the price — don't fight it
+      if (sourceId === 'pPrice') {
+        perKg.value = price.value.trim();
+      } else {
+        price.value = perKg.value.trim();
+      }
+    }
+
+    // Reads/writes whichever price field is currently active (normal price, or
+    // per-KG price for weight-sold items).
+    function activePriceField() {
+      const isWeight = document.getElementById('pSellByWeight').checked;
+      return document.getElementById(isWeight ? 'pPricePerKg' : 'pPrice');
+    }
+
+    // When a valid Discount % is entered: the current Price value is captured into
+    // Old Price (as the original/strikethrough amount), and Price is recalculated
+    // to the discounted amount and locked (read-only) while the % is active.
+    // Clearing the % restores the original amount back into Price and empties Old Price.
+    // If no % is set, Price and Old Price behave exactly as plain manual fields (unchanged).
+    // In "sell by weight" mode this operates on the per-KG field, and the result is
+    // always mirrored into the top Price field too (also locked, so they stay identical).
+    function syncPriceFromPercent() {
+      const pctInput = document.getElementById('pDiscountPercent');
+      const oldPriceInput = document.getElementById('pOldPrice');
+      const priceInput = activePriceField();
+      const mainPrice = document.getElementById('pPrice');
+      const pctRaw = pctInput.value.trim().replace('%', '');
+      const pctVal = parseFloat(bnToEnAdmin(pctRaw));
+      const pctValid = pctRaw !== '' && !isNaN(pctVal) && pctVal > 0 && pctVal < 100;
+
+      if (!pctValid) {
+        if (priceInput.readOnly) {
+          if (oldPriceInput.value.trim() !== '') {
+            priceInput.value = oldPriceInput.value.trim();
+          }
+          priceInput.readOnly = false;
+          priceInput.style.background = '';
+          oldPriceInput.value = '';
+        }
+        if (priceInput.id !== 'pPrice') {
+          mainPrice.value = priceInput.value;
+          mainPrice.readOnly = false;
+          mainPrice.style.background = '';
+        }
+        return;
+      }
+
+      if (!priceInput.readOnly) {
+        if (oldPriceInput.value.trim() === '') {
+          oldPriceInput.value = priceInput.value.trim();
+        }
+        priceInput.readOnly = true;
+        priceInput.style.background = '#eef1f6';
+      }
+      const baseVal = parseFloat(bnToEnAdmin(oldPriceInput.value.trim()));
+      if (!isNaN(baseVal) && baseVal > 0) {
+        priceInput.value = Math.round(baseVal * (1 - pctVal / 100));
+      }
+      if (priceInput.id !== 'pPrice') {
+        mainPrice.value = priceInput.value;
+        mainPrice.readOnly = true;
+        mainPrice.style.background = '#eef1f6';
+      }
+    }
+    function stockLabelFor(stock) {
+      if (stock === undefined || stock === null || stock === '') return { text: 'In Stock', cls: 'in' };
+      const n = parseInt(bnToEnAdmin(stock), 10);
+      if (isNaN(n) || n <= 0) return { text: 'Out of Stock', cls: 'out' };
+      return { text: `In Stock: ${n}`, cls: 'in' };
+    }
+
+    // ===== Accordion controls =====
+    function toggleSection(key) {
+      const card = document.getElementById(`sectionCard-${key}`);
+      const isOpen = card.classList.contains('open');
+      // close all sections first (only one open at a time keeps the page short)
+      document.querySelectorAll('.section-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    }
+
+    function toggleImgField(key) {
+      const item = document.getElementById(`imgField-${key}`);
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.img-field-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    function toggleMiniItem(el) {
+      const item = el.closest('.mini-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.mini-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = '';
+      if (!email || !password) {
+        errEl.textContent = 'Please enter email and password';
+        return;
+      }
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(err => { errEl.textContent = 'Login failed — incorrect email or password'; });
+    }
+
+    function doLogout() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('loginWrap').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+        clearDiag();
+        listenProducts();
+        listenOrders();
+        loadSiteSettingsForm();
+      } else {
+        document.getElementById('loginWrap').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';
+      }
+    });
+
+    // ===== Live image URL preview =====
+    function wireImagePreview(inputId, previewKey) {
+      const input = document.getElementById(inputId);
+      const wrap = document.getElementById(`preview-${previewKey}`);
+      const img = document.getElementById(`previewImg-${previewKey}`);
+      const statusText = document.getElementById(`previewStatus-${previewKey}`);
+      if (!input || !wrap || !img || !statusText) return;
+
+      let debounceTimer = null;
+      input.addEventListener('input', () => {
+        const url = input.value.trim();
+        clearTimeout(debounceTimer);
+        if (!url) {
+          wrap.classList.remove('show', 'ok', 'bad');
+          return;
+        }
+        debounceTimer = setTimeout(() => {
+          wrap.classList.add('show');
+          wrap.classList.remove('ok', 'bad');
+          statusText.textContent = 'ছবি যাচাই হচ্ছে...';
+          img.src = url;
+        }, 400);
+      });
+
+      img.addEventListener('load', () => {
+        if (!img.src) return;
+        wrap.classList.add('ok');
+        wrap.classList.remove('bad');
+        statusText.textContent = '✅ ছবি ঠিক আছে';
+        const headerThumb = document.getElementById(`thumb-${previewKey}`);
+        if (headerThumb) headerThumb.src = img.src;
+      });
+      img.addEventListener('error', () => {
+        if (!img.src) return;
+        wrap.classList.add('bad');
+        wrap.classList.remove('ok');
+        statusText.textContent = '❌ এই লিংকে ছবি পাওয়া যায়নি — লিংক ঠিক আছে কিনা যাচাই করুন';
+      });
+    }
+
+    wireImagePreview('logoImageInput', 'logo');
+    wireImagePreview('heroImageInput', 'hero');
+    wireImagePreview('catImage-group1', 'group1');
+    wireImagePreview('catImage-group2', 'group2');
+    wireImagePreview('catImage-group3', 'group3');
+    wireImagePreview('catImage-group4', 'group4');
+    wireImagePreview('offerImage1Input', 'offer1');
+    wireImagePreview('offerImage2Input', 'offer2');
+    wireImagePreview('offerImage3Input', 'offer3');
+    wireImagePreview('offerImage4Input', 'offer4');
+    wireImagePreview('ownerPhotoInput', 'owner');
+    wireImagePreview('pImage', 'product');
+
+    // ===== Site Settings (logo, hero image, category thumbnails/labels, offer slides, owner photo, delivery charges) =====
+    async function loadSiteSettingsForm() {
+      try {
+        const doc = await db.collection('settings').doc('site').get();
+        if (!doc.exists) return;
+        const data = doc.data();
+        if (data.logoImage) {
+          document.getElementById('logoImageInput').value = data.logoImage;
+          document.getElementById('logoImageInput').dispatchEvent(new Event('input'));
+        }
+        if (data.heroImage) {
+          document.getElementById('heroImageInput').value = data.heroImage;
+          document.getElementById('heroImageInput').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage1) {
+          document.getElementById('offerImage1Input').value = data.offerImage1;
+          document.getElementById('offerImage1Input').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage2) {
+          document.getElementById('offerImage2Input').value = data.offerImage2;
+          document.getElementById('offerImage2Input').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage3) {
+          document.getElementById('offerImage3Input').value = data.offerImage3;
+          document.getElementById('offerImage3Input').dispatchEvent(new Event('input'));
+        }
+        if (data.offerImage4) {
+          document.getElementById('offerImage4Input').value = data.offerImage4;
+          document.getElementById('offerImage4Input').dispatchEvent(new Event('input'));
+        }
+        if (data.ownerPhoto) {
+          document.getElementById('ownerPhotoInput').value = data.ownerPhoto;
+          document.getElementById('ownerPhotoInput').dispatchEvent(new Event('input'));
+        }
+        const catImages = data.categoryImages || {};
+        const catLabels = data.categoryLabels || {};
+        ['group1', 'group2', 'group3', 'group4'].forEach(key => {
+          if (catImages[key]) {
+            const el = document.getElementById(`catImage-${key}`);
+            el.value = catImages[key];
+            el.dispatchEvent(new Event('input'));
+          }
+          if (catLabels[key]) {
+            document.getElementById(`catLabel-${key}`).value = catLabels[key];
+            const fieldLabelEl = document.getElementById(`fieldLabel-${key}`);
+            if (fieldLabelEl) fieldLabelEl.textContent = catLabels[key];
+          }
+        });
+        if (data.deliveryInside !== undefined) document.getElementById('deliveryInsideInput').value = data.deliveryInside;
+        if (data.deliveryOutside !== undefined) document.getElementById('deliveryOutsideInput').value = data.deliveryOutside;
+      } catch (e) {
+        showDiag('Site Settings লোড', e);
+      }
+    }
+
+    function saveSiteSettings() {
+      const statusEl = document.getElementById('settingsStatus');
+      const btn = document.getElementById('saveSiteImagesBtn');
+      const logoImage = document.getElementById('logoImageInput').value.trim();
+      const heroImage = document.getElementById('heroImageInput').value.trim();
+      const offerImage1 = document.getElementById('offerImage1Input').value.trim();
+      const offerImage2 = document.getElementById('offerImage2Input').value.trim();
+      const offerImage3 = document.getElementById('offerImage3Input').value.trim();
+      const offerImage4 = document.getElementById('offerImage4Input').value.trim();
+      const ownerPhoto = document.getElementById('ownerPhotoInput').value.trim();
+      const categoryImages = {};
+      const categoryLabelsData = {};
+      ['group1', 'group2', 'group3', 'group4'].forEach(key => {
+        const img = document.getElementById(`catImage-${key}`).value.trim();
+        const label = document.getElementById(`catLabel-${key}`).value.trim();
+        if (img) categoryImages[key] = img;
+        if (label) {
+          categoryLabelsData[key] = label;
+          const fieldLabelEl = document.getElementById(`fieldLabel-${key}`);
+          if (fieldLabelEl) fieldLabelEl.textContent = label;
+        }
+      });
+
+      btn.disabled = true;
+      statusEl.textContent = 'Saving...';
+      statusEl.style.color = '#1B2A4A';
+
+      const payload = { categoryImages, categoryLabels: categoryLabelsData };
+      if (logoImage) payload.logoImage = logoImage;
+      if (heroImage) payload.heroImage = heroImage;
+      if (offerImage1) payload.offerImage1 = offerImage1;
+      if (offerImage2) payload.offerImage2 = offerImage2;
+      if (offerImage3) payload.offerImage3 = offerImage3;
+      if (offerImage4) payload.offerImage4 = offerImage4;
+      if (ownerPhoto) payload.ownerPhoto = ownerPhoto;
+
+      db.collection('settings').doc('site').set(payload, { merge: true })
+        .then(() => {
+          statusEl.textContent = '✅ Site images updated';
+          statusEl.style.color = '#128C4A';
+        })
+        .catch((e) => {
+          statusEl.textContent = 'Something went wrong, please try again';
+          statusEl.style.color = '#ef4444';
+          showDiag('Site Settings সেভ', e);
+        })
+        .finally(() => { btn.disabled = false; });
+    }
+
+    // ===== Delivery Charges =====
+    function saveDeliveryCharges() {
+      const statusEl = document.getElementById('deliveryStatus');
+      const btn = document.getElementById('saveDeliveryBtn');
+      const inside = document.getElementById('deliveryInsideInput').value.trim();
+      const outside = document.getElementById('deliveryOutsideInput').value.trim();
+
+      const insideNum = parseFloat(bnToEnAdmin(inside));
+      const outsideNum = parseFloat(bnToEnAdmin(outside));
+      if (inside !== '' && isNaN(insideNum)) {
+        statusEl.textContent = 'সঠিক সংখ্যা লিখুন (ভিতরে ঢাকা)';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+      if (outside !== '' && isNaN(outsideNum)) {
+        statusEl.textContent = 'সঠিক সংখ্যা লিখুন (বাইরে ঢাকা)';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = 'Saving...';
+      statusEl.style.color = '#1B2A4A';
+
+      db.collection('settings').doc('site').set({
+        deliveryInside: isNaN(insideNum) ? 0 : insideNum,
+        deliveryOutside: isNaN(outsideNum) ? 0 : outsideNum
+      }, { merge: true })
+        .then(() => {
+          statusEl.textContent = '✅ ডেলিভারি চার্জ সেভ হয়েছে';
+          statusEl.style.color = '#128C4A';
+        })
+        .catch((e) => {
+          statusEl.textContent = 'Something went wrong, please try again';
+          statusEl.style.color = '#ef4444';
+          showDiag('ডেলিভারি চার্জ সেভ', e);
+        })
+        .finally(() => { btn.disabled = false; });
+    }
+
+    let editingId = null;
+    let productSubmitting = false;
+
+    function addProduct() {
+      if (productSubmitting) return;
+      const name = document.getElementById('pName').value.trim();
+      const price = document.getElementById('pPrice').value.trim();
+      const oldPrice = document.getElementById('pOldPrice').value.trim();
+      const discountPercent = document.getElementById('pDiscountPercent').value.trim();
+      const src = document.getElementById('pImage').value.trim();
+      const category = document.getElementById('pCategory').value;
+      const stockStatus = document.getElementById('pStockStatus').value;
+      const stockQtyRaw = document.getElementById('pStockQty').value.trim();
+      const statusEl = document.getElementById('addStatus');
+      const addBtn = document.getElementById('addBtn');
+
+      if (!name || !price || !src) {
+        statusEl.textContent = 'Please fill in name, price, and image URL';
+        statusEl.style.color = '#ef4444';
+        return;
+      }
+
+      const data = { name, price, oldPrice, src, category };
+      if (discountPercent) {
+        data.discountPercent = discountPercent;
+      } else if (editingId) {
+        data.discountPercent = firebase.firestore.FieldValue.delete();
+      }
+      data.freeDelivery = document.getElementById('pFreeDelivery').checked;
+      const offerEndsAtRaw = document.getElementById('pOfferEndsAt').value;
+      if (offerEndsAtRaw) {
+        data.offerEndsAt = new Date(offerEndsAtRaw).toISOString();
+      } else if (editingId) {
+        data.offerEndsAt = firebase.firestore.FieldValue.delete();
+      }
+      if (stockStatus === 'out') {
+        data.stock = 0;
+      } else if (stockQtyRaw !== '') {
+        const stockNum = parseInt(bnToEnAdmin(stockQtyRaw), 10);
+        data.stock = isNaN(stockNum) || stockNum <= 0 ? 1 : stockNum;
+      } else if (editingId) {
+        data.stock = firebase.firestore.FieldValue.delete();
+      }
+      const sellByWeight = document.getElementById('pSellByWeight').checked;
+      if (sellByWeight) {
+        const pricePerKg = document.getElementById('pPricePerKg').value.trim();
+        const minWeight = document.getElementById('pMinWeight').value.trim();
+        const weightOptionsRaw = document.getElementById('pWeightOptions').value.trim();
+        data.sellByWeight = true;
+        if (pricePerKg) data.price = pricePerKg;
+        if (minWeight) data.minWeight = minWeight;
+        data.weightOptions = weightOptionsRaw ? weightOptionsRaw.split(',').map(w => w.trim()).filter(Boolean) : [];
+      } else if (editingId) {
+        data.sellByWeight = false;
+        data.weightOptions = [];
+      }
+      productSubmitting = true;
+      addBtn.disabled = true;
+
+      if (editingId) {
+        statusEl.textContent = 'Updating...';
+        statusEl.style.color = '#1B2A4A';
+        db.collection('products').doc(editingId).update(data)
+          .then(() => {
+            statusEl.textContent = '✅ Product updated';
+            statusEl.style.color = '#128C4A';
+            cancelEdit();
+          })
+          .catch((e) => {
+            statusEl.textContent = 'Something went wrong, please try again';
+            statusEl.style.color = '#ef4444';
+            showDiag('Product আপডেট', e);
+          })
+          .finally(() => { productSubmitting = false; addBtn.disabled = false; });
+        return;
+      }
+
+      statusEl.textContent = 'Adding...';
+      statusEl.style.color = '#1B2A4A';
+
+      db.collection('products').add({ ...data, createdAt: Date.now() })
+        .then(() => {
+          statusEl.textContent = '✅ Product added';
+          statusEl.style.color = '#128C4A';
+          document.getElementById('pName').value = '';
+          document.getElementById('pPrice').value = '';
+          document.getElementById('pPrice').readOnly = false;
+          document.getElementById('pPrice').style.background = '';
+          document.getElementById('pOldPrice').value = '';
+          document.getElementById('pDiscountPercent').value = '';
+          document.getElementById('pOfferEndsAt').value = '';
+          document.getElementById('pImage').value = '';
+          document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
+          document.getElementById('pStockStatus').value = 'in';
+          document.getElementById('pStockQty').value = '';
+          document.getElementById('pStockQty').style.display = 'block';
+          document.getElementById('pFreeDelivery').checked = false;
+          document.getElementById('pPricePerKg').readOnly = false;
+          document.getElementById('pPricePerKg').style.background = '';
+        })
+        .catch((e) => {
+          statusEl.textContent = 'Something went wrong, please try again';
+          statusEl.style.color = '#ef4444';
+          showDiag('Product যোগ', e);
+        })
+        .finally(() => { productSubmitting = false; addBtn.disabled = false; });
+    }
+
+    function editProduct(id, name, price, oldPrice, src, category, stock, sellByWeight, minWeight, weightOptions, freeDelivery, offerEndsAt, discountPercent) {
+      editingId = id;
+      document.getElementById('pPrice').readOnly = false;
+      document.getElementById('pPrice').style.background = '';
+      document.getElementById('pPricePerKg').readOnly = false;
+      document.getElementById('pPricePerKg').style.background = '';
+      document.getElementById('pName').value = name;
+      document.getElementById('pPrice').value = price;
+      document.getElementById('pOldPrice').value = oldPrice || '';
+      document.getElementById('pDiscountPercent').value = discountPercent || '';
+      const imgInput = document.getElementById('pImage');
+      imgInput.value = src;
+      imgInput.dispatchEvent(new Event('input'));
+      document.getElementById('pCategory').value = category;
+      document.getElementById('pFreeDelivery').checked = !!freeDelivery;
+      const offerEndsAtInput = document.getElementById('pOfferEndsAt');
+      if (offerEndsAt) {
+        const d = new Date(offerEndsAt);
+        if (!isNaN(d.getTime())) {
+          const pad = n => String(n).padStart(2, '0');
+          offerEndsAtInput.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        } else {
+          offerEndsAtInput.value = '';
+        }
+      } else {
+        offerEndsAtInput.value = '';
+      }
+
+      document.getElementById('pSellByWeight').checked = !!sellByWeight;
+      document.getElementById('pWeightFieldsWrap').style.display = sellByWeight ? 'block' : 'none';
+      document.getElementById('pPricePerKg').value = sellByWeight ? price : '';
+      document.getElementById('pMinWeight').value = minWeight || '';
+      document.getElementById('pWeightOptions').value = (weightOptions && weightOptions.length) ? weightOptions.join(',') : '';
+
+      const isOut = (stock !== undefined && stock !== null && stock !== '' && parseInt(bnToEnAdmin(stock), 10) <= 0);
+      document.getElementById('pStockStatus').value = isOut ? 'out' : 'in';
+      document.getElementById('pStockQty').value = (!isOut && stock !== undefined && stock !== null && stock !== '') ? stock : '';
+      document.getElementById('pStockQty').style.display = isOut ? 'none' : 'block';
+
+      document.getElementById('addBtn').textContent = 'Update Product';
+      document.getElementById('cancelEditBtn').classList.add('show');
+      document.getElementById('addStatus').textContent = `Editing "${name}"`;
+      document.getElementById('addStatus').style.color = '#1B2A4A';
+      syncPriceFromPercent();
+      document.querySelectorAll('.section-card').forEach(c => c.classList.remove('open'));
+      document.getElementById('sectionCard-add').classList.add('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('pName').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pPrice').readOnly = false;
+      document.getElementById('pPrice').style.background = '';
+      document.getElementById('pOldPrice').value = '';
+      document.getElementById('pDiscountPercent').value = '';
+      document.getElementById('pOfferEndsAt').value = '';
+      document.getElementById('pImage').value = '';
+      document.getElementById('preview-product').classList.remove('show', 'ok', 'bad');
+      document.getElementById('pStockStatus').value = 'in';
+      document.getElementById('pStockQty').value = '';
+      document.getElementById('pStockQty').style.display = 'block';
+      document.getElementById('pSellByWeight').checked = false;
+      document.getElementById('pWeightFieldsWrap').style.display = 'none';
+      document.getElementById('pPricePerKg').value = '';
+      document.getElementById('pPricePerKg').readOnly = false;
+      document.getElementById('pPricePerKg').style.background = '';
+      document.getElementById('pMinWeight').value = '';
+      document.getElementById('pWeightOptions').value = '';
+      document.getElementById('pFreeDelivery').checked = false;
+      document.getElementById('addBtn').textContent = 'Add Product';
+      document.getElementById('cancelEditBtn').classList.remove('show');
+      document.getElementById('addStatus').textContent = '';
+    }
+
+    function deleteProduct(id) {
+      if (!confirm('Delete this product?')) return;
+      db.collection('products').doc(id).delete().catch(e => showDiag('Product ডিলিট', e));
+    }
+
+    // ===== Orders =====
+    let allOrders = [];
+    let currentOrderFilter = 'all';
+    let knownOrderIds = new Set();
+    let ordersFirstLoad = true;
+
+    function playNewOrderBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (e) {}
+    }
+
+    function listenOrders() {
+      db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        clearDiag();
+        allOrders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (!ordersFirstLoad) {
+          const newOnes = allOrders.filter(o => !knownOrderIds.has(o.id));
+          if (newOnes.length > 0) playNewOrderBeep();
+        }
+        allOrders.forEach(o => knownOrderIds.add(o.id));
+        ordersFirstLoad = false;
+
+        const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+        allOrders.forEach(o => {
+          const isDone = (o.status === 'Delivered' || o.status === 'Cancelled');
+          if (isDone && (Date.now() - o.createdAt) > TWO_WEEKS_MS) {
+            db.collection('orders').doc(o.id).delete();
+          }
+        });
+
+        const pendingCount = allOrders.filter(o => o.status === 'Pending').length;
+        const alertBox = document.getElementById('orderAlert');
+        document.getElementById('pendingOrderCount').textContent = pendingCount;
+        const sectionOrderCount = document.getElementById('sectionOrderCount');
+        if (pendingCount > 0) {
+          alertBox.classList.add('show');
+          document.title = `(${pendingCount}) NASIM WORLD — Admin`;
+          sectionOrderCount.style.display = 'inline-block';
+          sectionOrderCount.textContent = pendingCount;
+        } else {
+          alertBox.classList.remove('show');
+          document.title = 'NASIM WORLD — Admin';
+          sectionOrderCount.style.display = 'none';
+        }
+
+        renderOrders();
+      }, (error) => {
+        // This fires when Firestore cannot even connect/read — e.g. Security
+        // Rules blocking access. Previously this failed silently and just
+        // looked like "No orders".
+        showDiag('Orders লোড', error);
+      });
+    }
+
+    function deleteOrder(id) {
+      if (!confirm('Delete this order?')) return;
+      db.collection('orders').doc(id).delete().catch(e => showDiag('Order ডিলিট', e));
+    }
+
+    function filterOrders(status, el) {
+      currentOrderFilter = status;
+      document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderOrders();
+    }
+
+    let showHistory = false;
+    function toggleHistory() {
+      showHistory = !showHistory;
+      const btn = document.getElementById('historyToggle');
+      btn.classList.toggle('active', showHistory);
+      btn.textContent = showHistory ? '🕓 Show Recent Only' : '🕓 View Order History';
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const listEl = document.getElementById('ordersList');
+      let filtered = currentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentOrderFilter);
+
+      const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+      if (!showHistory) {
+        filtered = filtered.filter(o => {
+          const isDone = (o.status === 'Delivered' || o.status === 'Cancelled');
+          const isOld = (Date.now() - o.createdAt) > TWO_DAYS_MS;
+          return !(isDone && isOld);
+        });
+      }
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="empty-msg">No orders</div>`;
+        return;
+      }
+
+      listEl.innerHTML = '';
+      filtered.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        const date = new Date(order.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        let itemsHTML = '';
+        (order.items || []).forEach(it => {
+          if (it.sellByWeight) {
+            itemsHTML += `<div>${it.name} (${it.weight} KG) x${it.qty} = ৳${it.price * it.weight * it.qty}</div>`;
+          } else {
+            itemsHTML += `<div>${it.name} x${it.qty} = ৳${it.price * it.qty}</div>`;
+          }
+        });
+        const deliveryHTML = order.deliveryArea ? `<div>ডেলিভারি (${order.deliveryArea}): ৳${order.deliveryFee || 0}</div>` : '';
+
+        let actionsHTML = '';
+        if (order.status === 'Pending') {
+          actionsHTML = `
+            <button class="btn-accept" onclick="updateOrderStatus('${order.id}','Accepted')">Accept</button>
+            <button class="btn-cancel" onclick="updateOrderStatus('${order.id}','Cancelled')">Cancel</button>`;
+        } else if (order.status === 'Accepted') {
+          actionsHTML = `<button class="btn-deliver" onclick="updateOrderStatus('${order.id}','Delivered')">Delivered</button>`;
+        }
+        actionsHTML += `<a class="act-btn btn-call" href="tel:${order.phone}">📞 Call</a>`;
+        actionsHTML += `<button class="cross-btn" onclick="deleteOrder('${order.id}')" aria-label="Delete order">✕</button>`;
+
+        card.innerHTML = `
+          <div class="top-row">
+            <span class="cust-name">${order.orderId ? order.orderId + ' — ' : ''}${order.name}</span>
+            <span class="order-badge ${order.status}">${order.status}</span>
+          </div>
+          <div class="meta">📞 ${order.phone} &nbsp;•&nbsp; ${date} &nbsp;•&nbsp; ${order.source || ''}</div>
+          <div class="meta">📍 ${order.address}</div>
+          <div class="items-list">${itemsHTML}${deliveryHTML}</div>
+          <div class="total-row">Total: ৳${order.total}</div>
+          <div class="order-actions">${actionsHTML}</div>`;
+        listEl.appendChild(card);
+      });
+    }
+
+    function updateOrderStatus(id, status) {
+      db.collection('orders').doc(id).update({ status }).catch(e => showDiag('Order স্ট্যাটাস আপডেট', e));
+    }
+
+    function listenProducts() {
+      db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        const grouped = { group1: [], group2: [], group3: [], group4: [] };
+        snap.forEach(doc => {
+          const data = doc.data();
+          if (grouped[data.category]) grouped[data.category].push({ id: doc.id, ...data });
+        });
+
+        const listEl = document.getElementById('productList');
+        listEl.innerHTML = '';
+
+        Object.keys(categoryLabels).forEach(key => {
+          const group = document.createElement('div');
+          group.className = 'category-group';
+          const items = grouped[key];
+          let rowsHTML = '';
+          if (items.length === 0) {
+            rowsHTML = `<div class="empty-msg">No products</div>`;
+          } else {
+            items.forEach(item => {
+              const stockInfo = stockLabelFor(item.stock);
+              const priceLabel = item.sellByWeight ? `৳${item.price}/KG` : `৳${item.price}${item.oldPrice ? ' (was ৳' + item.oldPrice + ')' : ''}`;
+              rowsHTML += `
+                <div class="mini-item">
+                  <div class="mini-item-header" onclick="toggleMiniItem(this)">
+                    <img src="${item.src}" onerror="this.style.background='#FFFFFF'; this.alt='ছবি লোড হয়নি';">
+                    <div class="info">
+                      <div class="name">${item.name}</div>
+                      <div class="price">${priceLabel}</div>
+                      <div class="stock-label ${stockInfo.cls}">${stockInfo.text}</div>
+                    </div>
+                    <div class="mini-chevron">▾</div>
+                  </div>
+                  <div class="mini-item-body">
+                    <div class="mini-item-body-inner">
+                      <button class="edit-btn" onclick='event.stopPropagation(); editProduct("${item.id}", ${JSON.stringify(item.name)}, ${JSON.stringify(item.price)}, ${JSON.stringify(item.oldPrice || "")}, ${JSON.stringify(item.src)}, "${item.category}", ${JSON.stringify(item.stock !== undefined ? item.stock : "")}, ${JSON.stringify(!!item.sellByWeight)}, ${JSON.stringify(item.minWeight || "")}, ${JSON.stringify(item.weightOptions || [])}, ${JSON.stringify(!!item.freeDelivery)}, ${JSON.stringify(item.offerEndsAt || "")}, ${JSON.stringify(item.discountPercent || "")})'>Edit</button>
+                      <button class="cross-btn" onclick="event.stopPropagation(); deleteProduct('${item.id}')" aria-label="Delete product">✕</button>
+                    </div>
+                  </div>
+                </div>`;
+            });
+          }
+          group.innerHTML = `<h4>${categoryLabels[key]}</h4>${rowsHTML}`;
+          listEl.appendChild(group);
+        });
+      }, (error) => {
+        showDiag('Products লোড', error);
+      });
+    }
+  </script>
+
+</body>
+ </html>
